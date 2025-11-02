@@ -92,13 +92,13 @@ low_state=$(printf "%s" "$state" | tr '[:upper:]' '[:lower:]')
 # Choose icon and semantics
 icon=""
 if [[ "$low_state" == *"discharging"* ]]; then
-  icon="🔋"
+  icon="󱟞 "
 elif [[ "$low_state" == *"charging"* ]]; then
-  icon="⚡"
+  icon="󱟠 "
 elif [[ "$low_state" == *"fully-charged"* || "$low_state" == *"full"* || "$low_state" == *"pending-charge"* || "$low_state" == *"charging-prohibited"* ]]; then
   icon="🔌"
 elif [[ "$low_state" == *"empty"* ]]; then
-  icon="🪫"
+  icon="󰂎 "
 fi
 
 # Build label text
