@@ -81,7 +81,7 @@ elif [[ "$low_state" == *"charging"* ]]; then
 elif [[ "$low_state" == *"fully-charged"* || "$low_state" == *"full"* || "$low_state" == *"pending-charge"* || "$low_state" == *"charging-prohibited"* ]]; then
   icon="🔌"
 elif [[ "$low_state" == *"empty"* ]]; then
-  icon="🪫"
+  icon="󰁺"
 fi
 
 # Build label text

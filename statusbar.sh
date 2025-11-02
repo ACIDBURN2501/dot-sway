@@ -15,7 +15,7 @@ icon_fallback() {
     "🔌") echo -n "AC" ;;
     "⚡") echo -n "CHG" ;;
     "🔋") echo -n "BAT" ;;
-    "🪫") echo -n "LOW" ;;
+    "󰁺") echo -n "LOW" ;;
     "❓") echo -n "?" ;;
     *) echo -n "$icon" ;;
     esac
