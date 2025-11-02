@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
-# Simple sway status script
-# Outputs only non-empty sections separated by " | "
-# Left: concise battery (e.g., "⚡4h 54m", "🔋4h 54m", or "🔌")
-# Center: current time in HH:MM
+# Simple sway status script (generic)
+# Layout: <Battery> | <Status Icons> | <Time>
+# - Battery (left): concise output from battery.sh (e.g., "⚡4h 54m", "🔋4h 54m", or "🔌")
+# - Status Icons (center): aggregated outputs from executable scripts in ~/.config/sway/status.d
+# - Time (right): current time in HH:MM
 
 set -euo pipefail
 
@@ -23,6 +24,7 @@ icon_fallback() {
   fi
 }
 
+# Convert battery semicolon-separated line into a concise left section
 batt_short() {
   local line icon label color rest short iout
   line="$1"
@@ -45,8 +47,8 @@ batt_short() {
   printf "%s" "$short"
 }
 
+# Join non-empty args with " | " without leading/trailing pipes
 join_non_empty() {
-  # Join non-empty args with " | " without leading/trailing pipes
   local out="" part
   for part in "$@"; do
     if [[ -n "$part" ]]; then
@@ -59,22 +61,55 @@ join_non_empty() {
   printf "%s\n" "$out"
 }
 
+# Run all executable scripts in a status directory and join their non-empty outputs with spaces
+status_icons() {
+  local dir="${STATUS_DIR:-$HOME/.config/sway/status.d}"
+  local outputs=()
+  if [[ -d "$dir" ]]; then
+    # Iterate in lexical order for predictable placement
+    local s out
+    for s in "$dir"/*; do
+      if [[ -f "$s" && -x "$s" ]]; then
+        # Execute each script; ignore errors from individual scripts
+        out="$("$s" 2>/dev/null || true)"
+        # Trim trailing newline(s)
+        out=${out//$'\n'/}
+        if [[ -n "$out" ]]; then
+          outputs+=("$out")
+        fi
+      fi
+    done
+  fi
+  # Join with single spaces
+  local joined="" item
+  for item in "${outputs[@]:-}"; do
+    if [[ -n "$joined" ]]; then
+      joined+=" "
+    fi
+    joined+="$item"
+  done
+  printf "%s" "$joined"
+}
+
 while true; do
   NOW=$(date +'%H:%M')
+
+  # Left: battery concise summary
   LEFT=""
-  if [ -x "$HOME/.config/sway/battery.sh" ]; then
-    B_RAW=$("$HOME/.config/sway/battery.sh")
-    LEFT=$(batt_short "$B_RAW")
+  if [[ -x "$HOME/.config/sway/battery.sh" ]]; then
+    B_RAW=$("$HOME/.config/sway/battery.sh" || true)
+    if [[ -n "$B_RAW" ]]; then
+      LEFT=$(batt_short "$B_RAW")
+    fi
   fi
 
-  # Bluetooth status
-  if [ -x "$HOME/.config/sway/bluetooth.sh" ]; then
-    BLUE=$("$HOME/.config/sway/bluetooth.sh")
-    LEFT="$BLUE"
-  fi
+  # Center: generic status icons aggregated from scripts
+  CENTER="$(status_icons)"
 
-  CENTER="$NOW"
-  # Only print non-empty sections;
-  join_non_empty "$LEFT" "$CENTER"
+  # Right: time
+  RIGHT="$NOW"
+
+  # Only print non-empty sections
+  join_non_empty "$LEFT" "$CENTER" "$RIGHT"
   sleep 1
 done
