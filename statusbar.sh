@@ -7,30 +7,11 @@
 
 set -euo pipefail
 
-# If BAR_ASCII=1 is set in the environment, replace emoji with ASCII fallbacks
-icon_fallback() {
-  local icon="$1"
-  if [[ "${BAR_ASCII:-0}" == "1" ]]; then
-    case "$icon" in
-    "🔌") echo -n "AC" ;;
-    "⚡") echo -n "CHG" ;;
-    "🔋") echo -n "BAT" ;;
-    "󰁺") echo -n "LOW" ;;
-    "❓") echo -n "?" ;;
-    *) echo -n "$icon" ;;
-    esac
-  else
-    echo -n "$icon"
-  fi
-}
-
 # Convert battery semicolon-separated line into a concise left section
 batt_short() {
-  local line icon label color rest short iout
+  local line icon label color rest short
   line="$1"
   IFS=';' read -r icon label color rest <<<"$line"
-  # Normalise icon via fallback if needed
-  iout=$(icon_fallback "$icon")
   # If label has trailing markers, trim to just time
   # Examples: "5h 6m remaining" -> "5h 6m", "1h 2m to full" -> "1h 2m"
   if [[ "$label" == *" remaining" ]]; then
@@ -40,9 +21,9 @@ batt_short() {
   fi
   # If fully charged, just show plug icon
   if [[ "$label" == "Full" || "$icon" == "🔌" ]]; then
-    short="$iout"
+    short="$icon"
   else
-    short="${iout}${label}"
+    short="${icon}${label}"
   fi
   printf "%s" "$short"
 }
