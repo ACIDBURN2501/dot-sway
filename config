@@ -87,6 +87,9 @@ gaps outer 5
     # Start your launcher
     bindsym $mod+d exec $menu
 
+    # Disable the touchpad
+    bindsym $mod+Ctrl+p exec $HOME/.local/bin/toggle-touchpad.sh
+
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
     # Despite the name, also works for non-floating windows.
