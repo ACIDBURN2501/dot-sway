@@ -25,7 +25,7 @@ else
 fi
 
 if [[ "$MUTED" == "yes" ]]; then
-  echo " $VOL%" # muted icon
+  echo " "
 else
-  echo " $VOL%" # speaker icon
+  echo " $VOL%"
 fi
