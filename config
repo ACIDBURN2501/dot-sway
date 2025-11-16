@@ -24,6 +24,10 @@ set $menu wofi --show drun
 # Waybar
 #exec --no-startup-id waybar
 
+# Image opening in Dolphin (etc)
+exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
+
 
 ### Output configuration
 #
