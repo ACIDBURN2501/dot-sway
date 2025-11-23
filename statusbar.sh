@@ -50,9 +50,14 @@ status_icons() {
     # Iterate in lexical order for predictable placement
     local s out
     for s in "$dir"/*; do
-      if [[ -f "$s" && -x "$s" ]]; then
-        # Execute each script; ignore errors from individual scripts
-        out="$("$s" 2>/dev/null || true)"
+      if [[ -f "$s" ]]; then
+        if [[ -x "$s" ]]; then
+          # Execute directly if it is executable
+          out="$("$s" 2>/dev/null || true)"
+        else
+          # Fallback: try to run with bash (helps when user forgot chmod +x)
+          out="$(bash "$s" 2>/dev/null || true)"
+        fi
         # Trim trailing newline(s)
         out=${out//$'\n'/}
         if [[ -n "$out" ]]; then
