@@ -8,6 +8,11 @@ This directory contains a very small set of scripts to drive a simple, fast stat
 
 The core loop is implemented in `statusbar.sh`. Supporting scripts live alongside it and under `status.d/`.
 
+<p align="center">
+  <img src="images/preview.png" alt="Desktop preview." />
+</p>
+
+
 ## Files
 
 - `statusbar.sh` — main loop that prints a single status line every second: `<Battery> | <Status Icons> | <Time>`
