@@ -72,8 +72,13 @@ input type:keyboard {
 
 blur enable
 
+#gaps and borders
 gaps inner 10
 gaps outer 5
+# Use pixel borders to disable titlebars for all windows
+default_border pixel 2
+# Also apply to floating windows
+default_floating_border pixel 2
 #
 # You can also configure each device individually.
 # Read `man 5 sway-input` for more information about this section.
