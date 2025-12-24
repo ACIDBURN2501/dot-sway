@@ -1,0 +1,13 @@
+# ~/.config/kanshi/config
+# Docked profile: external 4K on, laptop panel off
+profile docked {
+  output DP-1 mode 3840x2160@60.000Hz position 0,0 scale 1
+  output eDP-1 disable
+  # optional: tidy up workspaces after applying (see script below)
+  # exec ~/.config/sway/scripts/move-nonactive-ws.sh
+}
+
+profile mobile {
+  output eDP-1 mode 1920x1080@60.020Hz position 0,0 scale 1
+  # exec ~/.config/sway/scripts/move-nonactive-ws.sh
+}
