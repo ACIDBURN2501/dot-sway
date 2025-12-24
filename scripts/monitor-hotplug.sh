@@ -27,6 +27,7 @@ EXT_SCALE="1"
 # --- Logic ---
 
 LOG_FILE="/tmp/sway-monitor-hotplug.log"
+CURRENT_STATE=""
 
 log() {
   echo "[$(date '+%H:%M:%S')] $*" >> "$LOG_FILE"
@@ -35,9 +36,10 @@ log() {
 move_workspaces() {
   local target="$1"
   log "Moving all workspaces to $target"
-  # Get list of existing workspaces and move them one by one
+  # Use criteria to move workspaces without switching focus to them
+  # This prevents the "jumping" behavior
   for ws in $(swaymsg -t get_workspaces -r | jq -r '.[].name'); do
-    swaymsg "workspace $ws; move workspace to output $target" >/dev/null 2>&1 || true
+    swaymsg "[workspace=\"$ws\"] move workspace to output $target" >/dev/null 2>&1 || true
   done
 }
 
@@ -50,28 +52,45 @@ update_monitors() {
   ext_output=$(echo "$outputs_json" | jq -r ".[] | select(.name != \"$INTERNAL_OUTPUT\") | .name" | head -n1)
   
   if [[ -n "$ext_output" && "$ext_output" != "null" ]]; then
-    log "External detected: $ext_output. Switching to docked mode."
+    # New state: Docked to specific output
+    NEW_STATE="docked:$ext_output"
     
-    # 1. Enable external (force resolution if needed, or auto)
-    # Using 'pos 0 0' to ensure it's the primary/top-left coordinate
-    swaymsg output "$ext_output" enable mode "$EXT_RES" scale "$EXT_SCALE" pos 0 0
-    
-    # 2. Move workspaces (Critical: do this BEFORE disabling internal to avoid losing focus)
-    move_workspaces "$ext_output"
-    
-    # 3. Disable internal
-    swaymsg output "$INTERNAL_OUTPUT" disable
+    if [[ "$CURRENT_STATE" != "$NEW_STATE" ]]; then
+      log "External detected: $ext_output. Switching to docked mode."
+      
+      # 1. Enable external
+      swaymsg output "$ext_output" enable mode "$EXT_RES" scale "$EXT_SCALE" pos 0 0
+      
+      # 2. Move workspaces
+      move_workspaces "$ext_output"
+      
+      # 3. Disable internal
+      swaymsg output "$INTERNAL_OUTPUT" disable
+      
+      CURRENT_STATE="$NEW_STATE"
+    else
+      log "State unchanged ($CURRENT_STATE). Ignoring event."
+    fi
     
   else
-    log "No external detected. Switching to mobile mode."
+    # New state: Mobile
+    NEW_STATE="mobile"
     
-    # 1. Enable internal
-    swaymsg output "$INTERNAL_OUTPUT" enable
-    
-    # 2. Move workspaces
-    move_workspaces "$INTERNAL_OUTPUT"
-    
-    # No need to disable external as it's gone
+    if [[ "$CURRENT_STATE" != "$NEW_STATE" ]]; then
+      log "No external detected. Switching to mobile mode."
+      
+      # 1. Enable internal
+      swaymsg output "$INTERNAL_OUTPUT" enable
+      
+      # 2. Move workspaces
+      move_workspaces "$INTERNAL_OUTPUT"
+      
+      # No need to disable external as it's gone
+      
+      CURRENT_STATE="$NEW_STATE"
+    else
+      log "State unchanged ($CURRENT_STATE). Ignoring event."
+    fi
   fi
 }
 
