@@ -1,0 +1,19 @@
+window {
+    margin: 0px;
+    background-color: rgba(40, 42, 54, 0.9);
+    border-radius: 10px;
+    border: 2px solid #6272a4;
+}
+
+#input {
+    margin: 5px;
+    border-radius: 5px;
+    padding: 5px;
+    background-color: #282a36;
+    color: #f8f8f2;
+}
+
+#entry:selected {
+    background-color: #44475a;
+}
+
