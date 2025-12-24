@@ -255,5 +255,8 @@ bar {
     }
 }
 
+# --- Auto-start ---
+# Daemon to handle monitor hotplugging (replaces kanshi)
+exec ~/.config/sway/scripts/monitor-hotplug.sh
 #
 include /etc/sway/config.d/*
