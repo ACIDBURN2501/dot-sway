@@ -148,12 +148,13 @@ log "Monitor hotplug daemon started (PID: $$)"
 update_monitors || true
 
 while true; do
-  if ! swaymsg -m -t subscribe '["output", "input"]' 2>/dev/null | while read -r event; do
+  # Subscribe to output events only.
+  # Use jq to ensure we read one valid JSON object per line.
+  if ! swaymsg -m -t subscribe '["output"]' 2>/dev/null | jq --unbuffered -c '.' | while read -r event; do
     # Log the event for debugging
     # log "Sway event: $(echo "$event" | jq -c .change 2>/dev/null || echo "switch")"
     
-    # Process all output/input events (removed strict grep filter to catch disconnects)
-    sleep 0.5
+    # Process output events
     update_monitors || true
   done; then
     log "Warning: swaymsg subscription lost. Restarting in 2s..."
