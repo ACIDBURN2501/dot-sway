@@ -34,10 +34,15 @@ The core loop is implemented in `statusbar.sh`. Supporting scripts live alongsid
 - Bash (for the scripts)
 - `jq` (for JSON parsing in utility scripts)
 - `swaymsg` (for interacting with Sway)
+- `swaynag` (for confirmation dialogs)
 - UPower (for battery information)
 - `brightnessctl` (for `status.d/20-brightness.sh`)
 - `pactl` (PulseAudio/PipeWire for `status.d/30-volume.sh`)
 - `bluez` / `bluetoothctl` (for `status.d/80-bluetooth.sh`)
+- `grim` (for screenshots)
+- `slurp` (for interactive region selection in screenshots)
+- `systemctl` (for system suspension and environment management)
+- `dbus-update-activation-environment` (for environment variable management)
 - Optional: `swayidle`, `swaylock`, `wmenu`/`wofi`/`tofi` (referenced in `config`)
 
 ## How it works
