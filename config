@@ -57,13 +57,15 @@ blur enable
 blur_xray enable
 
 #gaps and borders
-gaps inner 2
-gaps outer 1
+#gaps inner 5
+#gaps outer 5
 
 # Use pixel borders to disable titlebars for all windows
 default_border pixel 2
 # Also apply to floating windows
 default_floating_border pixel 2
+
+default_dim_inactive 0.15
 
 # Add a rounded corners if desired
 #corner_radius 10
