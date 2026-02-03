@@ -52,27 +52,22 @@ input type:keyboard {
        xkb_model "pc105"
 }
 
-# Enable blur effects (works well with SwayFX)
-blur enable
-blur_xray enable
+# --- Conditional SwayFX Settings ---
+# The sway config language does not support shell-like variable assignment or if/then logic.
+# Instead, we use a shell script to detect SwayFX and dynamically generate a configuration snippet,
+# which is then included.
 
-#gaps and borders
-#gaps inner 5
-#gaps outer 5
+# 1. Execute the guard script to generate /tmp/swayfx_config_snippet (empty if not SwayFX).
+exec $HOME/.config/sway/scripts/swayfx_guard.sh
+
+# 2. Include the dynamically generated settings. This will be empty for vanilla Sway.
+include /tmp/swayfx_config_snippet
 
 # Use pixel borders to disable titlebars for all windows
+# (These are standard Sway commands)
 default_border pixel 2
-# Also apply to floating windows
 default_floating_border pixel 2
 
-default_dim_inactive 0.15
-
-# Add a rounded corners if desired
-#corner_radius 10
-
-#
-# You can also configure each device individually.
-# Read `man 5 sway-input` for more information about this section.
 
 ### Key bindings
 #
