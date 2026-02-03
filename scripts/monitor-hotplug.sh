@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 # monitor-hotplug.sh
 # Robust monitor hotplugging and clamshell mode for Sway
 # Optimized for ThinkPad T480
@@ -31,10 +32,12 @@ get_lid_state() {
 move_workspaces() {
   local target="$1"
   log "Moving all workspaces to $target"
-  local workspaces
-  workspaces=$(swaymsg -t get_workspaces -r 2>/dev/null | jq -r '.[].name' 2>/dev/null || echo "")
-  for ws in $workspaces; do
+  local workspaces_json
+  workspaces_json=$(swaymsg -t get_workspaces -r 2>/dev/null | jq -c . || echo "[]")
+  
+  echo "$workspaces_json" | jq -r '.[].name' 2>/dev/null | while read -r ws; do
     if [[ -n "$ws" ]]; then
+      # Use the workspace name exactly as read (handles spaces)
       swaymsg "[workspace=\"$ws\"] move workspace to output $target" >/dev/null 2>&1 || true
     fi
   done

@@ -28,7 +28,7 @@ exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DES
 bindsym Control+Mod1+s exec grim -g "$(slurp)" ~/Pictures/Screenshots/screenshot-$(date +'%Y-%m-%d-%H%M%S').png
 
 # Screen locking
-bindsym Mod4+l exec swaylock -f -i ~/.config/sway/images/wp.jpg
+bindsym $mod+l exec swaylock -f -i ~/.config/sway/images/wp.jpg
 
 ### Output configuration
 #
@@ -92,7 +92,7 @@ default_floating_border pixel 2
     bindsym $mod+d exec $menu
 
     # Disable the touchpad
-    bindsym $mod+Ctrl+p exec $HOME/.local/bin/toggle-touchpad.sh
+    bindsym $mod+Ctrl+p exec $HOME/.config/sway/scripts/toggle-touchpad.sh
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.

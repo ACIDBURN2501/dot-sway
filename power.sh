@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 # Power status script for sway status bar
 
 # Check if battery script exists and is executable
