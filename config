@@ -8,6 +8,7 @@
 #
 # Logo key. Use Mod1 for Alt. Mod4 for Super
 set $mod Mod1
+set $super Mod4
 # Home row direction keys, like vim
 set $left h
 set $down j
@@ -28,7 +29,7 @@ exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DES
 bindsym Control+Mod1+s exec grim -g "$(slurp)" ~/Pictures/Screenshots/screenshot-$(date +'%Y-%m-%d-%H%M%S').png
 
 # Screen locking
-bindsym $mod+l exec swaylock -f -i ~/.config/sway/images/wp.jpg
+bindsym $super+l exec swaylock -f -i ~/.config/sway/images/wp.jpg
 
 ### Output configuration
 #
