@@ -16,6 +16,8 @@ The core loop is implemented in `statusbar.sh`. Supporting scripts live alongsid
 ## Files
 
 - `config` — A default Sway configuration file you can use as a starting point.
+- `config.d/` — Drop-in directory for additional Sway configuration snippets.
+    - `floating_windows` — Rules to make specific applications always open as floating windows (e.g., calculators, dialogs). See [Floating Windows Configuration](#floating-windows-configuration) below.
 - `statusbar.sh` — main loop that prints a single status line every second: `<Battery> | <Status Icons> | <Time>`
 - `battery.sh` — reads UPower's DisplayDevice and prints a semicolon-delimited line: `icon;label;color;default`
 - `power.sh` — tiny helper that converts `battery.sh` output into a compact human-readable string (used similarly to `batt_short` in `statusbar.sh`)
@@ -105,6 +107,25 @@ See [`scripts/SCRIPTS.md`](scripts/SCRIPTS.md) for details on:
 - `move-ws-to-output.sh`
 - `toggle-touchpad.sh`
 - `monitor-hotplug.sh`
+
+## Floating Windows Configuration
+
+By default, Sway tiles all windows. However, some applications (like calculators, dialogs, or system utilities) work better as floating windows. The `config.d/floating_windows` file contains rules to automatically make specific applications float.
+
+### Adding Your Own Floating Applications
+
+1. Open the application you want to make floating
+2. Find its identifier by running:
+   ```bash
+   swaymsg -t get_tree | grep -Po '"(app_id|class)": *"\K[^"]*'
+   ```
+3. Edit `~/.config/sway/config.d/floating_windows` and add a line:
+   ```
+   for_window [app_id="YOUR_APP_ID"] floating enable
+   ```
+4. Reload Sway config with `$mod+Shift+c`
+
+The file includes commented examples for common applications (pavucontrol, file pickers, etc.) that you can uncomment as needed.
 
 ## Extra Configuration
 

@@ -1,0 +1,39 @@
+# Floating Windows Configuration
+#
+# This file contains rules to make specific applications always open as floating
+# windows instead of tiled windows.
+#
+# --- How to find an application's identifier ---
+#
+# 1. Open the application you want to make floating
+# 2. Run this command in a terminal:
+#      swaymsg -t get_tree | grep -i "app_id\|class"
+# 3. Look for the app_id (Wayland apps) or class (X11 apps) of your application
+#
+# Alternatively, for a more focused search:
+#      swaymsg -t get_tree | grep -Po '"(app_id|class)": *"\K[^"]*'
+#
+# --- Syntax ---
+#
+# for_window [app_id="APPLICATION_ID"] floating enable
+# for_window [class="APPLICATION_CLASS"] floating enable
+#
+# You can also match by title or other criteria. See: man 5 sway
+#
+# --- Examples ---
+
+# GNOME Calculator
+for_window [app_id="org.gnome.Calculator"] floating enable
+
+# Other common floating applications (uncomment to use):
+# for_window [app_id="pavucontrol"] floating enable
+# for_window [app_id="blueman-manager"] floating enable
+# for_window [app_id="nm-connection-editor"] floating enable
+# for_window [app_id="gnome-system-monitor"] floating enable
+# for_window [title="Firefox — Sharing Indicator"] floating enable
+# for_window [app_id="org.kde.polkit-kde-authentication-agent-1"] floating enable
+
+# File picker dialogs (common pattern)
+# for_window [window_role="pop-up"] floating enable
+# for_window [window_role="dialog"] floating enable
+# for_window [window_type="dialog"] floating enable
