@@ -77,7 +77,18 @@ exec $HOME/.config/sway/scripts/swayfx_guard.sh
 include /tmp/swayfx_config_snippet
 
 # 3. Initialize theme on startup and include theme configuration
+# Provide default color values as fallback (will be overridden by theme config)
+set $bg_color #323232
+set $bar_bg_color #323232D9
+set $text_color #ffffff
+set $inactive_text #d0d0d0
+set $border_color #404040
+set $indicator_color #5294e2
+
+# Initialize theme (runs asynchronously after Sway starts)
 exec $HOME/.config/sway/scripts/toggle_theme.sh init
+
+# Include theme configuration (will override defaults above if file exists)
 include /tmp/sway_theme_config
 
 # Use pixel borders to disable titlebars for all windows
