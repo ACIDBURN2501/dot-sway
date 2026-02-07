@@ -1,10 +1,17 @@
+/* NOTE: This file is kept for reference only.
+ * Active wofi themes are now managed by the theme toggle system at:
+ *   ~/.config/wofi/style-dark.css
+ *   ~/.config/wofi/style-light.css
+ *   ~/.config/wofi/style.css (symlink to active theme)
+ */
+
 *{
-    font-family: monospace;
+    font-family: 'Adwaita Mono', monospace;
 }
 
 window {
     margin: 5px;
-    border: 0px solid white;
+    border: 2px solid #404040;
     background-color: rgba(48, 98, 148, 1.0);
 }
 

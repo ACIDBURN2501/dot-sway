@@ -24,10 +24,12 @@ The core loop is implemented in `statusbar.sh`. Supporting scripts live alongsid
 - `status.d/` — drop-in directory for status items. Included scripts:
     - `20-brightness.sh` — Displays brightness percentage (uses `brightnessctl`)
     - `30-volume.sh` — Displays volume level and mute status (uses `pactl`)
+    - `40-theme.sh` — Displays current theme indicator (🌙 for dark, ☀️ for light)
     - `80-bluetooth.sh` — Displays Bluetooth connection status
     - `90-net.sh` — Displays network status (WiFi/Ethernet)
 - `scripts/` — Utility scripts for window management and system control.
-    - `monitor-hotplug.sh` — **New!** Robustly handles monitor switching (internal vs. external) to avoid Kanshi race conditions.
+    - `monitor-hotplug.sh` — Robustly handles monitor switching (internal vs. external) to avoid Kanshi race conditions.
+    - `toggle_theme.sh` — **New!** Toggles between Dark and Light themes. Syncs with Gnome when available.
     - See `scripts/SCRIPTS.md` for more details.
 - `extra/` — Extra configuration files, such as `kanshi` config (see `extra/EXTRA.md`).
 
@@ -41,6 +43,7 @@ The core loop is implemented in `statusbar.sh`. Supporting scripts live alongsid
 - `brightnessctl` (for `status.d/20-brightness.sh`)
 - `pactl` (PulseAudio/PipeWire for `status.d/30-volume.sh`)
 - `bluez` / `bluetoothctl` (for `status.d/80-bluetooth.sh`)
+- `gsettings` (optional, for Gnome theme syncing)
 - `grim` (for screenshots)
 - `slurp` (for interactive region selection in screenshots)
 - `systemctl` (for system suspension and environment management)
@@ -91,12 +94,35 @@ For Swayfx with its bar, the same `status_command` applies. Ensure the scripts a
 chmod +x ~/.config/sway/*.sh ~/.config/sway/status.d/*.sh
 ```
 
+## Theme Toggle (Dark/Light Mode)
+
+This configuration includes a theme toggle system that allows you to switch between dark and light themes:
+
+**Features:**
+- Toggle via keybind: `Mod+Shift+t` (Alt+Shift+t by default)
+- Status bar indicator: 🌙 (dark) / ☀️ (light)
+- Automatic Gnome integration: syncs with system theme when running under Gnome
+- Standalone operation: works independently when not using Gnome
+- Dynamic theming: updates bar colors, window borders, and workspace indicators
+
+**Gnome Compatibility:**
+When running under Gnome, the theme toggle automatically syncs with `gsettings` (org.gnome.desktop.interface color-scheme), ensuring consistent theming between Sway and Gnome applications. If Gnome is not detected, it operates as a Sway-only theme toggle.
+
+**Manual Usage:**
+```bash
+# Toggle theme
+~/.config/sway/scripts/toggle_theme.sh toggle
+
+# Check current theme
+~/.config/sway/scripts/toggle_theme.sh get
+```
+
 ## Adding items via status.d/
 
 Place any executable script in `~/.config/sway/status.d`. The script should:
 
 - Print a single line to stdout (no trailing newlines required; they are trimmed)
-- Exit 0 on success; errors are ignored so a failing script won’t break the bar
+- Exit 0 on success; errors are ignored so a failing script won't break the bar
 - Be fast (ideally <10–20ms) to avoid jank; consider caching or async daemons for expensive queries
 
 ## Utility Scripts
@@ -107,6 +133,7 @@ See [`scripts/SCRIPTS.md`](scripts/SCRIPTS.md) for details on:
 - `move-ws-to-output.sh`
 - `toggle-touchpad.sh`
 - `monitor-hotplug.sh`
+- `toggle_theme.sh`
 
 ## Floating Windows Configuration
 

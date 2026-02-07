@@ -22,3 +22,18 @@ $HOME/.local/bin/
             - If the laptop lid is closed, **suspends** the system (ensures it doesn't stay awake in your bag).
     - **Hardware Support:** Uses `/proc/acpi/button/lid/LID/state` to detect lid status. Optimized for ThinkPad T480.
     - **Logging:** Logs actions to `/tmp/sway-monitor-hotplug.log`.
+
+- `toggle_theme.sh`: **(New)** Toggles between Dark and Light themes for Sway.
+    - **Features:**
+        - Syncs with Gnome theme settings when running under Gnome (uses `gsettings`)
+        - Falls back to Sway-only theming when Gnome is not available
+        - Generates theme configuration dynamically in `/tmp/sway_theme_config`
+        - Updates bar colors, window borders, and workspace indicators
+        - Sends desktop notifications when theme changes
+    - **Usage:**
+        - `toggle_theme.sh toggle` - Toggle between dark and light themes
+        - `toggle_theme.sh init` - Initialize theme on startup
+        - `toggle_theme.sh get` - Get current theme (dark/light)
+    - **Keybind:** Mod+Shift+t
+    - **Status Bar:** Shows theme indicator (🌙 for dark, ☀️ for light) via `status.d/40-theme.sh`
+    - **Gnome Compatibility:** When running under Gnome, automatically syncs with system theme preferences

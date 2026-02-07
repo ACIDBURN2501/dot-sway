@@ -62,6 +62,9 @@ input type:keyboard {
        xkb_model "pc105"
 }
 
+# Prevent accidental focus changes from mouse movement
+focus_follows_mouse no
+
 # --- Conditional SwayFX Settings ---
 # The sway config language does not support shell-like variable assignment or if/then logic.
 # Instead, we use a shell script to detect SwayFX and dynamically generate a configuration snippet,
@@ -72,6 +75,10 @@ exec $HOME/.config/sway/scripts/swayfx_guard.sh
 
 # 2. Include the dynamically generated settings. This will be empty for vanilla Sway.
 include /tmp/swayfx_config_snippet
+
+# 3. Initialize theme on startup and include theme configuration
+exec $HOME/.config/sway/scripts/toggle_theme.sh init
+include /tmp/sway_theme_config
 
 # Use pixel borders to disable titlebars for all windows
 # (These are standard Sway commands)
@@ -94,6 +101,9 @@ default_floating_border pixel 2
 
     # Disable the touchpad
     bindsym $mod+Ctrl+p exec $HOME/.config/sway/scripts/toggle-touchpad.sh
+
+    # Toggle theme (Dark/Light mode)
+    bindsym $mod+Shift+t exec $HOME/.config/sway/scripts/toggle_theme.sh toggle
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
@@ -229,15 +239,16 @@ bindsym $mod+r mode "resize"
 # Read `man 5 sway-bar` for more information about this section.
 bar {
     position top
-    #font pango:SauceCodePro Nerd Font 10, Noto Color Emoji 10
     status_command ~/.config/sway/statusbar.sh
-
     font pango:SauceCodePro Nerd Font 10
 
+    # Theme colors managed by toggle_theme.sh (variables defined in /tmp/sway_theme_config)
     colors {
-        statusline      #ffffff
-        background     #323232
-        inactive_workspace #323232 #323232 #d0d0d0
+        statusline $text_color
+        background $bar_bg_color
+        inactive_workspace $bar_bg_color $bar_bg_color $inactive_text
+        active_workspace $bar_bg_color $bar_bg_color $text_color
+        focused_workspace $indicator_color $indicator_color $text_color
     }
 }
 
