@@ -256,6 +256,9 @@ bar {
 # Daemon to handle monitor hotplugging (replaces kanshi)
 exec ~/.config/sway/scripts/monitor-hotplug.sh
 
+# Optional: Mako notification daemon (only starts if installed)
+exec command -v mako && mako || true
+
 # Lid switch triggers
 bindswitch --locked lid:on exec ~/.config/sway/scripts/monitor-hotplug.sh --once
 bindswitch --locked lid:off exec ~/.config/sway/scripts/monitor-hotplug.sh --once

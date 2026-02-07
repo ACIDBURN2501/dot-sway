@@ -29,7 +29,10 @@ $HOME/.local/bin/
         - Falls back to Sway-only theming when Gnome is not available
         - Generates theme configuration dynamically in `/tmp/sway_theme_config`
         - Updates bar colors, window borders, and workspace indicators
-        - Sends desktop notifications when theme changes
+        - Updates wofi launcher theme (dark/light CSS)
+        - Updates kitty terminal theme (Tokyo Night Moon/Day)
+        - Updates mako notification theme (optional - only if installed)
+        - Sends desktop notifications when theme changes (requires mako)
     - **Usage:**
         - `toggle_theme.sh toggle` - Toggle between dark and light themes
         - `toggle_theme.sh init` - Initialize theme on startup
@@ -37,3 +40,4 @@ $HOME/.local/bin/
     - **Keybind:** Mod+Shift+t
     - **Status Bar:** Shows theme indicator (🌙 for dark, ☀️ for light) via `status.d/40-theme.sh`
     - **Gnome Compatibility:** When running under Gnome, automatically syncs with system theme preferences
+    - **Optional Components:** Gracefully handles missing components (mako, kitty themes, etc.)

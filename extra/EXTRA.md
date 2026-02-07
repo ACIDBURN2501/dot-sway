@@ -15,6 +15,29 @@ Location: `extra/wofi/`
 
 The theme automatically switches when you toggle between dark/light mode (Mod+Shift+t).
 
+## Mako Notification Daemon (Optional)
+
+Location: `extra/mako/`
+
+**Optional Feature:** Desktop notifications via [mako](https://github.com/emersion/mako) notification daemon.
+
+**Installation:**
+- Arch Linux: `sudo pacman -S mako`
+- Debian: `sudo apt install mako-notifier`
+
+**How it works:**
+- Mako is automatically started by Sway if installed (will gracefully skip if not available)
+- Theme configurations are stored in `extra/mako/config-dark` and `extra/mako/config-light`
+- Active config at `~/.config/mako/config` is automatically updated when toggling themes
+- Notifications appear at top-center (Gnome-style)
+- The configuration will not break if mako is not installed
+
+**Features:**
+- Gnome-style toast notifications at top center
+- Automatically matches dark/light theme
+- 5-second default timeout
+- Grouped notifications by app
+
 ## Kanshi (Deprecated)
 
 Location: `extra/kanshi/config`

@@ -44,6 +44,7 @@ The core loop is implemented in `statusbar.sh`. Supporting scripts live alongsid
 - `pactl` (PulseAudio/PipeWire for `status.d/30-volume.sh`)
 - `bluez` / `bluetoothctl` (for `status.d/80-bluetooth.sh`)
 - `gsettings` (optional, for Gnome theme syncing)
+- `mako` (optional, for desktop notifications)
 - `grim` (for screenshots)
 - `slurp` (for interactive region selection in screenshots)
 - `systemctl` (for system suspension and environment management)

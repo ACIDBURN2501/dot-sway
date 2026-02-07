@@ -1,0 +1,33 @@
+# Mako notification daemon configuration - Dark theme
+# See: man 5 mako
+
+# Position at top center (like Gnome)
+anchor=top-center
+margin=10
+
+# Notification dimensions
+width=400
+height=150
+padding=15
+border-size=2
+border-radius=8
+
+# Dark theme colors
+background-color=#1e1e2e
+text-color=#cdd6f4
+border-color=#89b4fa
+progress-color=over #313244
+
+# Font
+font=Adwaita Mono 11
+
+# Timing
+default-timeout=5000
+ignore-timeout=0
+
+# Group notifications by app
+group-by=app-name
+max-visible=5
+
+# Format
+format=<b>%s</b>\n%b

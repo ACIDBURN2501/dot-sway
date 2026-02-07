@@ -59,6 +59,12 @@ toggle_theme() {
     # Update wofi theme
     update_wofi_theme "$new_theme"
 
+    # Update kitty theme
+    update_kitty_theme "$new_theme"
+
+    # Update mako theme (optional - only if installed)
+    update_mako_theme "$new_theme"
+
     # Reload Sway to apply changes
     swaymsg reload &>/dev/null || true
 
@@ -134,11 +140,69 @@ update_wofi_theme() {
     fi
 }
 
+# Update kitty theme
+update_kitty_theme() {
+    local theme="$1"
+    local kitty_conf="$HOME/.config/kitty"
+    local themes_dir="$kitty_conf/themes/themes"
+
+    # Select appropriate Tokyo Night theme
+    if [[ "$theme" == "dark" ]]; then
+        local theme_file="$themes_dir/tokyo_night_moon.conf"
+    else
+        local theme_file="$themes_dir/tokyo_night_day.conf"
+    fi
+
+    # Update current-theme.conf if theme file exists
+    if [[ -f "$theme_file" ]]; then
+        cp "$theme_file" "$kitty_conf/current-theme.conf"
+
+        # Update running kitty instances if kitty remote control is available
+        if command -v kitty &>/dev/null; then
+            kitty @ set-colors --all --configured "$theme_file" &>/dev/null || true
+        fi
+    fi
+}
+
+# Update mako notification daemon theme (optional)
+update_mako_theme() {
+    local theme="$1"
+    local mako_extra="$HOME/.config/sway/extra/mako"
+    local mako_conf="$HOME/.config/mako"
+
+    # Only proceed if mako is installed
+    if ! command -v mako &>/dev/null; then
+        return 0
+    fi
+
+    # Ensure mako config directory exists
+    mkdir -p "$mako_conf"
+
+    # Select appropriate theme config
+    if [[ "$theme" == "dark" ]]; then
+        local theme_file="$mako_extra/config-dark"
+    else
+        local theme_file="$mako_extra/config-light"
+    fi
+
+    # Copy theme config if it exists
+    if [[ -f "$theme_file" ]]; then
+        cp "$theme_file" "$mako_conf/config"
+
+        # Reload mako if it's running
+        if command -v makoctl &>/dev/null && pgrep -x mako &>/dev/null; then
+            makoctl reload &>/dev/null || true
+        fi
+    fi
+}
+
 # Initialize theme on startup
 init_theme() {
     local current=$(get_current_theme)
     generate_theme_config "$current"
     update_wofi_theme "$current"
+    update_kitty_theme "$current"
+    update_mako_theme "$current"
 }
 
 # Main command dispatcher
