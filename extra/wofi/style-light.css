@@ -1,0 +1,56 @@
+/* Light theme for wofi - managed by toggle_theme.sh */
+
+* {
+    font-family: 'Adwaita Mono', monospace;
+}
+
+window {
+    margin: 5px;
+    border: 2px solid #c0c0c0;
+    background-color: rgba(173, 194, 215, 1.0);
+}
+
+#input {
+    margin: 5px;
+    border-radius: 0px;
+    border: none;
+    border-bottom: 0px solid black;
+    background-color: #f5f5f5;
+    color: #1a1a1a;
+}
+
+#inner-box {
+    margin: 5px;
+    background-color: #f5f5f5;
+}
+
+#outer-box {
+    margin: 5px;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+#scroll {
+
+}
+
+#text {
+    margin: 5px;
+    color: #1a1a1a;
+}
+
+#entry {
+    background-color: #f5f5f5;
+}
+
+#entry:selected {
+    background-color: #e0e0e0;
+}
+
+#expander, #expander-box {
+    background-color: #f5f5f5;
+}
+
+#text:selected {
+    text-decoration-color: #1a1a1a;
+}

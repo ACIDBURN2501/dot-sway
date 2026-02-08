@@ -41,4 +41,4 @@ $HOME/.local/bin/
     - **Status Bar:** Shows theme indicator (🌙 for dark, ☀️ for light) via `status.d/40-theme.sh`
     - **Gnome Compatibility:** When running under Gnome, automatically syncs with system theme preferences
     - **Optional Components:** Gracefully handles missing components (mako, kitty themes, etc.)
-    - **Wofi Requirements:** If using wofi, both `~/.config/wofi/style-dark.css` and `~/.config/wofi/style-light.css` must exist. See `extra/EXTRA.md` for setup instructions.
+    - **Wofi Requirements:** If using wofi, both `~/.config/wofi/style-dark.css` and `~/.config/wofi/style-light.css` must exist. Copy the templates from `extra/wofi/` - see `extra/EXTRA.md` for setup instructions.

@@ -20,6 +20,23 @@ Wofi is referenced in the main Sway config but is optional - the configuration w
 
 **Keybind:** `Mod+d` launches wofi (if installed)
 
+### Setup for Theme Switching
+
+To enable automatic theme switching for wofi, copy the provided theme templates to your wofi config directory:
+
+```bash
+# Create wofi config directory if it doesn't exist
+mkdir -p ~/.config/wofi
+
+# Copy theme templates from the repository
+cp ~/.config/sway/extra/wofi/style-dark.css ~/.config/wofi/
+cp ~/.config/sway/extra/wofi/style-light.css ~/.config/wofi/
+```
+
+The `toggle_theme.sh` script will automatically create the `style.css` symlink when you first toggle themes or run `toggle_theme.sh init`.
+
+**Note:** Without these files, wofi will still work but won't switch themes automatically.
+
 ### Theme Integration
 
 Wofi integrates with the theme toggle system to automatically switch between dark and light themes:
@@ -34,8 +51,12 @@ Wofi integrates with the theme toggle system to automatically switch between dar
 - The `toggle_theme.sh` script creates a symlink from `style.css` to either `style-dark.css` or `style-light.css`
 - Both theme files must exist for theme switching to work properly
 
-**Reference Template:**
-The file `extra/wofi/style.css` is kept as a reference template. It is not used directly - active themes are managed in `~/.config/wofi/`.
+**Template Files:**
+- `extra/wofi/style-dark.css` - Dark theme template
+- `extra/wofi/style-light.css` - Light theme template
+- `extra/wofi/style.css` - Legacy reference (kept for backward compatibility)
+
+These templates should be copied to `~/.config/wofi/` (see Setup section above).
 
 ### Customizing Wofi Themes
 
