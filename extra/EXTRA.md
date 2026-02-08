@@ -2,18 +2,65 @@
 
 These files are not part of the main configuration, but are available for specific use cases.
 
-## Wofi Themes (Reference Only)
+## Wofi Application Launcher (Optional)
 
 Location: `extra/wofi/`
 
-**Note:** Wofi themes are now actively managed by the theme toggle system at `~/.config/wofi/`. The files in `extra/wofi/` are kept as reference only.
+**Optional Feature:** [Wofi](https://hg.sr.ht/~scoopta/wofi) is a lightweight application launcher/menu for Wayland, similar to dmenu or rofi.
 
-**Active Theme System:**
-- `~/.config/wofi/style-dark.css` - Dark theme
-- `~/.config/wofi/style-light.css` - Light theme
-- `~/.config/wofi/style.css` - Symlink to active theme (automatically switched by `toggle_theme.sh`)
+### Installation
 
-The theme automatically switches when you toggle between dark/light mode (Mod+Shift+t).
+- Arch Linux: `sudo pacman -S wofi`
+- Debian/Ubuntu: `sudo apt install wofi`
+- Fedora: `sudo dnf install wofi`
+
+### Configuration
+
+Wofi is referenced in the main Sway config but is optional - the configuration will not break if it's not installed.
+
+**Keybind:** `Mod+d` launches wofi (if installed)
+
+### Theme Integration
+
+Wofi integrates with the theme toggle system to automatically switch between dark and light themes:
+
+**Theme Files:**
+- `~/.config/wofi/style-dark.css` - Dark theme styling
+- `~/.config/wofi/style-light.css` - Light theme styling
+- `~/.config/wofi/style.css` - Symlink to active theme (automatically managed)
+
+**How it works:**
+- When you toggle themes with `Mod+Shift+t`, wofi's theme automatically switches
+- The `toggle_theme.sh` script creates a symlink from `style.css` to either `style-dark.css` or `style-light.css`
+- Both theme files must exist for theme switching to work properly
+
+**Reference Template:**
+The file `extra/wofi/style.css` is kept as a reference template. It is not used directly - active themes are managed in `~/.config/wofi/`.
+
+### Customizing Wofi Themes
+
+You can customize the appearance by editing the theme files:
+
+```bash
+# Edit dark theme
+nano ~/.config/wofi/style-dark.css
+
+# Edit light theme
+nano ~/.config/wofi/style-light.css
+```
+
+**Key CSS elements:**
+- `window` - Outer window appearance (border, background)
+- `#input` - Search input field styling
+- `#inner-box`, `#outer-box` - Container styling
+- `#entry` - Individual menu item styling
+- `#entry:selected` - Selected item styling
+
+Changes take effect the next time wofi is launched.
+
+### Power Menu
+
+The `extra/wofi/wofi-power.sh` script provides a power menu using wofi with options to lock, logout, suspend, reboot, and shutdown. This script is independent of theme management but will use the active theme.
 
 ## Mako Notification Daemon (Optional)
 

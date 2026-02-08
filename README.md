@@ -44,12 +44,13 @@ The core loop is implemented in `statusbar.sh`. Supporting scripts live alongsid
 - `pactl` (PulseAudio/PipeWire for `status.d/30-volume.sh`)
 - `bluez` / `bluetoothctl` (for `status.d/80-bluetooth.sh`)
 - `gsettings` (optional, for Gnome theme syncing)
-- `mako` (optional, for desktop notifications)
+- `wofi` (optional, application launcher with automatic theme switching)
+- `mako` (optional, notification daemon with automatic theme switching)
 - `grim` (for screenshots)
 - `slurp` (for interactive region selection in screenshots)
 - `systemctl` (for system suspension and environment management)
 - `dbus-update-activation-environment` (for environment variable management)
-- Optional: `swayidle`, `swaylock`, `wmenu`/`wofi`/`tofi` (referenced in `config`)
+- Optional: `swayidle`, `swaylock` (referenced in `config`)
 
 ## How it works
 
@@ -105,6 +106,7 @@ This configuration includes a theme toggle system that allows you to switch betw
 - Automatic Gnome integration: syncs with system theme when running under Gnome
 - Standalone operation: works independently when not using Gnome
 - Dynamic theming: updates bar colors, window borders, and workspace indicators
+- Optional component theming: automatically switches themes for wofi (launcher), kitty (terminal), and mako (notifications) if installed
 
 **Gnome Compatibility:**
 When running under Gnome, the theme toggle automatically syncs with `gsettings` (org.gnome.desktop.interface color-scheme), ensuring consistent theming between Sway and Gnome applications. If Gnome is not detected, it operates as a Sway-only theme toggle.
