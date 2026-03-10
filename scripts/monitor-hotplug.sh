@@ -5,9 +5,10 @@ set -euo pipefail
 # Optimized for ThinkPad T480
 
 # --- Configuration ---
-INTERNAL_OUTPUT="eDP-1"
-EXT_RES="3840x2160@60Hz"
-EXT_SCALE="1"
+INTERNAL_OUTPUT="eDP-2"
+EXT_RES="3840x2160@120Hz"
+EXT_SCALE="1.25"
+EXT_ADAPTIVE_SYNC="on"
 LOG_FILE="/tmp/sway-monitor-hotplug.log"
 SUSPEND_DELAY=5
 
@@ -67,7 +68,7 @@ update_monitors() {
       log "Action: Docked mode. Output: $ext_output, Lid: $lid_state"
       
       # Enable external
-      swaymsg output "$ext_output" enable mode "$EXT_RES" scale "$EXT_SCALE" pos 0 0 || log "Warning: Failed to enable $ext_output"
+      swaymsg output "$ext_output" enable mode "$EXT_RES" scale "$EXT_SCALE" pos 0 0 adaptive_sync "$EXT_ADAPTIVE_SYNC" || log "Warning: Failed to enable $ext_output"
       
       # Move workspaces
       move_workspaces "$ext_output"

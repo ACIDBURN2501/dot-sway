@@ -32,7 +32,11 @@ bindsym Control+Mod1+s exec grim -g "$(slurp)" ~/Pictures/Screenshots/screenshot
 bindsym $super+l exec swaylock -f -i ~/.config/sway/images/wp.jpg
 
 ### Output configuration
-#
+
+# External monitor settings are managed dynamically by scripts/monitor-hotplug.sh.
+# It auto-detects the connected output name (e.g. DP-2, HDMI-A-1) and applies
+# mode, scale, and adaptive_sync at runtime.
+
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
 output * bg ~/.config/sway/images/wp.jpg fill
 # Example configuration:
@@ -277,3 +281,6 @@ bindswitch --locked lid:off exec ~/.config/sway/scripts/monitor-hotplug.sh --onc
 # Include user configuration snippets
 include ~/.config/sway/config.d/*
 include /etc/sway/config.d/*
+
+# SSH agent socket
+exec sh -c 'ssh-add -l >/dev/null 2>&1 || ssh-add ~/.ssh/github'
