@@ -9,6 +9,13 @@ $HOME/.local/bin/
 - `move-ws-to-active.sh`: Moves all workspaces to the currently focused output.
 - `move-ws-to-output.sh`: Moves all workspaces to a specific output (arg 1).
 - `toggle-touchpad.sh`: Toggles the touchpad on/off and sends a notification.
+- `volume-control.sh`: Handles mute, volume up/down, and mic mute.
+    - Prefers `wpctl` on PipeWire systems.
+    - Falls back to `pactl` for PulseAudio-compatible sessions.
+    - Intended for media-key bindings that should work across built-in and USB keyboards.
+- `brightness-control.sh`: Handles brightness up/down for laptop backlights.
+    - Uses `brightnessctl` when `/sys/class/backlight` is available.
+    - Exits silently on desktops or systems without a controllable backlight.
 - `monitor-hotplug.sh`: **(New)** Auto-switches between "Mobile" (internal screen only) and "Docked" (external screen only) modes.
     - **Logic:**
         - If an external monitor is connected:

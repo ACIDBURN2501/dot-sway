@@ -1,0 +1,20 @@
+# Optional media-key fallback for hardware that Sway does not catch reliably.
+# Uses the same helper scripts as the main Sway config.
+
+XF86AudioMute
+  /home/ajl/.config/sway/scripts/volume-control.sh mute
+
+XF86AudioLowerVolume
+  /home/ajl/.config/sway/scripts/volume-control.sh down
+
+XF86AudioRaiseVolume
+  /home/ajl/.config/sway/scripts/volume-control.sh up
+
+XF86AudioMicMute
+  /home/ajl/.config/sway/scripts/volume-control.sh mic-mute
+
+XF86MonBrightnessDown
+  /home/ajl/.config/sway/scripts/brightness-control.sh down
+
+XF86MonBrightnessUp
+  /home/ajl/.config/sway/scripts/brightness-control.sh up

@@ -106,6 +106,36 @@ Location: `extra/mako/`
 - 5-second default timeout
 - Grouped notifications by app
 
+## swhkd Media Key Fallback (Optional)
+
+Location: `extra/swhkd/swhkdrc`
+
+**Optional Feature:** [`swhkd`](https://github.com/waycrate/swhkd) is a hotkey
+daemon that can catch media keys on some keyboards and laptops where Sway does
+not reliably bind separate `Consumer Control`, WMI, or vendor hotkey devices.
+
+**When to use it:**
+- `libinput debug-events --show-keycodes` sees the media keys
+- `wev` does not show them or Sway bindings still do not fire
+- You want a fallback only for media keys, not a replacement for normal Sway shortcuts
+
+**Configuration:**
+- The sample config in `extra/swhkd/swhkdrc` calls the same helper scripts used by the main Sway config
+- Copy it to `~/.config/swhkd/swhkdrc`
+- Keep the config limited to media keys to avoid overlapping with your normal Sway bindings
+
+**Startup:**
+
+```bash
+swhks &
+pkexec swhkd --config "$HOME/.config/swhkd/swhkdrc"
+```
+
+**Important:**
+- Use absolute paths in the `swhkd` config because `pkexec` may not preserve your shell environment
+- Only enable `swhkd` on affected machines, otherwise media keys may trigger twice
+- Reload the daemon after config changes with `sudo pkill -HUP swhkd`
+
 ## Kanshi (Deprecated)
 
 Location: `extra/kanshi/config`

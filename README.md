@@ -41,7 +41,7 @@ The core loop is implemented in `statusbar.sh`. Supporting scripts live alongsid
 - `swaynag` (for confirmation dialogs)
 - UPower (for battery information)
 - `brightnessctl` (for `status.d/20-brightness.sh`)
-- `pactl` (PulseAudio/PipeWire for `status.d/30-volume.sh`)
+- `pactl` or `wpctl` (audio control helpers; `status.d/30-volume.sh` currently uses `pactl`)
 - `bluez` / `bluetoothctl` (for `status.d/80-bluetooth.sh`)
 - `gsettings` (optional, for Gnome theme syncing)
 - `wofi` (optional, application launcher with automatic theme switching)
@@ -59,6 +59,50 @@ The core loop is implemented in `statusbar.sh`. Supporting scripts live alongsid
 3. It executes each executable file in `~/.config/sway/status.d` (in lexical order) and concatenates their outputs with spaces for the center section
 4. It appends the current time as the right section
 5. Only non-empty sections are printed; sections are separated by ` | `
+
+### Media Keys
+
+Media keys are handled with small helper scripts and both of Sway's binding
+styles: `bindsym` for `XF86...` keysyms and `bindcode` for standard Linux input
+codes. This makes the defaults work more reliably with built-in laptop
+keyboards, external USB keyboards, and keyboards that expose volume keys
+through a separate `Consumer Control` device.
+
+- `scripts/volume-control.sh` prefers `wpctl` and falls back to `pactl`
+- `scripts/brightness-control.sh` uses `brightnessctl` when a backlight device exists
+- The default bindings use both `bindsym` and `bindcode` for mute, volume, mic mute, and brightness
+
+If your media keys are visible to `libinput` but still do not trigger in Sway,
+an optional `swhkd` fallback config is provided in `extra/swhkd/swhkdrc`.
+Use it only on affected hardware, otherwise both Sway and `swhkd` may respond
+to the same key and double-trigger the action.
+
+Common Linux media key codes used by the config:
+
+- `121` - mute (`KEY_MUTE`)
+- `122` - volume down (`KEY_VOLUMEDOWN`)
+- `123` - volume up (`KEY_VOLUMEUP`)
+- `232` - brightness down (`KEY_BRIGHTNESSDOWN`)
+- `233` - brightness up (`KEY_BRIGHTNESSUP`)
+- `256` - microphone mute (`KEY_MICMUTE`)
+
+### Optional `swhkd` Fallback
+
+For keyboards and laptops that expose media keys through separate hotkey devices
+that Sway does not bind reliably, you can use `swhkd` as a media-key fallback.
+
+Example startup:
+
+```bash
+swhks &
+pkexec swhkd --config "$HOME/.config/swhkd/swhkdrc"
+```
+
+Suggested setup:
+
+1. Copy `extra/swhkd/swhkdrc` to `~/.config/swhkd/swhkdrc`
+2. Keep it limited to media keys so it does not conflict with normal Sway shortcuts
+3. Enable it only on machines where Sway does not catch those keys reliably
 
 ## Using with Sway/Swayfx
 
