@@ -114,6 +114,33 @@ cp ~/.config/sway/config ~/.config/sway/config.backup
 cp ~/.config/sway/config ~/.config/sway/config
 ```
 
+### Monitor Hotplug Configuration
+
+`scripts/monitor-hotplug.sh` auto-detects the internal display (`eDP-*`) and any connected external display. External monitor settings default to safe values that work on any display, and can be overridden with environment variables — useful when the same dotfiles are used on multiple machines with different monitors.
+
+Set these in your shell profile (e.g. `~/.bash_profile`, `~/.zprofile`) or in a machine-local Sway snippet (`~/.config/sway/config.d/local`) using `exec`:
+
+```bash
+# Example: home desktop/laptop with a 4K 120 Hz display over DisplayPort
+export DOTSWAY_EXT_RES="3840x2160@120Hz"
+export DOTSWAY_EXT_SCALE="1.25"
+export DOTSWAY_EXT_ADAPTIVE_SYNC="on"
+
+# Example: work laptop with a 1080p 60 Hz display
+export DOTSWAY_EXT_RES="1920x1080@60Hz"
+export DOTSWAY_EXT_SCALE="1"
+export DOTSWAY_EXT_ADAPTIVE_SYNC="off"
+```
+
+| Variable | Default | Description |
+|---|---|---|
+| `DOTSWAY_EXT_RES` | `preferred` | Mode for the external monitor. `preferred` uses the display's native mode. |
+| `DOTSWAY_EXT_SCALE` | `1` | Output scale factor. Use `1.25`–`2` for HiDPI displays. |
+| `DOTSWAY_EXT_ADAPTIVE_SYNC` | `off` | Adaptive sync (`on`/`off`). Only enable if your GPU and display support it. |
+| `DOTSWAY_INTERNAL_OUTPUT` | *(auto)* | Override auto-detection of the internal panel (e.g. `eDP-1`). |
+
+The internal display is auto-detected as the first `eDP-*` output reported by Sway, so no configuration is needed in most cases.
+
 ### Clamshell Mode Setup (Important)
 To use "clamshell mode" (using the laptop while the lid is closed with an external monitor), you must prevent `systemd-logind` from suspending the system when the lid is closed. The `monitor-hotplug.sh` script handles suspension logic itself.
 

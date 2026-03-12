@@ -16,19 +16,27 @@ $HOME/.local/bin/
 - `brightness-control.sh`: Handles brightness up/down for laptop backlights.
     - Uses `brightnessctl` when `/sys/class/backlight` is available.
     - Exits silently on desktops or systems without a controllable backlight.
-- `monitor-hotplug.sh`: **(New)** Auto-switches between "Mobile" (internal screen only) and "Docked" (external screen only) modes.
+- `monitor-hotplug.sh`: Auto-switches between "Mobile" (internal screen only) and "Docked" (external screen only) modes.
     - **Logic:**
         - If an external monitor is connected:
             - Enables the external monitor.
             - Moves all workspaces to it.
-            - Disables the internal display (`eDP-1`) by default (configurable via `DISABLE_INTERNAL_ON_EXTERNAL="true"` in the script).
+            - Disables the internal display by default (configurable via `DISABLE_INTERNAL_ON_EXTERNAL="true"` in the script).
             - If `DISABLE_INTERNAL_ON_EXTERNAL` is set to "false" and the lid is open, enables the internal display in extended mode.
         - If no external monitor is connected:
             - Enables the internal display.
             - Moves all workspaces to it.
             - If the laptop lid is closed, **suspends** the system (ensures it doesn't stay awake in your bag).
-    - **Hardware Support:** Uses `/proc/acpi/button/lid/LID/state` to detect lid status. Optimized for ThinkPad T480.
+    - **Hardware Support:** Internal display is auto-detected as the first `eDP-*` output. Lid state is read from `/proc/acpi/button/lid/LID/state` when available.
     - **Logging:** Logs actions to `/tmp/sway-monitor-hotplug.log`.
+    - **Environment variables** (set before starting Sway to customise external monitor behaviour):
+
+        | Variable | Default | Description |
+        |---|---|---|
+        | `DOTSWAY_EXT_RES` | `preferred` | Mode string for the external monitor (e.g. `3840x2160@120Hz`) |
+        | `DOTSWAY_EXT_SCALE` | `1` | Output scale factor (e.g. `1.25` for a 4K display) |
+        | `DOTSWAY_EXT_ADAPTIVE_SYNC` | `off` | Enable adaptive sync (`on`/`off`) |
+        | `DOTSWAY_INTERNAL_OUTPUT` | *(auto)* | Force a specific internal output name (e.g. `eDP-1`) |
 
 - `toggle_theme.sh`: **(New)** Toggles between Dark and Light themes for Sway.
     - **Features:**
