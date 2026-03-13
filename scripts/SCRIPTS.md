@@ -27,16 +27,27 @@ $HOME/.local/bin/
             - Enables the internal display.
             - Moves all workspaces to it.
             - If the laptop lid is closed, **suspends** the system (ensures it doesn't stay awake in your bag).
-    - **Hardware Support:** Internal display is auto-detected as the first `eDP-*` output. Lid state is read from `/proc/acpi/button/lid/LID/state` when available.
+    - **Hardware Support:** Internal display is auto-detected as the first `eDP-*` output. Lid state is read from the first available `/proc/acpi/button/lid/*/state` entry when present.
     - **Logging:** Logs actions to `/tmp/sway-monitor-hotplug.log`.
-    - **Environment variables** (set before starting Sway to customise external monitor behaviour):
+    - **External output settings precedence:**
+        1. `DOTSWAY_EXT_*` environment variables
+        2. Per-monitor matches from `~/.config/sway/scripts/monitor-profiles.local.sh`
+        3. Universal fallback defaults (`1920x1080@60Hz`, scale `1`, adaptive sync `off`)
+    - **Per-monitor setup:**
+        - Copy `scripts/monitor-profiles.example.sh` to `~/.config/sway/scripts/monitor-profiles.local.sh`.
+        - Use `swaymsg -t get_outputs -r` to capture the external display `name`, `make`, `model`, and `serial`.
+        - Add a `dotsway_monitor_profile()` case entry that calls `set_monitor_profile MODE SCALE ADAPTIVE_SYNC`.
+        - Reload Sway and run `~/.config/sway/scripts/monitor-hotplug.sh --once` to re-apply immediately.
+        - Check `/tmp/sway-monitor-hotplug.log` if the detected values or applied settings do not look right.
+    - **Environment variables** (set before starting Sway to force the same external monitor behaviour everywhere):
 
         | Variable | Default | Description |
         |---|---|---|
-        | `DOTSWAY_EXT_RES` | `preferred` | Mode string for the external monitor (e.g. `3840x2160@120Hz`) |
-        | `DOTSWAY_EXT_SCALE` | `1` | Output scale factor (e.g. `1.25` for a 4K display) |
+        | `DOTSWAY_EXT_RES` | `1920x1080@60Hz` | Forced mode string for the external monitor (e.g. `3840x2160@120Hz`) |
+        | `DOTSWAY_EXT_SCALE` | `1` | Forced output scale factor (e.g. `1.25` for a 4K display) |
         | `DOTSWAY_EXT_ADAPTIVE_SYNC` | `off` | Enable adaptive sync (`on`/`off`) |
         | `DOTSWAY_INTERNAL_OUTPUT` | *(auto)* | Force a specific internal output name (e.g. `eDP-1`) |
+        | `DOTSWAY_MONITOR_PROFILES_FILE` | `~/.config/sway/scripts/monitor-profiles.local.sh` | Alternate path for local per-monitor overrides |
 
 - `toggle_theme.sh`: **(New)** Toggles between Dark and Light themes for Sway.
     - **Features:**

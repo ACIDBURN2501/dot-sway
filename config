@@ -277,7 +277,7 @@ bar {
 
 # --- Auto-start ---
 # Daemon to handle monitor hotplugging (replaces kanshi)
-exec ~/.config/sway/scripts/monitor-hotplug.sh
+exec_always ~/.config/sway/scripts/monitor-hotplug.sh
 
 # Optional: Mako notification daemon (only starts if installed)
 exec command -v mako && mako || true

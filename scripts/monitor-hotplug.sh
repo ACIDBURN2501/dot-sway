@@ -8,17 +8,20 @@ set -euo pipefail
 # Override with DOTSWAY_INTERNAL_OUTPUT env var or set directly here.
 INTERNAL_OUTPUT="${DOTSWAY_INTERNAL_OUTPUT:-}"
 
-# External monitor settings. Override via environment variables before starting Sway,
-# e.g. in ~/.config/sway/config.d/local or your shell profile.
+# External monitor settings. Environment variables override everything.
+# Otherwise, the script uses per-monitor profile overrides from
+# ~/.config/sway/scripts/monitor-profiles.local.sh when available, and finally
+# falls back to universal defaults.
 #   DOTSWAY_EXT_RES    — mode string passed to `swaymsg output … mode`
-#                        Default: "preferred" (uses the display's native/preferred mode)
+#                        Default fallback: "1920x1080@60Hz"
 #   DOTSWAY_EXT_SCALE  — output scale factor
-#                        Default: 1 (no scaling; safe for any display)
+#                        Default fallback: 1
 #   DOTSWAY_EXT_ADAPTIVE_SYNC — "on" or "off"
-#                        Default: "on" (not supported on all hardware/drivers)
-EXT_RES="${DOTSWAY_EXT_RES:-preferred}"
-EXT_SCALE="${DOTSWAY_EXT_SCALE:-1}"
-EXT_ADAPTIVE_SYNC="${DOTSWAY_EXT_ADAPTIVE_SYNC:-on}"
+#                        Default fallback: "off"
+DEFAULT_EXT_RES="1920x1080@60Hz"
+DEFAULT_EXT_SCALE="1"
+DEFAULT_EXT_ADAPTIVE_SYNC="off"
+MONITOR_PROFILES_FILE="${DOTSWAY_MONITOR_PROFILES_FILE:-$HOME/.config/sway/scripts/monitor-profiles.local.sh}"
 LOG_FILE="/tmp/sway-monitor-hotplug.log"
 SUSPEND_DELAY=5
 
@@ -27,9 +30,92 @@ DISABLE_INTERNAL_ON_EXTERNAL="true"
 
 # --- State ---
 CURRENT_STATE=""
+PROFILE_EXT_RES=""
+PROFILE_EXT_SCALE=""
+PROFILE_EXT_ADAPTIVE_SYNC=""
+
+if [[ -f "$MONITOR_PROFILES_FILE" ]]; then
+  # shellcheck disable=SC1090
+  . "$MONITOR_PROFILES_FILE"
+fi
 
 log() {
   echo "[$(date '+%Y-%m-%d %H:%M:%S')] $*" >> "$LOG_FILE"
+}
+
+sanitize_jq_value() {
+  local value="${1:-}"
+  if [[ "$value" == "null" ]]; then
+    printf ''
+    return 0
+  fi
+  printf '%s' "$value"
+}
+
+set_monitor_profile() {
+  PROFILE_EXT_RES="${1:-}"
+  PROFILE_EXT_SCALE="${2:-}"
+  PROFILE_EXT_ADAPTIVE_SYNC="${3:-}"
+}
+
+reset_monitor_profile() {
+  PROFILE_EXT_RES=""
+  PROFILE_EXT_SCALE=""
+  PROFILE_EXT_ADAPTIVE_SYNC=""
+}
+
+resolve_external_settings() {
+  local output_json="$1"
+  local output_name make model serial
+  local resolved_res resolved_scale resolved_adaptive_sync
+  local res_source scale_source adaptive_sync_source
+
+  output_name=$(sanitize_jq_value "$(jq -r '.name // empty' <<< "$output_json")")
+  make=$(sanitize_jq_value "$(jq -r '.make // empty' <<< "$output_json")")
+  model=$(sanitize_jq_value "$(jq -r '.model // empty' <<< "$output_json")")
+  serial=$(sanitize_jq_value "$(jq -r '.serial // empty' <<< "$output_json")")
+
+  reset_monitor_profile
+  if declare -F dotsway_monitor_profile >/dev/null 2>&1; then
+    dotsway_monitor_profile "$output_name" "$make" "$model" "$serial" || true
+  fi
+
+  resolved_res="$DEFAULT_EXT_RES"
+  res_source="default"
+  if [[ -n "$PROFILE_EXT_RES" ]]; then
+    resolved_res="$PROFILE_EXT_RES"
+    res_source="profile"
+  fi
+  if [[ -n "${DOTSWAY_EXT_RES:-}" ]]; then
+    resolved_res="$DOTSWAY_EXT_RES"
+    res_source="env"
+  fi
+
+  resolved_scale="$DEFAULT_EXT_SCALE"
+  scale_source="default"
+  if [[ -n "$PROFILE_EXT_SCALE" ]]; then
+    resolved_scale="$PROFILE_EXT_SCALE"
+    scale_source="profile"
+  fi
+  if [[ -n "${DOTSWAY_EXT_SCALE:-}" ]]; then
+    resolved_scale="$DOTSWAY_EXT_SCALE"
+    scale_source="env"
+  fi
+
+  resolved_adaptive_sync="$DEFAULT_EXT_ADAPTIVE_SYNC"
+  adaptive_sync_source="default"
+  if [[ -n "$PROFILE_EXT_ADAPTIVE_SYNC" ]]; then
+    resolved_adaptive_sync="$PROFILE_EXT_ADAPTIVE_SYNC"
+    adaptive_sync_source="profile"
+  fi
+  if [[ -n "${DOTSWAY_EXT_ADAPTIVE_SYNC:-}" ]]; then
+    resolved_adaptive_sync="$DOTSWAY_EXT_ADAPTIVE_SYNC"
+    adaptive_sync_source="env"
+  fi
+
+  log "Resolved external settings for $output_name ($make $model ${serial:-no-serial}): mode=$resolved_res [$res_source], scale=$resolved_scale [$scale_source], adaptive_sync=$resolved_adaptive_sync [$adaptive_sync_source]"
+
+  printf '%s|%s|%s\n' "$resolved_res" "$resolved_scale" "$resolved_adaptive_sync"
 }
 
 disable_output() {
@@ -95,16 +181,28 @@ update_monitors() {
 
   # Find an external monitor (anything that is not an eDP built-in panel)
   local ext_output
-  ext_output=$(echo "$outputs_json" | jq -r '.[] | select(.name | startswith("eDP") | not) | .name' | head -n1)
+  local ext_output_json
+  local resolved_ext_settings
+  local ext_res
+  local ext_scale
+  local ext_adaptive_sync
+  ext_output_json=$(echo "$outputs_json" | jq -c '.[] | select(.name | startswith("eDP") | not)' | head -n1)
+  if [[ -n "$ext_output_json" ]]; then
+    ext_output=$(sanitize_jq_value "$(jq -r '.name // empty' <<< "$ext_output_json")")
+  else
+    ext_output=""
+  fi
   
-  if [[ -n "$ext_output" && "$ext_output" != "null" ]]; then
+  if [[ -n "$ext_output" ]]; then
     NEW_STATE="docked:$ext_output:$lid_state"
     
     if [[ "$CURRENT_STATE" != "$NEW_STATE" ]]; then
       log "Action: Docked mode. Output: $ext_output, Lid: $lid_state"
+      resolved_ext_settings=$(resolve_external_settings "$ext_output_json")
+      IFS='|' read -r ext_res ext_scale ext_adaptive_sync <<< "$resolved_ext_settings"
       
       # Enable external and wait for DRM atomic commit to settle
-      swaymsg output "$ext_output" enable mode "$EXT_RES" scale "$EXT_SCALE" pos 0 0 adaptive_sync "$EXT_ADAPTIVE_SYNC" || log "Warning: Failed to enable $ext_output"
+      swaymsg output "$ext_output" enable mode "$ext_res" scale "$ext_scale" pos 0 0 adaptive_sync "$ext_adaptive_sync" || log "Warning: Failed to enable $ext_output"
       sleep 1
 
       # Move workspaces

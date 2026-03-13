@@ -148,4 +148,6 @@ We have moved to a script-based approach (`scripts/monitor-hotplug.sh`) which is
 2. Moves all workspaces to it
 3. Disables the internal laptop display
 
+The hotplug script now supports local per-monitor overrides via `~/.config/sway/scripts/monitor-profiles.local.sh`, with a safe universal fallback of `1920x1080@60Hz`, scale `1`, and adaptive sync `off`. See `README.md` for setup details.
+
 If you prefer complex multi-monitor setups (e.g. extending desktops rather than switching), you may want to disable the hotplug script in `config` and revert to using Kanshi.

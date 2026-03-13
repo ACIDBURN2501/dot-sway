@@ -18,6 +18,7 @@ The core loop is implemented in `statusbar.sh`. Supporting scripts live alongsid
 - `config` — A default Sway configuration file you can use as a starting point.
 - `config.d/` — Drop-in directory for additional Sway configuration snippets.
     - `floating_windows` — Rules to make specific applications always open as floating windows (e.g., calculators, dialogs). See [Floating Windows Configuration](#floating-windows-configuration) below.
+
 - `statusbar.sh` — main loop that prints a single status line every second: `<Battery> | <Status Icons> | <Time>`
 - `battery.sh` — reads UPower's DisplayDevice and prints a semicolon-delimited line: `icon;label;color;default`
 - `power.sh` — tiny helper that converts `battery.sh` output into a compact human-readable string (used similarly to `batt_short` in `statusbar.sh`)
@@ -116,30 +117,82 @@ cp ~/.config/sway/config ~/.config/sway/config
 
 ### Monitor Hotplug Configuration
 
-`scripts/monitor-hotplug.sh` auto-detects the internal display (`eDP-*`) and any connected external display. External monitor settings default to safe values that work on any display, and can be overridden with environment variables — useful when the same dotfiles are used on multiple machines with different monitors.
+`scripts/monitor-hotplug.sh` auto-detects the internal display (`eDP-*`) and any connected external display. External monitor settings now resolve in this order:
 
-Set these in your shell profile (e.g. `~/.bash_profile`, `~/.zprofile`) or in a machine-local Sway snippet (`~/.config/sway/config.d/local`) using `exec`:
+1. Explicit environment variables
+2. Per-monitor matches from `~/.config/sway/scripts/monitor-profiles.local.sh`
+3. Universal fallback defaults
+
+The universal fallback is intentionally conservative: `1920x1080@60Hz`, scale `1`, and adaptive sync `off`.
+
+This keeps the shared Sway config portable across laptops and desktops, while still allowing machine- or monitor-specific overrides outside the tracked config.
+
+Use environment variables only when you want to force the same settings on every machine that uses this config. They must be set before Sway starts:
 
 ```bash
-# Example: home desktop/laptop with a 4K 120 Hz display over DisplayPort
+# Example: force all machines to use the same external mode
 export DOTSWAY_EXT_RES="3840x2160@120Hz"
-export DOTSWAY_EXT_SCALE="1.25"
-export DOTSWAY_EXT_ADAPTIVE_SYNC="on"
-
-# Example: work laptop with a 1080p 60 Hz display
-export DOTSWAY_EXT_RES="1920x1080@60Hz"
 export DOTSWAY_EXT_SCALE="1"
-export DOTSWAY_EXT_ADAPTIVE_SYNC="off"
+export DOTSWAY_EXT_ADAPTIVE_SYNC="on"
 ```
+
+For machine- or monitor-specific behavior, copy `scripts/monitor-profiles.example.sh` to `~/.config/sway/scripts/monitor-profiles.local.sh` and edit it for your hardware.
+
+```bash
+cp ~/.config/sway/scripts/monitor-profiles.example.sh ~/.config/sway/scripts/monitor-profiles.local.sh
+```
+
+Recommended setup flow:
+
+1. Copy `~/.config/sway/scripts/monitor-profiles.example.sh` to `~/.config/sway/scripts/monitor-profiles.local.sh`.
+2. Run `swaymsg -t get_outputs -r` and note the external monitor `make`, `model`, and `serial` values.
+3. Add a `case` entry in `~/.config/sway/scripts/monitor-profiles.local.sh` for that monitor.
+4. Reload Sway with `swaymsg reload`.
+5. Re-apply the layout immediately with `~/.config/sway/scripts/monitor-hotplug.sh --once`.
+
+The Sway config uses `exec_always` for the hotplug daemon so a reload restarts it and picks up profile changes.
+
+To inspect the detected identity values more easily, this can help:
+
+```bash
+swaymsg -t get_outputs -r | jq -r '.[] | select(.name | startswith("eDP") | not) | [.name, .make, .model, .serial] | @tsv'
+```
+
+Example profile:
+
+```bash
+dotsway_monitor_profile() {
+  local _output_name="$1"
+  local make="$2"
+  local model="$3"
+  local serial="$4"
+
+  case "$make|$model|$serial" in
+    # Match a specific unit by serial
+    'ExampleMake|ExampleModel|SERIALHERE')
+      set_monitor_profile '3840x2160@120Hz' '1' 'on'
+      ;;
+    # Match any unit of this make/model (leave serial empty)
+    'ExampleMake|ExampleModel|')
+      set_monitor_profile '1920x1080@60Hz' '1' 'off'
+      ;;
+  esac
+}
+```
+
+Match on `serial` when you want a specific physical display, or leave it empty when every monitor with the same make/model should share one profile.
 
 | Variable | Default | Description |
 |---|---|---|
-| `DOTSWAY_EXT_RES` | `preferred` | Mode for the external monitor. `preferred` uses the display's native mode. |
-| `DOTSWAY_EXT_SCALE` | `1` | Output scale factor. Use `1.25`–`2` for HiDPI displays. |
+| `DOTSWAY_EXT_RES` | `1920x1080@60Hz` | Forced mode for the external monitor. Environment variables override any profile match. |
+| `DOTSWAY_EXT_SCALE` | `1` | Output scale factor. Environment variables override any profile match. |
 | `DOTSWAY_EXT_ADAPTIVE_SYNC` | `off` | Adaptive sync (`on`/`off`). Only enable if your GPU and display support it. |
 | `DOTSWAY_INTERNAL_OUTPUT` | *(auto)* | Override auto-detection of the internal panel (e.g. `eDP-1`). |
+| `DOTSWAY_MONITOR_PROFILES_FILE` | `~/.config/sway/scripts/monitor-profiles.local.sh` | Alternate path for local per-monitor overrides. |
 
 The internal display is auto-detected as the first `eDP-*` output reported by Sway, so no configuration is needed in most cases.
+
+If a profile does not seem to apply, check `/tmp/sway-monitor-hotplug.log`. The script logs the detected monitor identity and whether each setting came from the default, a profile, or an environment override.
 
 ### Clamshell Mode Setup (Important)
 To use "clamshell mode" (using the laptop while the lid is closed with an external monitor), you must prevent `systemd-logind` from suspending the system when the lid is closed. The `monitor-hotplug.sh` script handles suspension logic itself.
@@ -212,6 +265,8 @@ See [`scripts/SCRIPTS.md`](scripts/SCRIPTS.md) for details on:
 ## Floating Windows Configuration
 
 By default, Sway tiles all windows. However, some applications (like calculators, dialogs, or system utilities) work better as floating windows. The `config.d/floating_windows` file contains rules to automatically make specific applications float.
+
+Monitor hotplug configuration lives in `scripts/` alongside the script that uses it: `scripts/monitor-profiles.example.sh` is the template, and `scripts/monitor-profiles.local.sh` is the machine-local override (gitignored).
 
 ### Adding Your Own Floating Applications
 
