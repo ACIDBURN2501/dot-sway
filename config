@@ -120,6 +120,9 @@ default_floating_border pixel 2
     # Toggle theme (Dark/Light mode)
     bindsym $mod+Shift+t exec $HOME/.config/sway/scripts/toggle_theme.sh toggle
 
+    # Toggle Mako DND (Focus mode)
+    bindsym $mod+Shift+m exec $HOME/.config/sway/scripts/toggle-mako-dnd.sh
+
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.
     # Despite the name, also works for non-floating windows.
