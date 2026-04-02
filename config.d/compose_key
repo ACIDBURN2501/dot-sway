@@ -1,0 +1,19 @@
+# Compose Key Configuration
+#
+# The compose key allows you to type special characters using key sequences.
+# For example, with Menu key as compose: Menu, -, -, - produces an em-dash (—)
+#
+# The compose key is set in the main config file via the $compose_key variable
+# and passed to xkb_options. To change it, edit the `set $compose_key` line
+# in the main config, or override it in a config.d/ snippet:
+#
+#   set $compose_key compose:rwin
+#
+# Common options:
+#   compose:menu  — Menu key (default)
+#   compose:ralt  — Right Alt
+#   compose:lwin  — Left Windows key
+#   compose:rwin  — Right Windows key
+#   compose:caps  — Caps Lock
+#
+# See `man 7 xkeyboard-config` for more XKB options.

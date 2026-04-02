@@ -17,6 +17,7 @@ The core loop is implemented in `statusbar.sh`. Supporting scripts live alongsid
 
 - `config` — A default Sway configuration file you can use as a starting point.
 - `config.d/` — Drop-in directory for additional Sway configuration snippets.
+    - `compose_key` — Compose key settings (see [Compose Key Configuration](#compose-key-configuration) below).
     - `floating_windows` — Rules to make specific applications always open as floating windows (e.g., calculators, dialogs). See [Floating Windows Configuration](#floating-windows-configuration) below.
 
 - `statusbar.sh` — main loop that prints a single status line every second: `<Battery> | <Status Icons> | <Time>`
@@ -135,6 +136,30 @@ export DOTSWAY_EXT_RES="3840x2160@120Hz"
 export DOTSWAY_EXT_SCALE="1"
 export DOTSWAY_EXT_ADAPTIVE_SYNC="on"
 ```
+
+### Compose Key Configuration
+
+The config sets a compose key for entering special characters (e.g., `Menu`, `-`, `-`, `-` → `—`). The compose key defaults to the Menu key and is controlled by the `$compose_key` variable in the main config:
+
+```
+set $compose_key compose:menu
+```
+
+To change it, edit that line or override it in a `config.d/` snippet (since includes are loaded after the default `set`):
+
+```
+# Example: use Right Alt as compose key
+set $compose_key compose:ralt
+```
+
+Common options:
+- `compose:menu` — Menu key (default)
+- `compose:ralt` — Right Alt
+- `compose:lwin` — Left Windows key
+- `compose:rwin` — Right Windows key
+- `compose:caps` — Caps Lock
+
+See `man 7 xkeyboard-config` for more XKB options.
 
 For machine- or monitor-specific behavior, copy `scripts/monitor-profiles.example.sh` to `~/.config/sway/scripts/monitor-profiles.local.sh` and edit it for your hardware.
 
