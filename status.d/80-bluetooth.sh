@@ -26,8 +26,20 @@ print_and_exit() {
 # 1. Verify that bluetoothctl exists.
 # ----------------------------------------------------------------------
 if ! command -v bluetoothctl &>/dev/null; then
-  # No bluetoothctl → we cannot query the stack → treat as “off”.
-  print_and_exit "$BLUETOOTH_OFF" 2
+  # No bluetoothctl → we cannot query the stack → nothing to show.
+  exit 0
+fi
+
+# ----------------------------------------------------------------------
+# 1b. Skip entirely on machines with no Bluetooth radio at all.
+# `rfkill` is cheap and does not block on the bluetoothd dbus service,
+# so it's a safe pre-check before touching bluetoothctl (which will
+# hang indefinitely waiting for a controller on hardware that has none).
+# ----------------------------------------------------------------------
+if command -v rfkill &>/dev/null; then
+  if ! rfkill list bluetooth 2>/dev/null | grep -q .; then
+    exit 0
+  fi
 fi
 
 # ----------------------------------------------------------------------
@@ -35,7 +47,8 @@ fi
 # ----------------------------------------------------------------------
 # Using `bluetoothctl show` without a device name prints the properties
 # of the *default* controller (or the error message you already saw).
-SHOW_OUTPUT=$(bluetoothctl show 2>/dev/null)
+# Wrap in `timeout` so a wedged bluetoothd can never stall the status bar.
+SHOW_OUTPUT=$(timeout 1 bluetoothctl show 2>/dev/null) || print_and_exit "$BLUETOOTH_OFF" 2
 
 # ----------------------------------------------------------------------
 # 3. Determine whether a controller is present.
@@ -57,7 +70,7 @@ fi
 # 5. At this point the controller is present AND powered.
 #    We only need to know whether a device is connected.
 # ----------------------------------------------------------------------
-if bluetoothctl info | grep -q "^Connected: yes$"; then
+if timeout 1 bluetoothctl info 2>/dev/null | grep -q "^Connected: yes$"; then
   print_and_exit "$BLUETOOTH_CONNECTED" 0
 else
   print_and_exit "$BLUETOOTH_DISCONNECTED" 1
