@@ -90,9 +90,9 @@ EOF
 
     if [[ "$theme" == "dark" ]]; then
         cat >> "$THEME_CONFIG_FILE" << 'EOF'
-# Dark Theme - Color Variables (85% opacity = D9 in hex)
+# Dark Theme - Color Variables (Opaque)
 set $bg_color #323232
-set $bar_bg_color #323232D9
+set $bar_bg_color #323232
 set $text_color #ffffff
 set $inactive_text #d0d0d0
 set $border_color #404040
@@ -105,9 +105,9 @@ client.focused_inactive $bg_color $bg_color $inactive_text $bg_color
 EOF
     else
         cat >> "$THEME_CONFIG_FILE" << 'EOF'
-# Light Theme - Color Variables (85% opacity = D9 in hex)
+# Light Theme - Color Variables (Opaque)
 set $bg_color #f0f0f0
-set $bar_bg_color #f0f0f0D9
+set $bar_bg_color #f0f0f0
 set $text_color #000000
 set $inactive_text #666666
 set $border_color #d0d0d0
