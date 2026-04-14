@@ -4,6 +4,10 @@
 #
 # Read `man 5 sway` for a complete reference.
 
+
+exec systemctl --user import-environment XDG_CURRENT_DESKTOP
+exec dbus-update-activation-environment --systemd XDG_CURRENT_DESKTOP=sway WAYLAND_DISPLAY XDG_SESSION_TYPE
+
 ### Variables
 #
 # Logo key. Use Mod1 for Alt. Mod4 for Super
@@ -29,7 +33,7 @@ exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DES
 bindsym Control+Mod1+s exec grim -g "$(slurp)" ~/Pictures/Screenshots/screenshot-$(date +'%Y-%m-%d-%H%M%S').png
 
 # Screen locking
-bindsym $super+l exec swaylock -f -i ~/.config/sway/images/wp.jpg
+bindsym $super+l exec swaylock -f -i ~/.config/sway/images/wp.png
 
 ### Output configuration
 
@@ -38,7 +42,7 @@ bindsym $super+l exec swaylock -f -i ~/.config/sway/images/wp.jpg
 # mode, scale, and adaptive_sync at runtime.
 
 # Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
-output * bg ~/.config/sway/images/wp.jpg fill
+output * bg ~/.config/sway/images/wp.png fill
 # Example configuration:
 #
 #   output HDMI-A-1 resolution 1920x1080 position 1920,0
@@ -54,11 +58,12 @@ output * bg ~/.config/sway/images/wp.jpg fill
 #          timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
 #          before-sleep 'swaylock -f -c 000000'
 exec swayidle -w \
-         timeout 30 'light -S 10' \
-         timeout 60 'light -S 5' \
+         timeout 30 'ddcutil setvcp 10 40' \
+              resume 'ddcutil setvcp 10 85' \
+         timeout 60 'ddcutil setvcp 10 10' \
+              resume 'ddcutil setvcp 10 85' \
          timeout 120 'swaylock' \
-         before-sleep 'swaylock' \
-         resume 'light -S 100'
+         before-sleep 'swaylock'
 
 ### Input configuration
 set $compose_key compose:menu

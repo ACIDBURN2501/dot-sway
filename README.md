@@ -52,7 +52,7 @@ The core loop is implemented in `statusbar.sh`. Supporting scripts live alongsid
 - `slurp` (for interactive region selection in screenshots)
 - `systemctl` (for system suspension and environment management)
 - `dbus-update-activation-environment` (for environment variable management)
-- Optional: `swayidle`, `swaylock` (referenced in `config`)
+- Optional: `swayidle`, `swaylock`, `ddcutil` (referenced in `config`; `ddcutil` is used by swayidle to dim external monitors over DDC/CI)
 
 ## How it works
 

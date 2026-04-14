@@ -69,7 +69,7 @@ Verify that required external tools are available before attempting to use them.
     exit 0
   fi
   ```
-- **Common Tools:** `jq`, `swaymsg`, `upower`, `brightnessctl`, `pactl`, `bluetoothctl`.
+- **Common Tools:** `jq`, `swaymsg`, `upower`, `brightnessctl`, `ddcutil`, `pactl`, `bluetoothctl`.
 
 ### Error Handling
 - Use `|| true` for commands that might fail but shouldn't halt execution (e.g., fetching status).
