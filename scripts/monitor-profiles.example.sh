@@ -26,8 +26,10 @@
 # Leave any argument empty to keep the script's fallback default for that field.
 #
 # Match on serial when you want to target one specific physical unit.
-# Omit the serial (leave it empty in the pattern) to match any monitor of that
-# make and model regardless of which unit it is.
+# Use a trailing '* glob (e.g. 'Make|Model|'*) to match any monitor of that
+# make and model regardless of which unit it is. Note: bash `case` patterns
+# are literal unless you include a glob, so 'Make|Model|' on its own only
+# matches monitors that report an empty serial.
 #
 # After editing, run:
 #   swaymsg reload && ~/.config/sway/scripts/monitor-hotplug.sh --once
@@ -44,7 +46,7 @@ dotsway_monitor_profile() {
   case "$make|$model|$serial" in
 
     # --- 4K 120 Hz display (match any unit of this model) ---
-    # 'ExampleMake|ExampleModel|')
+    # 'ExampleMake|ExampleModel|'*)
     #   set_monitor_profile '3840x2160@120Hz' '1' 'on'
     #   ;;
 
