@@ -3,11 +3,15 @@
 # The compose key allows you to type special characters using key sequences.
 # For example, with Menu key as compose: Menu, -, -, - produces an em-dash (—)
 #
-# The compose key is set in the main config file via the $compose_key variable
-# and passed to xkb_options. To change it, edit the `set $compose_key` line
-# in the main config, or override it in a config.d/ snippet:
+# The compose key is set via the `scripts/set-compose-key.sh` script which
+# is executed on startup and reload.
 #
-#   set $compose_key compose:rwin
+# To change the compose key:
+# 1. Set the environment variable `DOTSWAY_COMPOSE_KEY` (e.g. in .zshrc or .bashrc)
+#    Example: export DOTSWAY_COMPOSE_KEY="compose:ralt"
+#
+# 2. Alternatively, edit the `set $compose_key` line in the main config file
+#    (this will act as a fallback if the environment variable is not set).
 #
 # Common options:
 #   compose:menu  — Menu key (default)

@@ -139,18 +139,15 @@ export DOTSWAY_EXT_ADAPTIVE_SYNC="on"
 
 ### Compose Key Configuration
 
-The config sets a compose key for entering special characters (e.g., `Menu`, `-`, `-`, `-` → `—`). The compose key defaults to the Menu key and is controlled by the `$compose_key` variable in the main config:
+The config sets a compose key for entering special characters (e.g., `Menu`, `-`, `-`, `-` → `—`). The compose key defaults to the Menu key and is managed by `scripts/set-compose-key.sh`.
 
-```
-set $compose_key compose:menu
+To change it, you can use the `DOTSWAY_COMPOSE_KEY` environment variable (e.g. in your shell profile):
+
+```bash
+export DOTSWAY_COMPOSE_KEY="compose:ralt"
 ```
 
-To change it, edit that line or override it in a `config.d/` snippet (since includes are loaded after the default `set`):
-
-```
-# Example: use Right Alt as compose key
-set $compose_key compose:ralt
-```
+Alternatively, edit the `$compose_key` variable in the main `config` file to change the fallback default.
 
 Common options:
 - `compose:menu` — Menu key (default)

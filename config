@@ -62,7 +62,7 @@ exec swayidle -w \
          before-sleep 'swaylock -f -i ~/.config/sway/images/wp.png'
 
 ### Input configuration
-set $compose_key compose:menu
+set $compose_key compose:rwin
 input type:keyboard {
        xkb_layout "gb"
        xkb_model "pc105"
@@ -253,6 +253,13 @@ bindsym $mod+r mode "resize"
     bindsym --locked XF86AudioMicMute exec $HOME/.config/sway/scripts/volume-control.sh mic-mute
     bindsym --locked XF86MonBrightnessDown exec $HOME/.config/sway/scripts/brightness-control.sh down
     bindsym --locked XF86MonBrightnessUp exec $HOME/.config/sway/scripts/brightness-control.sh up
+
+    # Hardware fallbacks for devices without working media keys
+    bindsym --locked $super+F10 exec $HOME/.config/sway/scripts/volume-control.sh mute
+    bindsym --locked $super+F11 exec $HOME/.config/sway/scripts/volume-control.sh down
+    bindsym --locked $super+F12 exec $HOME/.config/sway/scripts/volume-control.sh up
+    bindsym --locked $super+F7 exec $HOME/.config/sway/scripts/brightness-control.sh down
+    bindsym --locked $super+F8 exec $HOME/.config/sway/scripts/brightness-control.sh up
     # External monitor (DDC/CI) brightness
     bindsym --locked $super+Shift+Down exec $HOME/.config/sway/scripts/external-brightness.sh down
     bindsym --locked $super+Shift+Up exec $HOME/.config/sway/scripts/external-brightness.sh up
@@ -284,7 +291,9 @@ bar {
     }
 }
 
-# --- Auto-start ---
+# Auto-start compose key override
+exec_always ~/.config/sway/scripts/set-compose-key.sh
+
 # Daemon to handle monitor hotplugging (replaces kanshi)
 exec_always ~/.config/sway/scripts/monitor-hotplug.sh
 
