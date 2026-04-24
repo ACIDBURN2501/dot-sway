@@ -2,3 +2,6 @@
 # to this path and edit for your hardware.
 scripts/monitor-profiles.local.sh
 .theme_state
+ 
+# Stanged wallpaper folder
+images/temp/
