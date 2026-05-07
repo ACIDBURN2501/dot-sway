@@ -62,7 +62,7 @@ exec swayidle -w \
          before-sleep 'swaylock -f -i ~/.config/sway/images/wp.png'
 
 ### Input configuration
-set $compose_key compose:rwin
+set $compose_key compose:menu
 input type:keyboard {
        xkb_layout "gb"
        xkb_model "pc105"
