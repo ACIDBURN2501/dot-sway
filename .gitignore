@@ -3,5 +3,6 @@
 scripts/monitor-profiles.local.sh
 .theme_state
  
-# Stanged wallpaper folder
+# Staged wallpaper folder and wp image
 images/temp/
+images/wp.png
