@@ -9,10 +9,18 @@ if ! command -v ddcutil >/dev/null 2>&1; then
   exit 0
 fi
 
-# Read current brightness (VCP 0x10). Output line looks like:
-#   VCP code 0x10 (Brightness                    ): current value =    85, max value =   100
-CUR=$(ddcutil getvcp 10 --terse 2>/dev/null | awk '{print $4}')
-MAX=$(ddcutil getvcp 10 --terse 2>/dev/null | awk '{print $5}')
+# A getvcp I2C round-trip is slow, so we cache "CUR MAX" in a file that the
+# status bar (status.d/20-brightness.sh) also reads. Prefer the cache; only
+# fall back to a single getvcp if the cache is missing.
+CACHE="${XDG_RUNTIME_DIR:-/tmp}/sway-brightness-ext"
+CUR=""
+MAX=""
+if [[ -s "$CACHE" ]]; then
+  read -r CUR MAX < "$CACHE" || true
+fi
+if [[ -z "${CUR:-}" || -z "${MAX:-}" ]]; then
+  read -r _ _ _ CUR MAX < <(ddcutil getvcp 10 --terse 2>/dev/null || true)
+fi
 
 if [[ -z "${CUR:-}" || -z "${MAX:-}" ]]; then
   exit 0
@@ -32,4 +40,6 @@ case "$ACTION" in
     ;;
 esac
 
-ddcutil setvcp 10 "$NEW" >/dev/null 2>&1 || true
+if ddcutil setvcp 10 "$NEW" >/dev/null 2>&1; then
+  printf "%s %s\n" "$NEW" "$MAX" > "$CACHE"
+fi

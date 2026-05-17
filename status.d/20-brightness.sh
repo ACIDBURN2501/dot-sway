@@ -26,11 +26,24 @@ if command -v brightnessctl >/dev/null 2>&1 && compgen -G "/sys/class/backlight/
 fi
 
 # Fall back to external monitor via DDC/CI.
+# IMPORTANT: ddcutil getvcp is slow (I2C round-trip) and CPU-heavy, so this
+# status script never polls it. The brightness control script
+# (scripts/external-brightness.sh) keeps a cache file of "CUR MAX" up to date
+# whenever the user adjusts brightness. We seed that cache once if missing.
+CACHE="${XDG_RUNTIME_DIR:-/tmp}/sway-brightness-ext"
 if [[ -z "${PCT:-}" ]] && command -v ddcutil >/dev/null 2>&1; then
-  read -r _ _ _ cur max < <(ddcutil getvcp 10 --terse 2>/dev/null || true)
-  if [[ -n "${cur:-}" && -n "${max:-}" && "$max" -gt 0 ]]; then
-    PCT=$(awk -v c="$cur" -v m="$max" 'BEGIN { printf("%d", (c*100)/m) }')
-    ICON="$ICON_EXTERNAL"
+  if [[ ! -s "$CACHE" ]]; then
+    read -r _ _ _ cur max < <(ddcutil getvcp 10 --terse 2>/dev/null || true)
+    if [[ -n "${cur:-}" && -n "${max:-}" && "$max" -gt 0 ]]; then
+      printf "%s %s\n" "$cur" "$max" > "$CACHE"
+    fi
+  fi
+  if [[ -s "$CACHE" ]]; then
+    read -r cur max < "$CACHE"
+    if [[ -n "${cur:-}" && -n "${max:-}" && "$max" -gt 0 ]]; then
+      PCT=$(awk -v c="$cur" -v m="$max" 'BEGIN { printf("%d", (c*100)/m) }')
+      ICON="$ICON_EXTERNAL"
+    fi
   fi
 fi
 
