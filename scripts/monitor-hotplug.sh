@@ -167,6 +167,20 @@ update_monitors() {
     return 1
   fi
 
+  # Headless state: no outputs known to Sway at all (e.g. desktop monitor
+  # powered off and the DRM connector dropped). Bail out — there is nothing
+  # to enable, and falling through would attempt a no-op reload loop.
+  local outputs_count
+  outputs_count=$(jq 'length' <<< "$outputs_json" 2>/dev/null || echo 0)
+  if [[ "$outputs_count" == "0" ]]; then
+    NEW_STATE="headless"
+    if [[ "$CURRENT_STATE" != "$NEW_STATE" ]]; then
+      log "No outputs present (monitor off / disconnected). Idling until a hotplug event."
+      CURRENT_STATE="$NEW_STATE"
+    fi
+    return 0
+  fi
+
   # Auto-detect internal display if not explicitly configured
   local internal_output="$INTERNAL_OUTPUT"
   if [[ -z "$internal_output" ]]; then
@@ -244,7 +258,18 @@ update_monitors() {
       return
     fi
 
-    # Mobile mode
+    # Mobile mode — only meaningful if an internal panel was detected.
+    # On desktops with no eDP, skip this branch entirely; the headless guard
+    # above handles the "monitor off" case.
+    if [[ -z "$internal_output" ]]; then
+      NEW_STATE="desktop-no-ext:$lid_state"
+      if [[ "$CURRENT_STATE" != "$NEW_STATE" ]]; then
+        log "No external output and no internal panel detected (desktop). Idling."
+        CURRENT_STATE="$NEW_STATE"
+      fi
+      return 0
+    fi
+
     NEW_STATE="mobile:$lid_state"
     if [[ "$CURRENT_STATE" != "$NEW_STATE" ]]; then
       log "Action: Mobile mode. Enabling $internal_output"
@@ -263,7 +288,7 @@ update_monitors() {
         log "Warning: Internal output still not active. Forcing reload..."
         swaymsg reload
       fi
-      
+
       CURRENT_STATE="$NEW_STATE"
     fi
   fi
