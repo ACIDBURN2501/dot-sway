@@ -3,7 +3,7 @@
 # Prefers laptop backlight (brightnessctl); falls back to external monitor (ddcutil).
 set -euo pipefail
 
-ICON_INTERNAL=""
+ICON_INTERNAL="󰃠"
 ICON_EXTERNAL="󰖨"
 
 PCT=""

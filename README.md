@@ -1,301 +1,249 @@
-# Sway/Swayfx Minimal Status Bar
+# Sway/Swayfx Desktop Configuration
 
-This directory contains a very small set of scripts to drive a simple, fast status bar for Sway or Swayfx. The bar shows the battery, any additional status snippets from `status.d/`, and the current time.
-
-- Battery (left): concise battery summary derived from UPower
-- Center: outputs from any executable scripts in `~/.config/sway/status.d`
-- Time (right): current time in HH:MM
-
-The core loop is implemented in `statusbar.sh`. Supporting scripts live alongside it and under `status.d/`.
+A portable Sway (and Swayfx) configuration with **Waybar** as the desktop status bar, a unified dark/light theme toggle across the bar, terminal, launcher, and notifications, and a monitor-hotplug daemon that handles clamshell mode and per-monitor profiles.
 
 <p align="center">
   <img src="images/preview.png" alt="Desktop preview." />
 </p>
 
-
 ## Files
 
-- `config` — A default Sway configuration file you can use as a starting point.
-- `config.d/` — Drop-in directory for additional Sway configuration snippets.
-    - `floating_windows` — Rules to make specific applications always open as floating windows (e.g., calculators, dialogs). See [Floating Windows Configuration](#floating-windows-configuration) below.
-
-- `statusbar.sh` — main loop that prints a single status line every second: `<Battery> | <Status Icons> | <Time>`
-- `battery.sh` — reads UPower's DisplayDevice and prints a semicolon-delimited line: `icon;label;color;default`
-- `power.sh` — tiny helper that converts `battery.sh` output into a compact human-readable string (used similarly to `batt_short` in `statusbar.sh`)
-- `status.d/` — drop-in directory for status items. Included scripts:
-    - `20-brightness.sh` — Displays brightness percentage (uses `brightnessctl`)
-    - `30-volume.sh` — Displays volume level and mute status (uses `pactl`)
-    - `40-theme.sh` — Displays current theme indicator (🌙 for dark, ☀️ for light)
-    - `80-bluetooth.sh` — Displays Bluetooth connection status
-    - `90-net.sh` — Displays network status (WiFi/Ethernet)
-- `scripts/` — Utility scripts for window management and system control.
-    - `monitor-hotplug.sh` — Robustly handles monitor switching (internal vs. external) to avoid Kanshi race conditions.
-    - `toggle_theme.sh` — **New!** Toggles between Dark and Light themes. Syncs with Gnome when available.
-    - See `scripts/SCRIPTS.md` for more details.
-- `extra/` — Extra configuration files, such as `kanshi` config (see `extra/EXTRA.md`).
+- `config` — Sway configuration. Sources `/tmp/swayfx_config_snippet` (SwayFX-only settings, generated on launch by `scripts/swayfx_guard.sh`) and `/tmp/sway_theme_config` (active theme palette).
+- `config.d/` — Drop-in directory; sourced via `include config.d/*`.
+    - `waybar` — Launches Waybar, bootstrapping the active palette symlink.
+    - `wallpaper` — Re-rolls the desktop wallpaper on each reload. See [Wallpaper Rotation](#wallpaper-rotation).
+    - `floating_windows` — Per-application floating rules. See [Floating Windows](#floating-windows).
+    - `compose_key` — Compose-key bindings.
+- `waybar/` — Status bar configuration.
+    - `config.jsonc` — Module layout.
+    - `style.css` — Visual style; imports the active palette via `colors.css`.
+    - `colors-dark.css`, `colors-light.css` — Palettes (Tokyo Night Moon/Day), harmonised with the kitty themes.
+    - `colors.css` — Symlink (gitignored) to the active palette, managed by `scripts/toggle_theme.sh`.
+    - `modules/` — Custom shell modules for state Waybar can't read natively:
+        - `brightness.sh` — Laptop backlight via `brightnessctl`; falls back to external monitors via a `ddcutil` cache.
+        - `theme.sh` — Current theme indicator (🌙 / ☀️).
+        - `dnd.sh` — Mako DND indicator (🧘 when active).
+- `scripts/` — Utility scripts bound to keys in `config`. See [`scripts/SCRIPTS.md`](scripts/SCRIPTS.md).
+- `images/` — Visual assets.
+    - `wallpapers/` — Pool of source images for `rotate-wallpaper.sh`. Drop `.png/.jpg/.jpeg` files in; the folder itself is tracked via `.gitkeep`, contents are gitignored.
+    - `wp.png` — Symlink to the active wallpaper (gitignored). Managed by `scripts/rotate-wallpaper.sh`; consumed by `output * bg` and swaylock.
+    - `preview.png` — Repo screenshot for the README header.
+- `extra/` — Supplementary configs (kanshi, wofi, mako, swhkd). See [`extra/EXTRA.md`](extra/EXTRA.md).
 
 ## Requirements
 
-- Bash (for the scripts)
-- `jq` (for JSON parsing in utility scripts)
-- `swaymsg` (for interacting with Sway)
-- `swaynag` (for confirmation dialogs)
-- UPower (for battery information)
-- `brightnessctl` (for `status.d/20-brightness.sh`)
-- `pactl` or `wpctl` (audio control helpers; `status.d/30-volume.sh` currently uses `pactl`)
-- `bluez` / `bluetoothctl` (for `status.d/80-bluetooth.sh`)
-- `gsettings` (optional, for Gnome theme syncing)
-- `wofi` (optional, application launcher with automatic theme switching)
-- `mako` (optional, notification daemon with automatic theme switching)
-- `grim` (for screenshots)
-- `slurp` (for interactive region selection in screenshots)
-- `systemctl` (for system suspension and environment management)
-- `dbus-update-activation-environment` (for environment variable management)
-- Optional: `swayidle`, `swaylock`, `ddcutil` (referenced in `config`; `ddcutil` is used by swayidle to dim external monitors over DDC/CI)
+Core:
 
-## How it works
+- `sway` (or `swayfx`), `swaymsg`, `swaynag`
+- `waybar` (≥ 0.9)
+- `bash`, `jq`
+- A Nerd Font (the config uses `SauceCodePro Nerd Font`, with `Symbols Nerd Font` as fallback)
 
-1. `statusbar.sh` loops once per second
-2. It calls `battery.sh` (if present and executable) and compresses that into a short left section (e.g. `󱟞 4h 12m`, `󱟠 1h 05m`, or `🔌` when full)
-3. It executes each executable file in `~/.config/sway/status.d` (in lexical order) and concatenates their outputs with spaces for the center section
-4. It appends the current time as the right section
-5. Only non-empty sections are printed; sections are separated by ` | `
+Hardware integration (used by Waybar modules and scripts):
 
-### Media Keys
+- `upower` — battery
+- `brightnessctl` — laptop backlight
+- `ddcutil` — external monitor brightness (optional)
+- `wpctl` (PipeWire) or `pactl` (PulseAudio) — audio control; Waybar's `pulseaudio` module reads via libpulse, so either works as long as the socket is provided (PipeWire's `pipewire-pulse` daemon counts)
+- `bluez` / `bluetoothctl` — bluetooth state and interactive control
+- `iproute2` (provides `ip`) — read-only network inspection; Waybar's `network` module reads via netlink and works regardless of what's managing the connection (dhcpcd, systemd-networkd, NetworkManager, etc.)
 
-Media keys are handled with small helper scripts and both of Sway's binding
-styles: `bindsym` for `XF86...` keysyms and `bindcode` for standard Linux input
-codes. This makes the defaults work more reliably with built-in laptop
-keyboards, external USB keyboards, and keyboards that expose volume keys
-through a separate `Consumer Control` device.
+Click handlers:
 
-- `scripts/volume-control.sh` prefers `wpctl` and falls back to `pactl`
-- `scripts/brightness-control.sh` uses `brightnessctl` when a backlight device exists
-- The default bindings use both `bindsym` and `bindcode` for mute, volume, mic mute, and brightness
+- **Audio** (left-click mute, scroll to adjust) → `scripts/volume-control.sh`
+- **Bluetooth** (left-click) → `scripts/bluetooth-tui.sh` — probes for [`bluetuith`](https://github.com/darkhz/bluetuith), falls back to `bluetoothctl`'s interactive shell.
+- **Network** (left-click) → `scripts/network-tui.sh` — probes for `impala` → `nmtui` → `iwctl`, falls back to a read-only `ip` interface + routes summary if none are installed. Install [`impala`](https://github.com/pythops/impala) for the recommended iwd TUI.
+- **Theme** / **DND** (left-click) → respective toggle scripts under `scripts/`
 
-If your media keys are visible to `libinput` but still do not trigger in Sway,
-an optional `swhkd` fallback config is provided in `extra/swhkd/swhkdrc`.
-Use it only on affected hardware, otherwise both Sway and `swhkd` may respond
-to the same key and double-trigger the action.
+If you prefer GUI tools, swap the `on-click` lines in `waybar/config.jsonc`: `pavucontrol` for audio, `blueman-manager` for bluetooth, `nm-connection-editor` or `nmtui` for network.
 
-Common Linux media key codes used by the config:
+Theming integrations (optional, picked up automatically when installed):
 
-- `121` - mute (`KEY_MUTE`)
-- `122` - volume down (`KEY_VOLUMEDOWN`)
-- `123` - volume up (`KEY_VOLUMEUP`)
-- `232` - brightness down (`KEY_BRIGHTNESSDOWN`)
-- `233` - brightness up (`KEY_BRIGHTNESSUP`)
-- `256` - microphone mute (`KEY_MICMUTE`)
+- `gsettings` — Gnome `color-scheme` sync
+- `wofi` — application launcher
+- `kitty` — terminal
+- `mako` — notification daemon
 
-### Optional `swhkd` Fallback
+Other:
 
-For keyboards and laptops that expose media keys through separate hotkey devices
-that Sway does not bind reliably, you can use `swhkd` as a media-key fallback.
+- `grim`, `slurp` — screenshots
+- `swayidle`, `swaylock` — idle locking
+- `wayland-pipewire-idle-inhibit` — holds an idle inhibitor while audio is playing so videos don't trigger the lock. Install with `cargo install wayland-pipewire-idle-inhibit` (needs `libpipewire-0.3-dev` and `libclang-dev` at build time); the binary must be on the sway session's `PATH`.
+- `dbus-update-activation-environment`, `systemctl --user import-environment` — XDG/Wayland env propagation
 
-Example startup:
+## Status Bar
+
+Waybar is launched by `config.d/waybar` on every Sway reload. The snippet:
+
+1. Reads `.theme_state` and points `waybar/colors.css` at the matching palette.
+2. Kills any prior Waybar instance.
+3. Launches Waybar with this repo's `config.jsonc` and `style.css`.
+
+### Layout
+
+| Cluster | Modules                                                                  |
+|---------|--------------------------------------------------------------------------|
+| Left    | `sway/workspaces`, `sway/mode`, `battery`                                |
+| Center  | `custom/brightness`, `pulseaudio`, `custom/theme`, `custom/dnd`, `bluetooth`, `network` |
+| Right   | `tray`, `clock`                                                          |
+
+Battery, audio, bluetooth, network, and clock use Waybar's native event-driven modules (D-Bus, no polling). Brightness, theme, and DND are custom shell modules — see `waybar/modules/`.
+
+### Adding modules
+
+- **Native module:** add its name to a `modules-*` array in `config.jsonc` and a config block below. See the [Waybar wiki](https://github.com/Alexays/Waybar/wiki) for the catalogue.
+- **Custom shell module:** drop an executable script in `waybar/modules/`, then add `"custom/<name>"` to a cluster with `"exec": "$HOME/.config/sway/waybar/modules/<script>.sh"`, an `"interval"`, and an optional `"on-click"`. For state-dependent styling, emit JSON (`{text, tooltip, class, percentage}`) and set `"return-type": "json"` — `style.css` can then target `#custom-<name>.<class>`.
+
+### Theming
+
+Edit `waybar/colors-dark.css` and `waybar/colors-light.css` — both must define the same `@define-color` names so `style.css` resolves in either palette. The toggle script (`scripts/toggle_theme.sh`) swaps the `colors.css` symlink and sends `SIGUSR2` so Waybar re-renders in place. Don't put colors in `style.css` directly; use the semantic tokens (`@bg`, `@fg`, `@accent`, `@warning`, etc.).
+
+## Theme Toggle (Dark/Light)
+
+A single keybind (`Mod+Shift+t`) flips Sway, Waybar, kitty, wofi, mako, and (when running under Gnome) Gnome's `color-scheme` between dark and light. The script lives at `scripts/toggle_theme.sh` and runs `init` at Sway startup to bootstrap all components.
+
+- **Status indicator:** 🌙 dark / ☀️ light (`waybar/modules/theme.sh`).
+- **Gnome sync:** when `gsettings` reports `org.gnome.desktop.interface color-scheme`, that is the source of truth; otherwise `.theme_state` is.
+- **Live Waybar repaint:** symlink swap + `SIGUSR2` — no restart.
+
+Manual usage:
+
+```bash
+~/.config/sway/scripts/toggle_theme.sh toggle   # flip
+~/.config/sway/scripts/toggle_theme.sh init     # re-apply current theme to all components
+~/.config/sway/scripts/toggle_theme.sh get      # print "dark" or "light"
+```
+
+## Wallpaper Rotation
+
+`config.d/wallpaper` runs `scripts/rotate-wallpaper.sh` on each Sway start/reload. The script:
+
+1. Scans `images/wallpapers/` for `.png`, `.jpg`, and `.jpeg` files (case-insensitive).
+2. Picks one uniformly at random.
+3. Repoints the `images/wp.png` symlink at the pick.
+4. Applies it live with `swaymsg output * bg images/wp.png fill` so the change is visible immediately, not just after the next reload.
+
+Because everything that references the wallpaper (`output * bg`, the swaylock keybind, and the swayidle `before-sleep` hook) reads `images/wp.png`, the lock screen and idle blur follow the same rotation automatically.
+
+### Usage
+
+```bash
+# Add wallpapers
+cp ~/Pictures/*.jpg ~/.config/sway/images/wallpapers/
+
+# Roll a new one (any of the below)
+$mod+Shift+c                                    # reload Sway — fires the exec_always hook
+~/.config/sway/scripts/rotate-wallpaper.sh      # run the script directly
+```
+
+An empty `images/wallpapers/` folder is a no-op — the current `wp.png` symlink is left untouched, so you can disable rotation by emptying the folder without breaking anything.
+
+### Cold-boot note
+
+On a fresh login Sway parses `output * bg` before `exec_always` fires, so the boot wallpaper is whatever `wp.png` pointed at when you last shut down. The rotation script then runs and applies the new pick live — expect a sub-second flash of the previous wallpaper before it changes.
+
+## Media Keys
+
+Media keys are bound with both `bindsym` (for `XF86...` keysyms) and `bindcode` (for raw Linux input codes), so they work across built-in laptop keyboards, external USB keyboards, and keyboards that expose volume keys through a separate Consumer Control device.
+
+- `scripts/volume-control.sh` prefers `wpctl`, falls back to `pactl`.
+- `scripts/brightness-control.sh` uses `brightnessctl` on backlight-bearing hardware, with a `ddcutil` cache for external monitors.
+
+Input codes used:
+
+| Code  | Key                       |
+|-------|---------------------------|
+| `121` | `KEY_MUTE`                |
+| `122` | `KEY_VOLUMEDOWN`          |
+| `123` | `KEY_VOLUMEUP`            |
+| `232` | `KEY_BRIGHTNESSDOWN`      |
+| `233` | `KEY_BRIGHTNESSUP`        |
+| `256` | `KEY_MICMUTE`             |
+
+### `swhkd` fallback
+
+On keyboards that expose media keys through a separate hotkey device Sway doesn't bind reliably, run `swhkd` alongside Sway:
 
 ```bash
 swhks &
 pkexec swhkd --config "$HOME/.config/swhkd/swhkdrc"
 ```
 
-Suggested setup:
+Copy `extra/swhkd/swhkdrc` to `~/.config/swhkd/swhkdrc` and keep it scoped to media keys only — otherwise Sway and swhkd will both fire on the same press.
 
-1. Copy `extra/swhkd/swhkdrc` to `~/.config/swhkd/swhkdrc`
-2. Keep it limited to media keys so it does not conflict with normal Sway shortcuts
-3. Enable it only on machines where Sway does not catch those keys reliably
+## Monitor Hotplug
 
-## Using with Sway/Swayfx
+`scripts/monitor-hotplug.sh` auto-detects the internal display (first `eDP-*` output) and any connected external display. External monitor settings resolve in this order:
 
-### Configuration
-A default configuration is provided in the `config` file. To use it:
+1. `DOTSWAY_EXT_*` environment variables.
+2. Per-monitor matches from `~/.config/sway/scripts/monitor-profiles.local.sh`.
+3. Universal fallback: `1920x1080@60Hz`, scale `1`, adaptive sync `off`.
 
-```bash
-cp ~/.config/sway/config ~/.config/sway/config.backup
-cp ~/.config/sway/config ~/.config/sway/config
-```
+Per-monitor setup:
 
-### Monitor Hotplug Configuration
+1. Copy `scripts/monitor-profiles.example.sh` → `scripts/monitor-profiles.local.sh` (gitignored).
+2. `swaymsg -t get_outputs -r | jq -r '.[] | select(.name | startswith("eDP") | not) | [.name, .make, .model, .serial] | @tsv'` to capture identity values.
+3. Add a `case` entry in `monitor-profiles.local.sh` that calls `set_monitor_profile MODE SCALE ADAPTIVE_SYNC`.
+4. `swaymsg reload` and `scripts/monitor-hotplug.sh --once` to apply immediately.
+5. If a profile doesn't apply, check `/tmp/sway-monitor-hotplug.log` — every decision is logged.
 
-`scripts/monitor-hotplug.sh` auto-detects the internal display (`eDP-*`) and any connected external display. External monitor settings now resolve in this order:
+Match on `serial` for a specific physical display, leave it empty to share a profile across every unit of the same make/model.
 
-1. Explicit environment variables
-2. Per-monitor matches from `~/.config/sway/scripts/monitor-profiles.local.sh`
-3. Universal fallback defaults
+Environment variables:
 
-The universal fallback is intentionally conservative: `1920x1080@60Hz`, scale `1`, and adaptive sync `off`.
+| Variable                          | Default                                              | Description                                                                |
+|-----------------------------------|------------------------------------------------------|----------------------------------------------------------------------------|
+| `DOTSWAY_EXT_RES`                 | `1920x1080@60Hz`                                     | Forced mode string (e.g. `3840x2160@120Hz`). Overrides any profile match.  |
+| `DOTSWAY_EXT_SCALE`               | `1`                                                  | Output scale factor (e.g. `1.25` for 4K).                                  |
+| `DOTSWAY_EXT_ADAPTIVE_SYNC`       | `off`                                                | Adaptive sync (`on`/`off`).                                                |
+| `DOTSWAY_INTERNAL_OUTPUT`         | *(auto)*                                             | Force a specific internal output name (e.g. `eDP-1`).                      |
+| `DOTSWAY_MONITOR_PROFILES_FILE`   | `~/.config/sway/scripts/monitor-profiles.local.sh`   | Alternate path for the per-monitor overrides file.                         |
 
-This keeps the shared Sway config portable across laptops and desktops, while still allowing machine- or monitor-specific overrides outside the tracked config.
+### Clamshell mode
 
-Use environment variables only when you want to force the same settings on every machine that uses this config. They must be set before Sway starts:
-
-```bash
-# Example: force all machines to use the same external mode
-export DOTSWAY_EXT_RES="3840x2160@120Hz"
-export DOTSWAY_EXT_SCALE="1"
-export DOTSWAY_EXT_ADAPTIVE_SYNC="on"
-```
-
-For machine- or monitor-specific behavior, copy `scripts/monitor-profiles.example.sh` to `~/.config/sway/scripts/monitor-profiles.local.sh` and edit it for your hardware.
-
-```bash
-cp ~/.config/sway/scripts/monitor-profiles.example.sh ~/.config/sway/scripts/monitor-profiles.local.sh
-```
-
-Recommended setup flow:
-
-1. Copy `~/.config/sway/scripts/monitor-profiles.example.sh` to `~/.config/sway/scripts/monitor-profiles.local.sh`.
-2. Run `swaymsg -t get_outputs -r` and note the external monitor `make`, `model`, and `serial` values.
-3. Add a `case` entry in `~/.config/sway/scripts/monitor-profiles.local.sh` for that monitor.
-4. Reload Sway with `swaymsg reload`.
-5. Re-apply the layout immediately with `~/.config/sway/scripts/monitor-hotplug.sh --once`.
-
-The Sway config uses `exec_always` for the hotplug daemon so a reload restarts it and picks up profile changes.
-
-To inspect the detected identity values more easily, this can help:
-
-```bash
-swaymsg -t get_outputs -r | jq -r '.[] | select(.name | startswith("eDP") | not) | [.name, .make, .model, .serial] | @tsv'
-```
-
-Example profile:
-
-```bash
-dotsway_monitor_profile() {
-  local _output_name="$1"
-  local make="$2"
-  local model="$3"
-  local serial="$4"
-
-  case "$make|$model|$serial" in
-    # Match a specific unit by serial
-    'ExampleMake|ExampleModel|SERIALHERE')
-      set_monitor_profile '3840x2160@120Hz' '1' 'on'
-      ;;
-    # Match any unit of this make/model (leave serial empty)
-    'ExampleMake|ExampleModel|')
-      set_monitor_profile '1920x1080@60Hz' '1' 'off'
-      ;;
-  esac
-}
-```
-
-Match on `serial` when you want a specific physical display, or leave it empty when every monitor with the same make/model should share one profile.
-
-| Variable | Default | Description |
-|---|---|---|
-| `DOTSWAY_EXT_RES` | `1920x1080@60Hz` | Forced mode for the external monitor. Environment variables override any profile match. |
-| `DOTSWAY_EXT_SCALE` | `1` | Output scale factor. Environment variables override any profile match. |
-| `DOTSWAY_EXT_ADAPTIVE_SYNC` | `off` | Adaptive sync (`on`/`off`). Only enable if your GPU and display support it. |
-| `DOTSWAY_INTERNAL_OUTPUT` | *(auto)* | Override auto-detection of the internal panel (e.g. `eDP-1`). |
-| `DOTSWAY_MONITOR_PROFILES_FILE` | `~/.config/sway/scripts/monitor-profiles.local.sh` | Alternate path for local per-monitor overrides. |
-
-The internal display is auto-detected as the first `eDP-*` output reported by Sway, so no configuration is needed in most cases.
-
-If a profile does not seem to apply, check `/tmp/sway-monitor-hotplug.log`. The script logs the detected monitor identity and whether each setting came from the default, a profile, or an environment override.
-
-### Clamshell Mode Setup (Important)
-To use "clamshell mode" (using the laptop while the lid is closed with an external monitor), you must prevent `systemd-logind` from suspending the system when the lid is closed. The `monitor-hotplug.sh` script handles suspension logic itself.
-
-Run the following to configure `logind`:
+For clamshell mode (laptop closed, external monitor only), prevent `systemd-logind` from suspending the system — `monitor-hotplug.sh` decides suspend behavior itself:
 
 ```bash
 sudo mkdir -p /etc/systemd/logind.conf.d/
-echo -e "[Login]\nHandleLidSwitch=ignore\nHandleLidSwitchExternalPower=ignore" | sudo tee /etc/systemd/logind.conf.d/sway-clamshell.conf
+echo -e "[Login]\nHandleLidSwitch=ignore\nHandleLidSwitchExternalPower=ignore" \
+  | sudo tee /etc/systemd/logind.conf.d/sway-clamshell.conf
 sudo systemctl restart systemd-logind
 ```
 
-### Status Bar
-Add a bar block to your sway config to execute the script. For vanilla swaybar:
+## Floating Windows
 
-```
-bar {
-    status_command exec ~/.config/sway/statusbar.sh
-}
-```
+`config.d/floating_windows` makes specific applications open as floating windows (calculators, dialogs, etc.). To add an application:
 
-For Swayfx with its bar, the same `status_command` applies. Ensure the scripts are executable:
-
-```
-chmod +x ~/.config/sway/*.sh ~/.config/sway/status.d/*.sh
-```
-
-## Theme Toggle (Dark/Light Mode)
-
-This configuration includes a theme toggle system that allows you to switch between dark and light themes:
-
-**Features:**
-- Toggle via keybind: `Mod+Shift+t` (Alt+Shift+t by default)
-- Status bar indicator: 🌙 (dark) / ☀️ (light)
-- Automatic Gnome integration: syncs with system theme when running under Gnome
-- Standalone operation: works independently when not using Gnome
-- Dynamic theming: updates bar colors, window borders, and workspace indicators
-- Optional component theming: automatically switches themes for wofi (launcher), kitty (terminal), and mako (notifications) if installed
-
-**Gnome Compatibility:**
-When running under Gnome, the theme toggle automatically syncs with `gsettings` (org.gnome.desktop.interface color-scheme), ensuring consistent theming between Sway and Gnome applications. If Gnome is not detected, it operates as a Sway-only theme toggle.
-
-**Manual Usage:**
-```bash
-# Toggle theme
-~/.config/sway/scripts/toggle_theme.sh toggle
-
-# Check current theme
-~/.config/sway/scripts/toggle_theme.sh get
-```
-
-## Adding items via status.d/
-
-Place any executable script in `~/.config/sway/status.d`. The script should:
-
-- Print a single line to stdout (no trailing newlines required; they are trimmed)
-- Exit 0 on success; errors are ignored so a failing script won't break the bar
-- Be fast (ideally <10–20ms) to avoid jank; consider caching or async daemons for expensive queries
-
-## Utility Scripts
-
-The `scripts/` directory contains helper scripts that are bound to keys in the provided `config`.
-See [`scripts/SCRIPTS.md`](scripts/SCRIPTS.md) for details on:
-- `move-ws-to-active.sh`
-- `move-ws-to-output.sh`
-- `toggle-touchpad.sh`
-- `monitor-hotplug.sh`
-- `toggle_theme.sh`
-
-## Floating Windows Configuration
-
-By default, Sway tiles all windows. However, some applications (like calculators, dialogs, or system utilities) work better as floating windows. The `config.d/floating_windows` file contains rules to automatically make specific applications float.
-
-Monitor hotplug configuration lives in `scripts/` alongside the script that uses it: `scripts/monitor-profiles.example.sh` is the template, and `scripts/monitor-profiles.local.sh` is the machine-local override (gitignored).
-
-### Adding Your Own Floating Applications
-
-1. Open the application you want to make floating
-2. Find its identifier by running:
+1. Open it and find its identifier:
    ```bash
    swaymsg -t get_tree | grep -Po '"(app_id|class)": *"\K[^"]*'
    ```
-3. Edit `~/.config/sway/config.d/floating_windows` and add a line:
+2. Add a line:
    ```
    for_window [app_id="YOUR_APP_ID"] floating enable
    ```
-4. Reload Sway config with `$mod+Shift+c`
+3. Reload with `$mod+Shift+c`.
 
-The file includes commented examples for common applications (pavucontrol, file pickers, etc.) that you can uncomment as needed.
+The file ships with commented examples (pavucontrol, file pickers, etc.).
 
-## Extra Configuration
+## Extras
 
-The `extra/` directory contains supplementary configuration files.
-See [`extra/EXTRA.md`](extra/EXTRA.md) for details.
+`extra/` contains supplementary configurations — see [`extra/EXTRA.md`](extra/EXTRA.md).
 
 ## Troubleshooting
 
-- Nothing shows for battery: ensure `upower` is installed and `upower -e` lists a `/org/freedesktop/UPower/devices/DisplayDevice`
-- Missing icons: install a font that supports Nerd Fonts/Unicode glyphs (e.g. JetBrainsMono Nerd Font)
-- Slow updates: ensure scripts in `status.d` are quick; avoid running heavy commands each second
-- Bluetooth icon missing: ensure `bluez` is installed and `bluetoothctl` is working
-- Clamshell mode not working: Check `/tmp/sway-monitor-hotplug.log` for errors and verify `HandleLidSwitch=ignore` is set in `logind.conf`.
+| Symptom                                         | Check                                                                                       |
+|-------------------------------------------------|---------------------------------------------------------------------------------------------|
+| No bar at all                                   | `pgrep waybar`; if empty, run `waybar -c waybar/config.jsonc -s waybar/style.css` and inspect stderr |
+| CSS parse error on launch                       | `waybar/colors.css` symlink missing — run `scripts/toggle_theme.sh init`                    |
+| Theme indicator stuck                           | Check `.theme_state` and `gsettings get org.gnome.desktop.interface color-scheme`           |
+| Battery missing                                 | `upower -e` must list `/org/freedesktop/UPower/devices/DisplayDevice`                       |
+| Missing glyphs                                  | Install a Nerd Font (the config asks for `SauceCodePro Nerd Font`)                          |
+| Bluetooth icon stuck off                        | `bluez` running? `rfkill list bluetooth` shows the controller?                              |
+| Clamshell mode suspends unexpectedly            | `/tmp/sway-monitor-hotplug.log` + verify `HandleLidSwitch=ignore` in `/etc/systemd/logind.conf.d/` |
+| Monitor profile not applied                     | `/tmp/sway-monitor-hotplug.log` logs the detected identity and which source set each value  |
+| Wallpaper doesn't rotate on reload              | `images/wallpapers/` exists with at least one `.png/.jpg/.jpeg`? Run `scripts/rotate-wallpaper.sh` directly and check `readlink images/wp.png` |
 
 ## License
 
-These scripts are provided as-is; adapt them freely to your setup.
+Provided as-is; adapt freely.

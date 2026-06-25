@@ -3,6 +3,12 @@
 scripts/monitor-profiles.local.sh
 .theme_state
  
-# Staged wallpaper folder and wp image
-images/temp/
+# Wallpaper rotation: track the folder (via .gitkeep) but not its contents,
+# and never commit the active wp.png symlink — rotate-wallpaper.sh manages it.
+images/wallpapers/*
+!images/wallpapers/.gitkeep
 images/wp.png
+
+# Waybar active palette symlink — managed by toggle_theme.sh, points at
+# waybar/colors-{dark,light}.css depending on current theme state.
+waybar/colors.css

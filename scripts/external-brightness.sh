@@ -10,8 +10,8 @@ if ! command -v ddcutil >/dev/null 2>&1; then
 fi
 
 # A getvcp I2C round-trip is slow, so we cache "CUR MAX" in a file that the
-# status bar (status.d/20-brightness.sh) also reads. Prefer the cache; only
-# fall back to a single getvcp if the cache is missing.
+# Waybar brightness module (waybar/modules/brightness.sh) also reads. Prefer
+# the cache; only fall back to a single getvcp if the cache is missing.
 CACHE="${XDG_RUNTIME_DIR:-/tmp}/sway-brightness-ext"
 CUR=""
 MAX=""

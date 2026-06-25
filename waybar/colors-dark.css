@@ -1,0 +1,16 @@
+/* Tokyo Night Moon palette — harmonises with kitty's tokyo_night_moon.conf. */
+@define-color bg          rgba(34, 36, 54, 0.92);
+@define-color bg_hover    rgba(255, 255, 255, 0.06);
+@define-color bg_active   #5294e2;
+
+@define-color fg          #c8d3f5;
+@define-color fg_dim      #828bb8;
+@define-color fg_strong   #ffffff;
+
+@define-color accent      #82aaff;
+@define-color success     #c3e88d;
+@define-color warning     #ffc777;
+@define-color critical    #ff757f;
+@define-color muted       #636da6;
+
+@define-color divider     rgba(255, 255, 255, 0.08);

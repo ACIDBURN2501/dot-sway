@@ -1,0 +1,24 @@
+# Launch Waybar as the desktop status bar.
+#
+# `exec` (not `exec_always`) so sway reloads don't kill+respawn the bar — early-boot
+# reloads were leaving waybar dead. Theme switches still reload waybar live via
+# SIGUSR2 from scripts/toggle_theme.sh.
+#
+# The inline symlink ensures `waybar/colors.css` points at the active palette
+# before waybar reads it, so a fresh checkout works without first running
+# `scripts/toggle_theme.sh init`.
+#
+# The loop supervises waybar: if it dies abnormally (e.g. a boot-time race
+# against still-starting D-Bus services), it is respawned. Capped at 5
+# attempts so the loop can't spin forever once the session is gone; a clean
+# exit (status 0) ends supervision immediately.
+exec sh -c '\
+  state=$(cat $HOME/.config/sway/.theme_state 2>/dev/null || echo dark); \
+  ln -sfn "colors-${state}.css" $HOME/.config/sway/waybar/colors.css; \
+  fails=0; \
+  while ! waybar -c $HOME/.config/sway/waybar/config.jsonc -s $HOME/.config/sway/waybar/style.css; do \
+    fails=$((fails+1)); \
+    [ "$fails" -ge 5 ] && break; \
+    sleep 1; \
+  done; \
+'

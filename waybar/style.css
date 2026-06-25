@@ -1,0 +1,114 @@
+/* Waybar theme. Active palette is resolved via the `colors.css` symlink,
+ * swapped by ~/.config/sway/scripts/toggle_theme.sh and reloaded with
+ * SIGUSR2. See colors-dark.css / colors-light.css for available tokens. */
+@import "colors.css";
+
+* {
+  font-family: "SauceCodePro Nerd Font", "Symbols Nerd Font", monospace;
+  font-size: 11pt;
+  font-feature-settings: "tnum";
+  min-height: 0;
+}
+
+window#waybar {
+  background-color: @bg;
+  color: @fg;
+  border-bottom: 0;
+  transition: background-color 0.2s ease;
+}
+
+/* --- Workspaces (pill buttons) -------------------------------------------- */
+#workspaces {
+  margin: 0 4px;
+}
+
+#workspaces button {
+  padding: 2px 10px;
+  margin: 3px 2px;
+  color: @fg_dim;
+  background: transparent;
+  border-radius: 6px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+#workspaces button:hover {
+  background: @bg_hover;
+  color: @fg;
+  box-shadow: none;
+  text-shadow: none;
+}
+
+#workspaces button.focused,
+#workspaces button.active {
+  background-color: @bg_active;
+  color: @fg_strong;
+}
+
+#workspaces button.urgent {
+  background-color: @critical;
+  color: @fg_strong;
+}
+
+/* --- Sway mode (resize etc.) --------------------------------------------- */
+#mode {
+  background-color: @accent;
+  color: @fg_strong;
+  padding: 0 10px;
+}
+
+/* --- Module padding & dividers ------------------------------------------- */
+#battery,
+#clock,
+#network,
+#bluetooth,
+#pulseaudio,
+#tray,
+#custom-brightness,
+#custom-theme,
+#custom-dnd {
+  padding: 0 10px;
+  border-right: 1px solid @divider;
+}
+
+/* Strip trailing divider from the last module of each cluster. */
+.modules-left > widget:last-child > #battery,
+.modules-center > widget:last-child > #network,
+.modules-right > widget:last-child > #clock {
+  border-right: 0;
+}
+
+/* --- Clickable modules: subtle hover affordance -------------------------- */
+#custom-theme:hover,
+#custom-dnd:hover,
+#pulseaudio:hover,
+#bluetooth:hover,
+#network:hover {
+  background-color: @bg_hover;
+}
+
+/* --- Battery state ------------------------------------------------------- */
+#battery.warning  { color: @warning; }
+#battery.critical { color: @critical; }
+#battery.charging,
+#battery.plugged  { color: @success; }
+
+/* --- Network disconnected ------------------------------------------------ */
+#network.disconnected { color: @muted; }
+
+/* --- Bluetooth states ---------------------------------------------------- */
+#bluetooth.disabled,
+#bluetooth.off       { color: @muted; }
+#bluetooth.connected { color: @accent; }
+
+/* --- Clock --------------------------------------------------------------- */
+#clock {
+  color: @fg_strong;
+  font-weight: 500;
+}
+
+/* --- Tray ---------------------------------------------------------------- */
+#tray {
+  padding: 0 6px;
+}
+#tray > .passive         { -gtk-icon-effect: dim; }
+#tray > .needs-attention { -gtk-icon-effect: highlight; color: @warning; }

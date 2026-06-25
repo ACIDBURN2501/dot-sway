@@ -1,0 +1,16 @@
+/* Tokyo Night Day palette — harmonises with kitty's tokyo_night_day.conf. */
+@define-color bg          rgba(225, 226, 231, 0.94);
+@define-color bg_hover    rgba(0, 0, 0, 0.06);
+@define-color bg_active   #5294e2;
+
+@define-color fg          #3760bf;
+@define-color fg_dim      #848cb5;
+@define-color fg_strong   #1a1b26;
+
+@define-color accent      #2e7de9;
+@define-color success     #587539;
+@define-color warning     #8c6c3e;
+@define-color critical    #f52a65;
+@define-color muted       #848cb5;
+
+@define-color divider     rgba(0, 0, 0, 0.08);

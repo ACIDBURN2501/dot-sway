@@ -1,149 +1,149 @@
 # Agent Guidelines for Sway Configuration Repository
 
-This document outlines the standards, conventions, and workflows for agents contributing to this repository. Adhering to these guidelines ensures consistency, stability, and maintainability of the Sway configuration and its supporting scripts.
+Conventions for contributing changes to this Sway + Waybar desktop configuration.
 
 ## Build, Lint, & Test
 
 ### Linting
-We use `shellcheck` for all shell scripts. All scripts must pass linting before being considered stable.
-- **Run linter on all scripts:**
-  ```bash
-  shellcheck *.sh status.d/*.sh scripts/*.sh
-  ```
-- **Run linter on a single file:**
-  ```bash
-  shellcheck path/to/script.sh
-  ```
+`shellcheck` covers all shell scripts.
+
+```bash
+shellcheck scripts/*.sh waybar/modules/*.sh
+```
 
 ### Testing
-Testing is primarily manual as these are system integration scripts.
-- **Run the main status bar loop:**
+Manual — these are system-integration scripts.
+
+- **Launch Waybar directly** (stderr shows parse errors):
   ```bash
-  ./statusbar.sh
+  waybar -c waybar/config.jsonc -s waybar/style.css
   ```
-- **Test a specific status module:**
+- **Test a custom Waybar module** in isolation:
   ```bash
-  ./status.d/20-brightness.sh
+  ./waybar/modules/brightness.sh
   ```
-- **Verify file permissions:** Ensure all scripts are executable.
+- **Verify executable bits:**
   ```bash
-  chmod +x *.sh status.d/* scripts/*.sh
+  chmod +x scripts/*.sh waybar/modules/*.sh
   ```
 
 ## Code Style & Conventions
 
 ### Shebang & Safety
-Always use a proper shebang and enable safety flags to prevent unexpected behavior.
 - **Shebang:** `#!/usr/bin/env bash`
-- **Safety Flags:** `set -euo pipefail`
-  - `-e`: Exit immediately if a command exits with a non-zero status.
-  - `-u`: Treat unset variables as an error.
-  - `-o pipefail`: The return value of a pipeline is the status of the last command to exit with a non-zero status.
+- **Safety flags:** `set -euo pipefail` (errexit, nounset, pipefail)
 
 ### Formatting & Naming
-- **Indentation:** Use **2 spaces** for indentation. Never use tabs.
-- **File Naming:** Use `kebab-case.sh` (e.g., `monitor-hotplug.sh`).
-- **Variable/Function Naming:** Use `snake_case` (e.g., `get_battery_info`).
-- **Constants:** Use `UPPER_SNAKE_CASE` (e.g., `ICON_VOL_MUTE`).
+- **Indentation:** 2 spaces. No tabs.
+- **Filenames:** `kebab-case.sh`.
+- **Variables/functions:** `snake_case`.
+- **Constants:** `UPPER_SNAKE_CASE`.
 
-### Structure
-Scripts should follow a logical structure:
-1. Shebang and safety flags.
-2. Comments describing the script's purpose and usage.
-3. Configuration variables and constants.
+### Script Structure
+1. Shebang + safety flags.
+2. Header comment: purpose, inputs, outputs.
+3. Constants.
 4. Helper functions.
-5. Execution logic / Main entry point.
+5. Main logic.
 
-### Status Scripts (`status.d/`)
-Scripts in `status.d/` are executed by `statusbar.sh` once per second.
-- **Output:** Must print exactly **one line** to stdout.
-- **Formatting:** Do not include leading/trailing whitespace or extra newlines. `statusbar.sh` handles joining outputs.
-- **Performance:** Must be fast (ideally <20ms). Use `|| true` or check command existence to prevent script failure from stopping the bar.
-- **Ordering:** Files are executed in lexical order (e.g., `20-brightness.sh` comes before `30-volume.sh`).
+### Waybar Custom Modules (`waybar/modules/`)
+Scripts here back `custom/*` modules in `waybar/config.jsonc`.
+
+- **Output:** print one line per invocation. Empty output hides the module.
+- **Performance:** budget under 50ms; cache state on disk if upstream is slow (see `brightness.sh` for the ddcutil pattern).
+- **JSON mode:** if the module needs state-dependent CSS classes or tooltips, emit JSON (`{text, tooltip, class, percentage}`) and set `"return-type": "json"` in `config.jsonc`. `style.css` can then target `#custom-<name>.<class>`.
+- **Failure mode:** prefer `command -v <tool> || exit 0` over silent errors — Waybar treats empty output as "nothing to show", which is the right default for missing hardware.
 
 ### Dependencies & Tooling
-Verify that required external tools are available before attempting to use them.
-- **Check for commands:**
-  ```bash
-  if ! command -v jq >/dev/null 2>&1; then
-    exit 0
-  fi
-  ```
-- **Common Tools:** `jq`, `swaymsg`, `upower`, `brightnessctl`, `ddcutil`, `pactl`, `bluetoothctl`.
+Always probe for tools before calling them:
+
+```bash
+command -v jq >/dev/null 2>&1 || exit 0
+```
+
+Common tools: `jq`, `swaymsg`, `upower`, `brightnessctl`, `ddcutil`, `pactl` / `wpctl`, `bluetoothctl`, `nmcli`, `makoctl`.
 
 ### Error Handling
-- Use `|| true` for commands that might fail but shouldn't halt execution (e.g., fetching status).
-- Provide sensible fallbacks if a command fails or a value is missing.
-- Use `2>/dev/null` to suppress noise from commands that might fail gracefully.
+- `|| true` on commands whose failure should not abort the script.
+- `2>/dev/null` to suppress noise from probes.
+- Provide a sensible fallback or exit 0 when state is unobtainable.
 
 ### Icons & UI
-We use Nerd Fonts for status bar icons.
-- Use consistent icons for similar features (e.g., `` for brightness, `` for volume).
-- Ensure icons are followed by a space if they are preceding text (e.g., `printf "󰁹 %s%%" "$PCT"`).
+Nerd Font glyphs only; consistent icons per concept (battery, brightness, network, etc.). Follow each icon with one space when followed by text:
+
+```bash
+printf "󰁹 %s%%" "$PCT"
+```
 
 ## Conventional Commits
 
-We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification for all changes. This helps in generating changelogs and understanding the project history.
+[Conventional Commits](https://www.conventionalcommits.org/) — `<type>(<scope>): <description>`.
 
-**Format:** `<type>(<scope>): <description>`
+- **feat** — new feature
+- **fix** — bug fix
+- **docs** — docs only
+- **style** — formatting only
+- **refactor** — no behavior change
+- **perf** — performance
+- **test** — tests
+- **chore** — build/tooling
 
-- **feat:** A new feature (e.g., `feat(status): add network speed module`)
-- **fix:** A bug fix (e.g., `fix(battery): handle missing DisplayDevice gracefully`)
-- **docs:** Documentation only changes (e.g., `docs(agents): update linting instructions`)
-- **style:** Changes that do not affect the meaning of the code (white-space, formatting, etc.)
-- **refactor:** A code change that neither fixes a bug nor adds a feature
-- **perf:** A code change that improves performance
-- **test:** Adding missing tests or correcting existing tests
-- **chore:** Changes to the build process or auxiliary tools and libraries
-
-**Examples:**
-- `feat(timer): improved the algorithm for sub nanosecond times`
-- `fix(volume): use pactl instead of amixer for better compatibility`
-- `style(brightness): fix indentation in 20-brightness.sh`
+Examples:
+- `feat(waybar): add disk usage module`
+- `fix(brightness): handle backlight devices without max_brightness`
+- `docs(scripts): clarify monitor profile precedence`
 
 ## Project Architecture
 
-- **Root:** Contains the main `statusbar.sh` and core scripts like `battery.sh` and `power.sh`.
-- **`status.d/`:** Modular status bar components. Each script here adds a "block" to the center of the bar.
-- **`scripts/`:** Independent utility scripts for window management, hotplugging, etc.
-  - `monitor-hotplug.sh`: Handles display switching AND system suspension logic for clamshell mode.
-- **`extra/`:** External configuration for tools like `kanshi` and `wofi`.
-- **`config`:** The primary Sway configuration file.
+- **`config`:** Primary Sway configuration. Includes `config.d/*` and theme/SwayFX snippets generated under `/tmp`.
+- **`config.d/`:** Drop-in Sway snippets sourced via `include config.d/*`. `waybar` launches the bar; `wallpaper` re-rolls `images/wp.png` from `images/wallpapers/` on reload (see `scripts/rotate-wallpaper.sh`); `floating_windows` and `compose_key` carry per-app and input rules.
+- **`waybar/`:** Status bar config.
+  - `config.jsonc` — module layout
+  - `style.css` — imports the active palette via the `colors.css` symlink (gitignored)
+  - `colors-dark.css` / `colors-light.css` — `@define-color` palettes. Both files **must define the same names** so `style.css` resolves in either palette.
+  - `modules/` — custom shell modules for state Waybar can't read natively (DDC/CI brightness, theme indicator, mako DND).
+- **`scripts/`:** Utilities bound to keybinds or `exec` lines — monitor hotplug, theme toggle, media key handlers, etc.
+- **`extra/`:** Standalone configs for adjacent tools (kanshi, wofi, mako, swhkd).
 
 ## Common Workflows
 
-### Adding a New Status Module
-1. Create a new script in `status.d/` (e.g., `50-new-module.sh`).
-2. Add the shebang and safety flags.
-3. Check for required dependencies at the start.
-4. Implement the logic to fetch the status.
-5. Format the output with an icon and optional text.
-6. Make the script executable: `chmod +x status.d/50-new-module.sh`.
-7. Verify by running `./status.d/50-new-module.sh` and then `./statusbar.sh`.
+### Adding a Waybar module
+1. **Native module:** add its name to a `modules-*` array in `waybar/config.jsonc` and a config block below. Native modules are preferred when one fits — they're event-driven.
+2. **Custom shell module:** drop the script in `waybar/modules/`, add `"custom/<name>"` to a cluster with `"exec"`, `"interval"`, and optional `"on-click"`.
+3. `chmod +x waybar/modules/<name>.sh`.
+4. Reload: `pkill -SIGUSR2 -x waybar` (style or `config.jsonc` changes — waybar rereads both). `swaymsg reload` no longer relaunches waybar; if you ever need a full restart, `pkill -x waybar` and let the next sway login (or run the launch command from `config.d/waybar`) bring it back.
 
-### Modifying Sway Config
-1. Edit the `config` file.
-2. Test the configuration for syntax errors: `sway -C`.
-3. Reload Sway to apply changes: `swaymsg reload`.
+### Modifying Sway config
+1. Edit `config` (or a snippet under `config.d/`).
+2. Syntax check: `sway -C`.
+3. `swaymsg reload`.
+
+### Modifying Waybar colors
+1. Edit `waybar/colors-dark.css` and `waybar/colors-light.css`. Keep `@define-color` names identical across both.
+2. Verify CSS parses by relaunching Waybar manually — parse errors land on stderr:
+   ```bash
+   waybar -c waybar/config.jsonc -s waybar/style.css
+   ```
+3. Live reload a running Waybar: `pkill -SIGUSR2 -x waybar`.
 
 ## Handling Hardware Variability
 
-As this configuration is intended to be portable across different machines:
-- **Conditional Execution:** Always check for the presence of hardware-specific tools or files (e.g., `/sys/class/backlight` or `upower`).
-- **Graceful Fallbacks:** If a hardware feature is missing, the script should exit silently (exit 0) without printing anything.
-- **Portability:** Avoid hardcoding specific interface names (like `wlan0`) unless necessary; use tools like `ip` or `nmcli` to discover them.
+This config is shared across laptops and desktops.
 
-## Troubleshooting Agents
+- **Probe, don't assume:** check `/sys/class/backlight`, `upower -e`, `rfkill list bluetooth` before using a feature.
+- **Empty over error:** a missing sensor should produce no output (exit 0), not a stderr noise burst — Waybar already hides empty modules.
+- **No hardcoded interfaces:** use `nmcli`, `ip`, or `/proc/net/route` to discover the active interface; don't bake in `wlan0`.
 
-When an agent encounters an issue:
-1. **Check Logs:** Look for error messages in the terminal where `statusbar.sh` is running.
-2. **Manual Execution:** Run the failing script manually with `bash -x` to see execution trace.
-3. **Environment:** Verify that all environment variables (like `PATH`) are correctly set.
-4. **Permissions:** Ensure all scripts and directories have the correct read/execute permissions.
+## Troubleshooting
+
+- **Waybar didn't start:** run it in the foreground (`waybar -c waybar/config.jsonc -s waybar/style.css`) — config and CSS errors print to stderr.
+- **Module shows nothing:** run the module script directly to see what it prints. Empty output hides the module by design.
+- **Theme didn't repaint:** confirm `waybar/colors.css` symlink exists (`scripts/toggle_theme.sh init` recreates it) and that Waybar is running (`pgrep -x waybar`).
+- **Permissions:** all scripts must be `chmod +x`.
 
 ## Design Philosophy
 
-- **Minimalism:** Keep scripts small and focused. Avoid unnecessary dependencies.
-- **Robustness:** Configuration should handle missing hardware or software gracefully without crashing the desktop environment or status bar.
-- **Speed:** The status bar updates every second; all modules must return results almost instantly.
-- **Visual Consistency:** Use Nerd Font icons and consistent spacing to maintain a clean aesthetic.
+- **Native first:** prefer Waybar's native modules; reach for `custom/*` only when there's no native equivalent for the state we need.
+- **Event-driven over polling:** when a custom module *must* poll, cache aggressively on the producer side (see `scripts/external-brightness.sh` writing a cache that `waybar/modules/brightness.sh` reads).
+- **Graceful degradation:** missing hardware → silent skip, not error.
+- **Visual consistency:** Nerd Font icons throughout; theming via the semantic `@define-color` tokens, never inline colors in `style.css`.

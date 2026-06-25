@@ -252,8 +252,20 @@ update_monitors() {
         return
       fi
       
+      # Re-confirm the lid is still closed. On resume the kernel can briefly
+      # report a stale "closed" state, and the output-subscribed daemon may
+      # re-run update_monitors at that moment — without this guard it would
+      # suspend the machine again right after a lid-open wake.
+      lid_state=$(get_lid_state)
+      if [[ "$lid_state" != "closed" ]]; then
+        log "Lid reopened during grace period (state: $lid_state). Aborting suspend."
+        CURRENT_STATE="" # Force update
+        update_monitors
+        return
+      fi
+
       log "Action: Suspending system (Lid closed, no external)"
-      CURRENT_STATE="" 
+      CURRENT_STATE=""
       systemctl suspend
       return
     fi

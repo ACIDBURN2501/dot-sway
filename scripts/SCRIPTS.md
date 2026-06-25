@@ -16,6 +16,13 @@ $HOME/.local/bin/
 - `brightness-control.sh`: Handles brightness up/down for laptop backlights.
     - Uses `brightnessctl` when `/sys/class/backlight` is available.
     - Exits silently on desktops or systems without a controllable backlight.
+- `network-tui.sh`: Launches the best available network management TUI in kitty for the Waybar network click handler.
+    - **Probe order:** `impala` (recommended; requires `iwd` as the wifi backend) → `nmtui` (requires NetworkManager) → `iwctl` (iwd interactive shell).
+    - **Fallback:** read-only `ip -c -br a` + `ip -c r` summary with `kitty --hold` so the window stays open.
+    - **Adding a TUI:** install one of the above and the script picks it up automatically — no config edit needed.
+- `bluetooth-tui.sh`: Launches the best available bluetooth management TUI in kitty for the Waybar bluetooth click handler.
+    - **Probe order:** `bluetuith` (recommended; ncurses TUI) → `bluetoothctl` (interactive shell).
+    - **Adding a TUI:** install `bluetuith` and the script picks it up automatically.
 - `monitor-hotplug.sh`: Auto-switches between "Mobile" (internal screen only) and "Docked" (external screen only) modes.
     - **Logic:**
         - If an external monitor is connected:
@@ -49,22 +56,23 @@ $HOME/.local/bin/
         | `DOTSWAY_INTERNAL_OUTPUT` | *(auto)* | Force a specific internal output name (e.g. `eDP-1`) |
         | `DOTSWAY_MONITOR_PROFILES_FILE` | `~/.config/sway/scripts/monitor-profiles.local.sh` | Alternate path for local per-monitor overrides |
 
-- `toggle_theme.sh`: **(New)** Toggles between Dark and Light themes for Sway.
-    - **Features:**
-        - Syncs with Gnome theme settings when running under Gnome (uses `gsettings`)
-        - Falls back to Sway-only theming when Gnome is not available
-        - Generates theme configuration dynamically in `/tmp/sway_theme_config`
-        - Updates bar colors, window borders, and workspace indicators
-        - Updates wofi launcher theme (symlinks `~/.config/wofi/style.css` to either `style-dark.css` or `style-light.css`)
-        - Updates kitty terminal theme (Tokyo Night Moon/Day)
-        - Updates mako notification theme (optional - only if installed)
-        - Sends desktop notifications when theme changes (requires notify-send)
-    - **Usage:**
-        - `toggle_theme.sh toggle` - Toggle between dark and light themes
-        - `toggle_theme.sh init` - Initialize theme on startup
-        - `toggle_theme.sh get` - Get current theme (dark/light)
-    - **Keybind:** Mod+Shift+t
-    - **Status Bar:** Shows theme indicator (🌙 for dark, ☀️ for light) via `status.d/40-theme.sh`
-    - **Gnome Compatibility:** When running under Gnome, automatically syncs with system theme preferences
-    - **Optional Components:** Gracefully handles missing components (mako, kitty themes, etc.)
-    - **Wofi Requirements:** If using wofi, both `~/.config/wofi/style-dark.css` and `~/.config/wofi/style-light.css` must exist. Copy the templates from `extra/wofi/` - see `extra/EXTRA.md` for setup instructions.
+- `rotate-wallpaper.sh`: Picks a random `.png/.jpg/.jpeg` from `~/.config/sway/images/wallpapers/`, repoints the `images/wp.png` symlink at it, and applies the change live via `swaymsg output * bg`. Wired through `config.d/wallpaper` so each `swaymsg reload` re-rolls.
+    - **No-op** when `images/wallpapers/` is empty or absent — leaves the current `wp.png` symlink alone, so the wallpaper subsystem degrades cleanly when the pool is unset.
+    - **Lock screen / idle blur:** both consume `images/wp.png`, so they follow rotation automatically — no extra wiring.
+    - **Override the source dir:** set `SWAY_DIR=/some/other/path` before invoking; the script resolves `images/wallpapers/` and `images/wp.png` underneath it.
+- `toggle_theme.sh`: Switches the desktop between dark and light themes in one keypress (`Mod+Shift+t`). Source of truth is Gnome's `org.gnome.desktop.interface color-scheme` when `gsettings` is available, otherwise `~/.config/sway/.theme_state`.
+    - **Updates in lockstep:**
+        - Sway colors via `/tmp/sway_theme_config` (sourced from `config`)
+        - Waybar palette by symlinking `waybar/colors.css` → `colors-{dark,light}.css`; `toggle` additionally sends `SIGUSR2` for a live reload (`init` deliberately doesn't — signalling waybar mid-startup races its async D-Bus setup and segfaults it)
+        - Kitty theme (Tokyo Night Moon/Day) via `kitty @ set-colors`
+        - Wofi theme by symlinking `~/.config/wofi/style.css`
+        - Mako notification theme (when installed) with `makoctl reload`
+        - Gnome `gtk-theme` (when available)
+    - **Status indicator:** `waybar/modules/theme.sh` emits 🌙 (dark) or ☀️ (light); click toggles.
+    - **Subcommands:**
+        - `toggle_theme.sh toggle` — flip
+        - `toggle_theme.sh init` — re-apply current theme to all components (invoked at Sway startup)
+        - `toggle_theme.sh get` — print `dark` or `light`
+    - **Component prerequisites:**
+        - **Waybar:** `waybar/colors-dark.css` and `waybar/colors-light.css` define the palette via `@define-color`. `colors.css` symlink is managed automatically and gitignored. `SIGUSR2` is best-effort — a no-op if Waybar isn't running.
+        - **Wofi:** `~/.config/wofi/style-dark.css` and `~/.config/wofi/style-light.css` must exist — copy from `extra/wofi/`, see `extra/EXTRA.md`.

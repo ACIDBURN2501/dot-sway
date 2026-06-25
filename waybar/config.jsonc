@@ -1,0 +1,110 @@
+// Waybar layout for the Sway desktop.
+//
+//   Left:    workspaces, sway mode, battery
+//   Center:  brightness, volume, theme, DND, bluetooth, network
+//   Right:   tray, clock
+//
+// Three modules under custom/* shell out to scripts in waybar/modules/
+// for logic that has no native equivalent (DDC/CI brightness cache,
+// theme state, mako DND mode).
+{
+  "layer": "top",
+  "position": "top",
+  "height": 32,
+  "spacing": 6,
+
+  "modules-left": ["sway/workspaces", "sway/mode"],
+  "modules-center": ["custom/brightness", "pulseaudio", "custom/theme", "custom/dnd", "bluetooth", "network"],
+  "modules-right": ["tray", "battery", "clock"],
+
+  "sway/workspaces": {
+    "disable-scroll": true,
+    "all-outputs": false,
+    "format": "{name}"
+  },
+
+  "sway/mode": {
+    "format": "<span style=\"italic\">{}</span>"
+  },
+
+  "battery": {
+    "states": {
+      "warning": 50,
+      "critical": 20
+    },
+    "format": "{icon} {time}",
+    "format-charging": "󱟠 {time}",
+    "format-plugged": "🔌",
+    "format-full": "🔌",
+    "format-time": "{H}h {M}m",
+    "format-icons": ["󰂎", "󱟞", "󱟞", "󱟞", "󱟞"],
+    "tooltip-format": "{capacity}% — {timeTo}"
+  },
+
+  "custom/brightness": {
+    "exec": "$HOME/.config/sway/waybar/modules/brightness.sh",
+    "interval": 2,
+    "tooltip": false
+  },
+
+  "pulseaudio": {
+    "format": "{icon} {volume}%",
+    "format-muted": "󰝟 ",
+    "format-icons": {
+      "default": ["󰕿", "󰖀", "󰕾"]
+    },
+    "on-click": "$HOME/.config/sway/scripts/volume-control.sh mute",
+    "on-scroll-up": "$HOME/.config/sway/scripts/volume-control.sh up",
+    "on-scroll-down": "$HOME/.config/sway/scripts/volume-control.sh down"
+  },
+
+  "custom/theme": {
+    "exec": "$HOME/.config/sway/waybar/modules/theme.sh",
+    "interval": 5,
+    "on-click": "$HOME/.config/sway/scripts/toggle_theme.sh",
+    "tooltip-format": "Click to toggle theme"
+  },
+
+  "custom/dnd": {
+    "exec": "$HOME/.config/sway/waybar/modules/dnd.sh",
+    "interval": 2,
+    "on-click": "$HOME/.config/sway/scripts/toggle-mako-dnd.sh",
+    "tooltip-format": "Click to toggle Do Not Disturb"
+  },
+
+  "bluetooth": {
+    "format": "󰂯",
+    "format-disabled": "󰂲",
+    "format-connected": "󰂱",
+    "format-connected-battery": "󰂱 {device_battery_percentage}%",
+    "tooltip-format": "{controller_alias}\n{num_connections} connected",
+    "tooltip-format-connected": "{device_enumerate}",
+    "on-click": "$HOME/.config/sway/scripts/bluetooth-tui.sh"
+  },
+
+  "network": {
+    "format-wifi": "󰖩 {signalStrength}%",
+    "format-ethernet": "󰈀",
+    "format-disconnected": "󰤭",
+    "tooltip-format-wifi": "{essid} — {ipaddr}\n↓ {bandwidthDownBits} ↑ {bandwidthUpBits}",
+    "tooltip-format-ethernet": "{ifname} — {ipaddr}",
+    "on-click": "$HOME/.config/sway/scripts/network-tui.sh"
+  },
+
+  "tray": {
+    "icon-size": 16,
+    "spacing": 8
+  },
+
+  "clock": {
+    "format": "{:%H:%M}",
+    "tooltip-format": "<tt><big>{:%Y-%m-%d}</big>\n\n{calendar}</tt>",
+    "calendar": {
+      "mode": "month",
+      "weeks-pos": "right",
+      "format": {
+        "today": "<span color='#5294e2'><b>{}</b></span>"
+      }
+    }
+  }
+}

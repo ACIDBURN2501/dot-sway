@@ -41,7 +41,8 @@ bindsym $super+l exec swaylock -f -i ~/.config/sway/images/wp.png
 # It auto-detects the connected output name (e.g. DP-2, HDMI-A-1) and applies
 # mode, scale, and adaptive_sync at runtime.
 
-# Default wallpaper (more resolutions are available in /usr/share/backgrounds/sway/)
+# Wallpaper — wp.png is a symlink managed by config.d/wallpaper + scripts/rotate-wallpaper.sh.
+# Drop images into images/wallpapers/ to populate the rotation pool.
 output * bg ~/.config/sway/images/wp.png fill
 # Example configuration:
 #
@@ -59,7 +60,13 @@ output * bg ~/.config/sway/images/wp.png fill
 #          before-sleep 'swaylock -f -c 000000'
 exec swayidle -w \
          timeout 300 'swaylock -f -i ~/.config/sway/images/wp.png' \
+         timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
          before-sleep 'swaylock -f -i ~/.config/sway/images/wp.png'
+
+# Hold an idle inhibitor while any PipeWire stream is active, so swayidle
+# doesn't lock the screen during video playback (e.g. Twitch, where the site
+# doesn't request the Wake Lock API itself).
+exec wayland-pipewire-idle-inhibit
 
 ### Input configuration
 set $compose_key compose:menu
@@ -272,24 +279,7 @@ bindsym $mod+r mode "resize"
     # Special key to take a screenshot with grim
     bindsym Print exec grim
 
-#
-# Status Bar:
-#
-# Read `man 5 sway-bar` for more information about this section.
-bar {
-    position top
-    status_command ~/.config/sway/statusbar.sh
-    font pango:SauceCodePro Nerd Font 10
-
-    # Theme colors managed by toggle_theme.sh (variables defined in /tmp/sway_theme_config)
-    colors {
-        statusline $text_color
-        background $bar_bg_color
-        inactive_workspace $bar_bg_color $bar_bg_color $inactive_text
-        active_workspace $bar_bg_color $bar_bg_color $text_color
-        focused_workspace $indicator_color $indicator_color $text_color
-    }
-}
+# Status bar: Waybar is launched from config.d/waybar.
 
 # Auto-start compose key override
 exec_always ~/.config/sway/scripts/set-compose-key.sh
