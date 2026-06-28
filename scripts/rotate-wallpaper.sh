@@ -11,6 +11,16 @@ set -euo pipefail
 SWAY_DIR="${SWAY_DIR:-$HOME/.config/sway}"
 WALLPAPER_DIR="$SWAY_DIR/images/wallpapers"
 LINK="$SWAY_DIR/images/wp.png"
+SKIP_MARKER="/tmp/sway_skip_wallpaper_rotation"
+
+# Theme toggles reload sway to re-apply colors, which would otherwise rotate the
+# wallpaper too. toggle_theme.sh drops this marker so we skip rotation on that
+# reload; sway still re-applies the current wp.png via `output * bg`. The marker
+# is consumed here so the next genuine reload rotates as normal.
+if [[ -e "$SKIP_MARKER" ]]; then
+  rm -f "$SKIP_MARKER"
+  exit 0
+fi
 
 [[ -d "$WALLPAPER_DIR" ]] || exit 0
 

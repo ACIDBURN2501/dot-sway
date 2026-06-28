@@ -1,0 +1,22 @@
+# Per-device compose key override
+#
+# The compose key differs between machines, so the active value is kept out of
+# version control. To override the default for this device:
+#
+#   cp compose_key.local.example compose_key.local
+#   # then edit the line below in compose_key.local
+#
+# The main config includes ~/.config/sway/compose_key.local before the input
+# block; sway silently skips it when absent, so the committed default
+# (compose:menu) applies on machines without a local file.
+#
+# Common options:
+#   compose:menu   — Menu key (default)
+#   compose:ralt   — Right Alt
+#   compose:rctrl  — Right Ctrl
+#   compose:lwin   — Left Super/Windows key
+#   compose:rwin   — Right Super/Windows key
+#   compose:caps   — Caps Lock
+#
+# See `man 7 xkeyboard-config` for the full list of XKB compose options.
+set $compose_key compose:menu

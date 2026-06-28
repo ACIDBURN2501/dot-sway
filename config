@@ -69,7 +69,11 @@ exec swayidle -w \
 exec wayland-pipewire-idle-inhibit
 
 ### Input configuration
+# Default compose key. Per-device override lives in the gitignored
+# compose_key.local (copy compose_key.local.example to create it). Sway
+# silently skips the include when the file is absent, so the default stands.
 set $compose_key compose:menu
+include ~/.config/sway/compose_key.local
 input type:keyboard {
        xkb_layout "gb"
        xkb_model "pc105"
@@ -280,9 +284,6 @@ bindsym $mod+r mode "resize"
     bindsym Print exec grim
 
 # Status bar: Waybar is launched from config.d/waybar.
-
-# Auto-start compose key override
-exec_always ~/.config/sway/scripts/set-compose-key.sh
 
 # Daemon to handle monitor hotplugging (replaces kanshi)
 exec_always ~/.config/sway/scripts/monitor-hotplug.sh

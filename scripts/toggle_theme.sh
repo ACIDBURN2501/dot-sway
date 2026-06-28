@@ -73,6 +73,11 @@ toggle_theme() {
     # (async D-Bus proxy setup) and segfaulted it in libgiomm. No-op if not running.
     pkill -SIGUSR2 -x waybar 2>/dev/null || true
 
+    # Drop a marker so rotate-wallpaper.sh skips rotation on the reload below.
+    # A theme switch should keep the current wallpaper; only an explicit config
+    # reload should pick a new one. The marker is consumed by the script.
+    touch "/tmp/sway_skip_wallpaper_rotation" 2>/dev/null || true
+
     # Reload Sway to apply changes
     swaymsg reload &>/dev/null || true
 

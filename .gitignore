@@ -1,6 +1,10 @@
 # Machine-local monitor profiles — copy scripts/monitor-profiles.example.sh
 # to this path and edit for your hardware.
 scripts/monitor-profiles.local.sh
+
+# Machine-local compose key — copy compose_key.local.example to this path.
+# The compose key differs per device; the active value is not committed.
+compose_key.local
 .theme_state
  
 # Wallpaper rotation: track the folder (via .gitkeep) but not its contents,
