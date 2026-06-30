@@ -55,13 +55,9 @@ output * bg ~/.config/sway/images/wp.png fill
 # Example configuration:
 #
 # exec swayidle -w \
-#          timeout 300 'swaylock -f -c 000000' \
+#          timeout 300 'swaylock -f -i ~/.config/sway/images/wp.png' \
 #          timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
-#          before-sleep 'swaylock -f -c 000000'
-exec swayidle -w \
-         timeout 300 'swaylock -f -i ~/.config/sway/images/wp.png' \
-         timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
-         before-sleep 'swaylock -f -i ~/.config/sway/images/wp.png'
+#          before-sleep 'swaylock -f -i ~/.config/sway/images/wp.png'
 
 # Hold an idle inhibitor while any PipeWire stream is active, so swayidle
 # doesn't lock the screen during video playback (e.g. Twitch, where the site
