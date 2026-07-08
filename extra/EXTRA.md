@@ -22,41 +22,30 @@ Wofi is referenced in the main Sway config but is optional - the configuration w
 
 ### Setup for Theme Switching
 
-To enable automatic theme switching for wofi, copy the provided theme templates to your wofi config directory:
+No manual setup is required. The `toggle_theme.sh` script manages
+`~/.config/wofi/style.css` for you, pointing it straight at the active theme's
+source file in this repo (`extra/wofi/style-{dark,light}.css`). It runs on first
+toggle (`Mod+Shift+t`) and at Sway startup (`toggle_theme.sh init`).
+
+If wofi ever launches in the wrong (or default) theme, re-apply the current one:
 
 ```bash
-# Create wofi config directory if it doesn't exist
-mkdir -p ~/.config/wofi
-
-# Copy theme templates from the repository
-cp ~/.config/sway/extra/wofi/style-dark.css ~/.config/wofi/
-cp ~/.config/sway/extra/wofi/style-light.css ~/.config/wofi/
+scripts/toggle_theme.sh init
 ```
-
-The `toggle_theme.sh` script will automatically create the `style.css` symlink when you first toggle themes or run `toggle_theme.sh init`.
-
-**Note:** Without these files, wofi will still work but won't switch themes automatically.
 
 ### Theme Integration
 
 Wofi integrates with the theme toggle system to automatically switch between dark and light themes:
 
 **Theme Files:**
-- `~/.config/wofi/style-dark.css` - Dark theme styling
-- `~/.config/wofi/style-light.css` - Light theme styling
-- `~/.config/wofi/style.css` - Symlink to active theme (automatically managed)
+- `extra/wofi/style-dark.css` - Dark theme styling
+- `extra/wofi/style-light.css` - Light theme styling
+- `~/.config/wofi/style.css` - Symlink to the active theme (automatically managed)
 
 **How it works:**
 - When you toggle themes with `Mod+Shift+t`, wofi's theme automatically switches
-- The `toggle_theme.sh` script creates a symlink from `style.css` to either `style-dark.css` or `style-light.css`
-- Both theme files must exist for theme switching to work properly
-
-**Template Files:**
-- `extra/wofi/style-dark.css` - Dark theme template
-- `extra/wofi/style-light.css` - Light theme template
-- `extra/wofi/style.css` - Legacy reference (kept for backward compatibility)
-
-These templates should be copied to `~/.config/wofi/` (see Setup section above).
+- `toggle_theme.sh` symlinks `~/.config/wofi/style.css` to `extra/wofi/style-dark.css` or `extra/wofi/style-light.css` in this repo
+- Because the symlink targets the repo source directly, there is no separate copy to keep in sync and no way to end up with a dangling `style.css`
 
 ### Customizing Wofi Themes
 
@@ -64,10 +53,10 @@ You can customize the appearance by editing the theme files:
 
 ```bash
 # Edit dark theme
-nano ~/.config/wofi/style-dark.css
+nano extra/wofi/style-dark.css
 
 # Edit light theme
-nano ~/.config/wofi/style-light.css
+nano extra/wofi/style-light.css
 ```
 
 **Key CSS elements:**

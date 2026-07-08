@@ -9,9 +9,12 @@ compose_key.local
  
 # Wallpaper rotation: track the folder (via .gitkeep) but not its contents,
 # and never commit the active wp.png symlink — rotate-wallpaper.sh manages it.
+# wallpaper_dir.local optionally points rotation at an external folder — copy
+# wallpaper_dir.local.example; the path is machine-specific, so not committed.
 images/wallpapers/*
 !images/wallpapers/.gitkeep
 images/wp.png
+wallpaper_dir.local
 
 # Waybar active palette symlink — managed by toggle_theme.sh, points at
 # waybar/colors-{dark,light}.css depending on current theme state.

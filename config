@@ -42,7 +42,7 @@ bindsym $super+l exec swaylock -f -i ~/.config/sway/images/wp.png
 # mode, scale, and adaptive_sync at runtime.
 
 # Wallpaper — wp.png is a symlink managed by config.d/wallpaper + scripts/rotate-wallpaper.sh.
-# Drop images into images/wallpapers/ to populate the rotation pool.
+# Rotation pool: images/wallpapers/, or an external folder via wallpaper_dir.local.
 output * bg ~/.config/sway/images/wp.png fill
 # Example configuration:
 #
@@ -132,6 +132,10 @@ default_floating_border pixel 2
 
     # Toggle Mako DND (Focus mode)
     bindsym $mod+Shift+m exec $HOME/.config/sway/scripts/toggle-mako-dnd.sh
+
+    # Cycle the desktop wallpaper (random pick from the pool). Rotation is
+    # on-demand only — reloads and logins keep the current wallpaper.
+    bindsym $mod+Shift+w exec $HOME/.config/sway/scripts/rotate-wallpaper.sh
 
     # Drag floating windows by holding down $mod and left mouse button.
     # Resize them with right mouse button + $mod.

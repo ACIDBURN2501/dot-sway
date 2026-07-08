@@ -1,8 +1,8 @@
 // Waybar layout for the Sway desktop.
 //
-//   Left:    workspaces, sway mode, battery
+//   Left:    workspaces, sway mode
 //   Center:  brightness, volume, theme, DND, bluetooth, network
-//   Right:   tray, clock
+//   Right:   tray, battery, clock
 //
 // Three modules under custom/* shell out to scripts in waybar/modules/
 // for logic that has no native equivalent (DDC/CI brightness cache,

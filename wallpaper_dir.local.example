@@ -1,0 +1,6 @@
+# Copy to wallpaper_dir.local (gitignored) to source the wallpaper rotation
+# pool from a folder outside this repo — e.g. a synced/shared image library.
+# First line = the folder path (~ is expanded). Only top-level .png/.jpg/.jpeg
+# files are used, so pointing at a subfolder of a larger collection is safe.
+# Without this file, rotation falls back to the in-repo images/wallpapers/.
+~/Pictures/Wallpapers

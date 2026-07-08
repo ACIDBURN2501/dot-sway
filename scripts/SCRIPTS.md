@@ -1,13 +1,9 @@
 # Utility scripts
 
-The following scripts are used in some of the Swayfx configuration or supporting status scripts. They should be placed into:
+These scripts live in `scripts/` and are invoked in place from `$HOME/.config/sway/scripts/` — keybinds and `exec` lines reference them by that path, so there's nothing to copy elsewhere.
 
-```bash
-$HOME/.local/bin/
-```
-
-- `move-ws-to-active.sh`: Moves all workspaces to the currently focused output.
-- `move-ws-to-output.sh`: Moves all workspaces to a specific output (arg 1).
+- `move-ws-to-active.sh`: Moves all workspaces to the currently focused output. Not bound by default — available for a keybind or manual use.
+- `move-ws-to-output.sh`: Moves all workspaces to a specific output (arg 1). Not bound by default — available for a keybind or manual use.
 - `toggle-touchpad.sh`: Toggles the touchpad on/off and sends a notification.
 - `volume-control.sh`: Handles mute, volume up/down, and mic mute.
     - Prefers `wpctl` on PipeWire systems.
@@ -56,10 +52,11 @@ $HOME/.local/bin/
         | `DOTSWAY_INTERNAL_OUTPUT` | *(auto)* | Force a specific internal output name (e.g. `eDP-1`) |
         | `DOTSWAY_MONITOR_PROFILES_FILE` | `~/.config/sway/scripts/monitor-profiles.local.sh` | Alternate path for local per-monitor overrides |
 
-- `rotate-wallpaper.sh`: Picks a random `.png/.jpg/.jpeg` from `~/.config/sway/images/wallpapers/`, repoints the `images/wp.png` symlink at it, and applies the change live via `swaymsg output * bg`. Wired through `config.d/wallpaper` so each `swaymsg reload` re-rolls.
-    - **No-op** when `images/wallpapers/` is empty or absent — leaves the current `wp.png` symlink alone, so the wallpaper subsystem degrades cleanly when the pool is unset.
-    - **Lock screen / idle blur:** both consume `images/wp.png`, so they follow rotation automatically — no extra wiring.
-    - **Override the source dir:** set `SWAY_DIR=/some/other/path` before invoking; the script resolves `images/wallpapers/` and `images/wp.png` underneath it.
+- `rotate-wallpaper.sh`: Picks a random `.png/.jpg/.jpeg` from the wallpaper pool, repoints the `images/wp.png` symlink at it, and applies the change live via `swaymsg output * bg`. Bound to `$mod+Shift+w` for on-demand switching. `config.d/wallpaper` runs it with `--if-unset` on start/reload, which only picks when `wp.png` isn't already set — so reloads and logins keep the current wallpaper.
+    - **Pool location:** `images/wallpapers/` by default. A `wallpaper_dir.local` file at the repo root (gitignored — copy `wallpaper_dir.local.example`) redirects it to any external folder, e.g. a synced image library; only top-level files are scanned, so a subfolder of a larger collection works.
+    - **Empty/absent pool:** an already-set `wp.png` is left alone; otherwise it falls back to the committed `images/default.png`, so `wp.png` always resolves (no black desktop, no broken swaylock image) even on a fresh checkout with an empty pool.
+    - **Lock screen:** the swaylock keybind (and the optional swayidle example in `config`) consume `images/wp.png`, so the lock screen follows rotation automatically — no extra wiring.
+    - **Override the repo dir:** set `SWAY_DIR=/some/other/path` before invoking; the script resolves `images/`, `wallpaper_dir.local`, and the default pool underneath it.
 - `toggle_theme.sh`: Switches the desktop between dark and light themes in one keypress (`Mod+Shift+t`). Source of truth is Gnome's `org.gnome.desktop.interface color-scheme` when `gsettings` is available, otherwise `~/.config/sway/.theme_state`.
     - **Updates in lockstep:**
         - Sway colors via `/tmp/sway_theme_config` (sourced from `config`)
@@ -75,4 +72,4 @@ $HOME/.local/bin/
         - `toggle_theme.sh get` — print `dark` or `light`
     - **Component prerequisites:**
         - **Waybar:** `waybar/colors-dark.css` and `waybar/colors-light.css` define the palette via `@define-color`. `colors.css` symlink is managed automatically and gitignored. `SIGUSR2` is best-effort — a no-op if Waybar isn't running.
-        - **Wofi:** `~/.config/wofi/style-dark.css` and `~/.config/wofi/style-light.css` must exist — copy from `extra/wofi/`, see `extra/EXTRA.md`.
+        - **Wofi:** no setup needed — `~/.config/wofi/style.css` is symlinked straight at the repo source `extra/wofi/style-{dark,light}.css`. See `extra/EXTRA.md`.

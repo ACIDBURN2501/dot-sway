@@ -1,4 +1,8 @@
-# Rotate the desktop wallpaper on each sway start/reload.
-# Picks a random .png/.jpg/.jpeg from images/wallpapers/ and repoints
-# images/wp.png at it. Empty folder leaves wp.png unchanged.
-exec_always ~/.config/sway/scripts/rotate-wallpaper.sh
+# Bootstrap the desktop wallpaper on sway start/reload — but only when one is
+# not already set. --if-unset makes rotate-wallpaper.sh a no-op whenever
+# images/wp.png already points at an existing file, so your chosen wallpaper
+# persists across logins and reloads. Rotate on demand with $mod+Shift+w.
+# Picks a random .png/.jpg/.jpeg from the pool (images/wallpapers/, or the
+# folder named in wallpaper_dir.local if present) and repoints images/wp.png —
+# or falls back to the committed images/default.png when the pool is empty.
+exec_always ~/.config/sway/scripts/rotate-wallpaper.sh --if-unset

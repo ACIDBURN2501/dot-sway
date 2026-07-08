@@ -96,7 +96,7 @@ Examples:
 ## Project Architecture
 
 - **`config`:** Primary Sway configuration. Includes `config.d/*` and theme/SwayFX snippets generated under `/tmp`.
-- **`config.d/`:** Drop-in Sway snippets sourced via `include config.d/*`. `waybar` launches the bar; `wallpaper` re-rolls `images/wp.png` from `images/wallpapers/` on reload (see `scripts/rotate-wallpaper.sh`); `floating_windows` and `compose_key` carry per-app and input rules.
+- **`config.d/`:** Drop-in Sway snippets sourced via `include config.d/*`. `waybar` launches the bar; `wallpaper` bootstraps `images/wp.png` from `images/wallpapers/` via `rotate-wallpaper.sh --if-unset` (a no-op when one is already set — rotation is on-demand via `$mod+Shift+w`); `floating_windows` carries per-app rules. (The compose-key input rule lives in `compose_key.local` at the repo root, included directly by `config`, not a `config.d` drop-in.)
 - **`waybar/`:** Status bar config.
   - `config.jsonc` — module layout
   - `style.css` — imports the active palette via the `colors.css` symlink (gitignored)

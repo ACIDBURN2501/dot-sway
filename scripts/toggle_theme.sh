@@ -73,12 +73,9 @@ toggle_theme() {
     # (async D-Bus proxy setup) and segfaulted it in libgiomm. No-op if not running.
     pkill -SIGUSR2 -x waybar 2>/dev/null || true
 
-    # Drop a marker so rotate-wallpaper.sh skips rotation on the reload below.
-    # A theme switch should keep the current wallpaper; only an explicit config
-    # reload should pick a new one. The marker is consumed by the script.
-    touch "/tmp/sway_skip_wallpaper_rotation" 2>/dev/null || true
-
-    # Reload Sway to apply changes
+    # Reload Sway to apply the generated colors. This no longer rotates the
+    # wallpaper: config.d/wallpaper runs rotate-wallpaper.sh with --if-unset, a
+    # no-op whenever wp.png is already set, so the current wallpaper persists.
     swaymsg reload &>/dev/null || true
 
     # Send notification if notify-send is available
@@ -138,19 +135,19 @@ EOF
 update_wofi_theme() {
     local theme="$1"
     local wofi_dir="$HOME/.config/wofi"
+    local wofi_src="$HOME/.config/sway/extra/wofi"
 
     # Ensure wofi config directory exists
     mkdir -p "$wofi_dir"
 
-    # Remove existing symlink or file
-    rm -f "$wofi_dir/style.css"
+    # Point style.css straight at the repo's theme source. Symlinking the
+    # source (rather than a manually-copied duplicate under ~/.config/wofi)
+    # means the launcher can never end up with a dangling style.css if the
+    # copy step was skipped, and edits to the templates take effect directly.
+    local target="$wofi_src/style-${theme}.css"
+    [[ -f "$target" ]] || return 0
 
-    # Create symlink to appropriate theme
-    if [[ "$theme" == "dark" ]]; then
-        ln -s "$wofi_dir/style-dark.css" "$wofi_dir/style.css"
-    else
-        ln -s "$wofi_dir/style-light.css" "$wofi_dir/style.css"
-    fi
+    ln -sfn "$target" "$wofi_dir/style.css"
 }
 
 # Update kitty theme

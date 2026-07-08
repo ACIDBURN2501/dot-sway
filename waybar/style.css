@@ -49,8 +49,9 @@ window#waybar {
   color: @fg_strong;
 }
 
-/* --- Sway mode (resize etc.) --------------------------------------------- */
-#mode {
+/* --- Sway mode / Hyprland submap (resize etc.) ---------------------------- */
+#mode,
+#submap {
   background-color: @accent;
   color: @fg_strong;
   padding: 0 10px;
