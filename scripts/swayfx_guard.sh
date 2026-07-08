@@ -3,7 +3,12 @@
 
 set -euo pipefail
 
-CONFIG_SNIPPET="/tmp/swayfx_config_snippet"
+# Per-user runtime dir (0700, wiped on logout), not world-writable /tmp. The
+# fallback keeps the script from hard-failing under `set -e` if the variable is
+# unset (rare; only outside a normal systemd/elogind session).
+RUNTIME_DIR="${XDG_RUNTIME_DIR:-/tmp}/sway"
+mkdir -p "$RUNTIME_DIR"
+CONFIG_SNIPPET="$RUNTIME_DIR/swayfx_config_snippet"
 
 # Clear any previous snippet to ensure clean state (important for 'include' logic)
 echo "" > "$CONFIG_SNIPPET"

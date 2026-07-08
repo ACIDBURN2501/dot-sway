@@ -46,7 +46,7 @@ Per-monitor setup:
    ```
 3. Add a `case` entry calling `set_monitor_profile MODE SCALE ADAPTIVE_SYNC`.
 4. `swaymsg reload` and `scripts/monitor-hotplug.sh --once` to apply.
-5. If a profile doesn't apply, check `/tmp/sway-monitor-hotplug.log`.
+5. If a profile doesn't apply, check `$XDG_RUNTIME_DIR/sway/monitor-hotplug.log`.
 
 Match on `serial` for a specific unit; leave it empty to share a profile across every unit of the same make/model.
 

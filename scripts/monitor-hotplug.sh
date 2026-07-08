@@ -22,7 +22,11 @@ DEFAULT_EXT_RES="1920x1080@60Hz"
 DEFAULT_EXT_SCALE="1"
 DEFAULT_EXT_ADAPTIVE_SYNC="off"
 MONITOR_PROFILES_FILE="${DOTSWAY_MONITOR_PROFILES_FILE:-$HOME/.config/sway/scripts/monitor-profiles.local.sh}"
-LOG_FILE="/tmp/sway-monitor-hotplug.log"
+# Per-user runtime dir (0700, wiped on logout) rather than world-writable /tmp.
+# Fallback keeps logging working if the variable is unset outside a systemd session.
+LOG_DIR="${XDG_RUNTIME_DIR:-/tmp}/sway"
+mkdir -p "$LOG_DIR"
+LOG_FILE="$LOG_DIR/monitor-hotplug.log"
 SUSPEND_DELAY=5
 
 # Set to "false" to enable extended mode (both screens on) when external is connected
@@ -328,7 +332,7 @@ update_monitors || true
 while true; do
   # Subscribe to output events only.
   # Use jq to ensure we read one valid JSON object per line.
-  if ! swaymsg -m -t subscribe '["output"]' 2>/dev/null | jq --unbuffered -c '.' | while read -r event; do
+  if ! swaymsg -m -t subscribe '["output"]' 2>/dev/null | jq --unbuffered -c '.' | while read -r _; do
     # Log the event for debugging
     # log "Sway event: $(echo "$event" | jq -c .change 2>/dev/null || echo "switch")"
     

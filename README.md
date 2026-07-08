@@ -1,5 +1,7 @@
 # Sway/Swayfx Desktop Configuration
 
+[![CI](https://github.com/aajll/dot-sway/actions/workflows/ci.yml/badge.svg)](https://github.com/aajll/dot-sway/actions/workflows/ci.yml)
+
 A portable Sway (and Swayfx) configuration with **Waybar** as the status bar, a unified dark/light theme across bar, terminal, launcher, and notifications, and a monitor-hotplug daemon that handles clamshell mode and per-monitor profiles.
 
 <p align="center">

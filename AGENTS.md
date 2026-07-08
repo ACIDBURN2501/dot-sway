@@ -5,11 +5,22 @@ Conventions for contributing changes to this Sway + Waybar desktop configuration
 ## Build, Lint, & Test
 
 ### Linting
-`shellcheck` covers all shell scripts.
+`shellcheck` covers all shell scripts. CI (`.github/workflows/ci.yml`) runs it
+across every tracked `*.sh` and gates at **`--severity=warning`**, so the tree
+must stay warning-clean — not just error-clean. Reproduce the gate locally:
 
 ```bash
-shellcheck scripts/*.sh waybar/modules/*.sh
+shellcheck --severity=warning $(git ls-files '*.sh')
 ```
+
+Keep it green rather than suppressing: split `local x=$(cmd)` into two lines
+(SC2155), name throwaway loop vars `_` (SC2034), use `printf` over `echo -e` in
+`#!/bin/sh` scripts (SC3037). A repo-wide `.shellcheckrc` is the place for any
+code you genuinely want to disable, with a reason.
+
+CI's second job runs `sway -C` against the config. Note `sway -C` exits `0` even
+on parse errors, so the job greps its output for `[ERROR]` instead of trusting
+the exit code — do the same if you script config checks.
 
 ### Testing
 Manual — these are system-integration scripts.
@@ -95,7 +106,7 @@ Examples:
 
 ## Project Architecture
 
-- **`config`:** Primary Sway configuration. Includes `config.d/*` and theme/SwayFX snippets generated under `/tmp`.
+- **`config`:** Primary Sway configuration. Includes `config.d/*` and theme/SwayFX snippets generated under `$XDG_RUNTIME_DIR/sway/` (per-user, 0700, wiped on logout — not world-writable `/tmp`). sway expands the variable in `include` via wordexp(3).
 - **`config.d/`:** Drop-in Sway snippets sourced via `include config.d/*`. `waybar` launches the bar; `wallpaper` bootstraps `images/wp.png` from `images/wallpapers/` via `rotate-wallpaper.sh --if-unset` (a no-op when one is already set — rotation is on-demand via `$mod+Shift+w`); `floating_windows` carries per-app rules. (The compose-key input rule lives in `compose_key.local` at the repo root, included directly by `config`, not a `config.d` drop-in.)
 - **`waybar/`:** Status bar config.
   - `config.jsonc` — module layout

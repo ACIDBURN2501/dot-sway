@@ -34,7 +34,7 @@
 # After editing, run:
 #   swaymsg reload && ~/.config/sway/scripts/monitor-hotplug.sh --once
 #
-# Check /tmp/sway-monitor-hotplug.log to confirm which source was applied
+# Check $XDG_RUNTIME_DIR/sway/monitor-hotplug.log to confirm which source was applied
 # (default / profile / env).
 
 dotsway_monitor_profile() {

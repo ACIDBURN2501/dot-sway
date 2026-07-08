@@ -3,7 +3,13 @@
 # Syncs with Gnome when available, falls back to Sway-only theming
 
 THEME_STATE_FILE="$HOME/.config/sway/.theme_state"
-THEME_CONFIG_FILE="/tmp/sway_theme_config"
+
+# Per-user runtime dir (0700, wiped on logout), not world-writable /tmp. The
+# fallback keeps things working if the variable is unset (rare; only outside a
+# normal systemd/elogind session), matching the include path in `config`.
+RUNTIME_DIR="${XDG_RUNTIME_DIR:-/tmp}/sway"
+mkdir -p "$RUNTIME_DIR"
+THEME_CONFIG_FILE="$RUNTIME_DIR/sway_theme_config"
 
 # Detect if running under Gnome
 is_gnome_available() {
@@ -15,7 +21,7 @@ is_gnome_available() {
 get_current_theme() {
     if is_gnome_available; then
         # Use Gnome's setting as source of truth
-        local gnome_scheme=$(gsettings get org.gnome.desktop.interface color-scheme)
+        local gnome_scheme; gnome_scheme=$(gsettings get org.gnome.desktop.interface color-scheme)
         if [[ "$gnome_scheme" == *"dark"* ]]; then
             echo "dark"
         else
@@ -30,7 +36,7 @@ get_current_theme() {
 
 # Toggle theme
 toggle_theme() {
-    local current=$(get_current_theme)
+    local current; current=$(get_current_theme)
     local new_theme
 
     if [[ "$current" == "dark" ]]; then
@@ -222,7 +228,7 @@ update_waybar_theme() {
 
 # Initialize theme on startup
 init_theme() {
-    local current=$(get_current_theme)
+    local current; current=$(get_current_theme)
     generate_theme_config "$current"
     update_wofi_theme "$current"
     update_kitty_theme "$current"

@@ -11,7 +11,7 @@ Suspend_command="systemctl suspend"
 options="Shutdown\nReboot\nSuspend\nHibernate\nLogout"
 
 # Show menu
-chosen=$(echo -e "$options" | wofi --show dmenu --prompt "Power:" --width 20%)
+chosen=$(printf '%b\n' "$options" | wofi --show dmenu --prompt "Power:" --width 20%)
 
 # Run the selected command
 case "$chosen" in

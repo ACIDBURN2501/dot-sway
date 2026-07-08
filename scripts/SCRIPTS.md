@@ -31,7 +31,7 @@ These scripts live in `scripts/` and are invoked in place from `$HOME/.config/sw
             - Moves all workspaces to it.
             - If the laptop lid is closed, **suspends** the system (ensures it doesn't stay awake in your bag).
     - **Hardware Support:** Internal display is auto-detected as the first `eDP-*` output. Lid state is read from the first available `/proc/acpi/button/lid/*/state` entry when present.
-    - **Logging:** Logs actions to `/tmp/sway-monitor-hotplug.log`.
+    - **Logging:** Logs actions to `$XDG_RUNTIME_DIR/sway/monitor-hotplug.log`.
     - **External output settings precedence:**
         1. `DOTSWAY_EXT_*` environment variables
         2. Per-monitor matches from `~/.config/sway/scripts/monitor-profiles.local.sh`
@@ -41,7 +41,7 @@ These scripts live in `scripts/` and are invoked in place from `$HOME/.config/sw
         - Use `swaymsg -t get_outputs -r` to capture the external display `name`, `make`, `model`, and `serial`.
         - Add a `dotsway_monitor_profile()` case entry that calls `set_monitor_profile MODE SCALE ADAPTIVE_SYNC`.
         - Reload Sway and run `~/.config/sway/scripts/monitor-hotplug.sh --once` to re-apply immediately.
-        - Check `/tmp/sway-monitor-hotplug.log` if the detected values or applied settings do not look right.
+        - Check `$XDG_RUNTIME_DIR/sway/monitor-hotplug.log` if the detected values or applied settings do not look right.
     - **Environment variables** (set before starting Sway to force the same external monitor behaviour everywhere):
 
         | Variable | Default | Description |
@@ -59,7 +59,7 @@ These scripts live in `scripts/` and are invoked in place from `$HOME/.config/sw
     - **Override the repo dir:** set `SWAY_DIR=/some/other/path` before invoking; the script resolves `images/`, `wallpaper_dir.local`, and the default pool underneath it.
 - `toggle_theme.sh`: Switches the desktop between dark and light themes in one keypress (`Mod+Shift+t`). Source of truth is Gnome's `org.gnome.desktop.interface color-scheme` when `gsettings` is available, otherwise `~/.config/sway/.theme_state`.
     - **Updates in lockstep:**
-        - Sway colors via `/tmp/sway_theme_config` (sourced from `config`)
+        - Sway colors via `$XDG_RUNTIME_DIR/sway/sway_theme_config` (sourced from `config`)
         - Waybar palette by symlinking `waybar/colors.css` → `colors-{dark,light}.css`; `toggle` additionally sends `SIGUSR2` for a live reload (`init` deliberately doesn't — signalling waybar mid-startup races its async D-Bus setup and segfaults it)
         - Kitty theme (Tokyo Night Moon/Day) via `kitty @ set-colors`
         - Wofi theme by symlinking `~/.config/wofi/style.css`

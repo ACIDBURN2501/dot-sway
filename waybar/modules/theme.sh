@@ -3,7 +3,6 @@
 # Shows current theme: ☀️ (light) or 🌙 (dark)
 
 THEME_STATE_FILE="$HOME/.config/sway/.theme_state"
-TOGGLE_SCRIPT="$HOME/.config/sway/scripts/toggle_theme.sh"
 
 # Function to detect if running under Gnome
 is_gnome_available() {

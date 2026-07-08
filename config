@@ -84,11 +84,13 @@ focus_follows_mouse no
 # Instead, we use a shell script to detect SwayFX and dynamically generate a configuration snippet,
 # which is then included.
 
-# 1. Execute the guard script to generate /tmp/swayfx_config_snippet (empty if not SwayFX).
+# 1. Execute the guard script to generate the SwayFX snippet (empty if not SwayFX).
+#    Generated under $XDG_RUNTIME_DIR (per-user, 0700, wiped on logout) rather than
+#    the world-writable /tmp. sway expands the variable in `include` via wordexp(3).
 exec $HOME/.config/sway/scripts/swayfx_guard.sh
 
 # 2. Include the dynamically generated settings. This will be empty for vanilla Sway.
-include /tmp/swayfx_config_snippet
+include $XDG_RUNTIME_DIR/sway/swayfx_config_snippet
 
 # 3. Initialize theme on startup and include theme configuration
 # Provide default color values as fallback (will be overridden by theme config)
@@ -102,8 +104,11 @@ set $indicator_color #5294e2
 # Initialize theme (runs asynchronously after Sway starts)
 exec $HOME/.config/sway/scripts/toggle_theme.sh init
 
-# Include theme configuration (will override defaults above if file exists)
-include /tmp/sway_theme_config
+# Include theme configuration (will override defaults above if file exists).
+# Same $XDG_RUNTIME_DIR home as the SwayFX snippet above. At parse time this
+# reads the previous run's file (or nothing on a fresh session, falling back to
+# the $bg_color defaults above); `toggle_theme.sh init`/`toggle` refresh it.
+include $XDG_RUNTIME_DIR/sway/sway_theme_config
 
 # Use pixel borders to disable titlebars for all windows
 # (These are standard Sway commands)
