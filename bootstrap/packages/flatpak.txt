@@ -1,0 +1,7 @@
+# Flatpak manifest for bootstrap/provision.sh — refs as shown by
+# `flatpak search` on flathub. Uncomment to install; the provisioner
+# passes them to: flatpak install -y --non-interactive.
+#
+# com.spotify.Client
+# com.discordapp.Discord
+# com.obsproject.Studio   # obs-studio is also in pacman — pick one

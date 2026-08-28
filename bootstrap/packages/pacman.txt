@@ -1,0 +1,52 @@
+# pacman manifest for bootstrap/provision.sh — one package per line, # comments
+# allowed. Single source of truth for system packages; edit to taste.
+# The provisioner runs: pacman -S --needed - < this file.
+
+# --- Desktop core (config/, waybar/, extra/) ---------------------------------
+sway
+waybar
+kitty
+wofi
+mako
+swaylock
+swaynag
+swayidle
+grim
+slurp
+
+# --- Status bar & script dependencies (docs/requirements.md) ------------------
+jq
+upower
+brightnessctl
+ddcutil
+bluez
+iwd
+# networkmanager   # alternative to iwd — do NOT enable both (stage_services)
+pipewire
+pipewire-pulse
+wpctl
+# kanshi           # extra/kanshi/config — optional; scripts/monitor-hotplug.sh replaces it
+
+# --- XDG portals (docs/xdg-defaults.md) ---------------------------------------
+# wlr = screencopy/screencast, gtk = file picker & settings. The portal package
+# already prefers wlr;gtk for Sway.
+xdg-desktop-portal
+xdg-desktop-portal-wlr
+xdg-desktop-portal-gtk
+flatpak
+
+# --- Provisioning infrastructure (bootstrap/) ---------------------------------
+age
+rage
+tailscale
+ufw
+snapper
+# sops             # only if you add sops-managed structured secrets
+
+# --- AUR helper — install once manually; then the `aur` stage works:
+# git clone https://aur.archlinux.org/yay.git /tmp/yay && cd /tmp/yay && makepkg -si
+
+# --- Optional default apps (MIME map in scripts/setup-defaults.sh) -------------
+# gnome-text-editor
+# evince
+# loupe

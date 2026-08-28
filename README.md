@@ -17,7 +17,15 @@ A portable Sway (and Swayfx) configuration with **Waybar** as the status bar, a 
 | `waybar/` | Status bar: `config.jsonc` layout, `style.css`, `colors-{dark,light}.css` palettes, custom `modules/`. |
 | `scripts/` | Utilities bound to keybinds / `exec` lines. See [`scripts/SCRIPTS.md`](scripts/SCRIPTS.md). |
 | `extra/` | Standalone configs for adjacent tools (kanshi, wofi, mako, swhkd). See [`extra/EXTRA.md`](extra/EXTRA.md). |
+| `bootstrap/` | Zero → online: archinstall JSON, package manifests, provisioner. See [`bootstrap/README.md`](bootstrap/README.md). |
 | `docs/` | Topic documentation (below). |
+
+## Zero → online (new machine)
+
+Fresh Arch → this desktop in three commands, no ISO build: the `archinstall`
+JSON pair plus a staged, idempotent provisioner (packages, services,
+ssh-agent, portals, age-encrypted secrets, tailscale) live in
+[`bootstrap/`](bootstrap/README.md).
 
 ## Setup
 

@@ -1,0 +1,15 @@
+{
+  "archinstall-language": "English",
+  "audio_config": { "audio": "pipewire" },
+  "bootloader_config": { "bootloader": "Systemd-boot", "removable": false, "uki": false },
+  "hostname": "REPLACE_ME",
+  "kernels": ["linux"],
+  "locale_config": { "kb_layout": "gb", "sys_enc": "UTF-8", "sys_lang": "en_US" },
+  "network_config": { "type": "default" },
+  "ntp": true,
+  "packages": [],
+  "profile_config": { "profile": { "main": "Minimal" } },
+  "script": "guided",
+  "swap": { "enabled": true, "algorithm": "zstd" },
+  "timezone": "Europe/London"
+}

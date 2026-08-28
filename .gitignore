@@ -19,3 +19,8 @@ wallpaper_dir.local
 # Waybar active palette symlink — managed by toggle_theme.sh, points at
 # waybar/colors-{dark,light}.css depending on current theme state.
 waybar/colors.css
+
+# archinstall JSON pair — the real files hold a password hash and
+# machine-specific details; only the .example forms are committed.
+bootstrap/archinstall/user_credentials.json
+bootstrap/archinstall/user_configuration.json
