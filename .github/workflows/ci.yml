@@ -1,9 +1,11 @@
 name: CI
 
-# Lint the shell scripts and syntax-check the Sway config on every push and PR.
-# Two jobs: `lint` is the load-bearing one (pure static analysis, always runs
-# clean anywhere); `config-check` is best-effort (installs upstream sway from
-# apt, which is vanilla — not SwayFX — and may lag the version you run).
+# Lint the shell scripts, validate the archinstall examples, syntax-check the
+# Sway config, and (informationally) check markdown links, on every push and
+# PR. `lint` is the load-bearing job (pure static analysis, always runs clean
+# anywhere); `config-check` is best-effort (installs upstream sway from apt,
+# which is vanilla — not SwayFX — and may lag the version you run);
+# `link-check` is informational until the dot-sway → sync rename lands.
 
 on:
   push:
@@ -39,6 +41,14 @@ jobs:
           # level (see the design note in AGENTS.md). Drop to --severity=error to
           # loosen, or add a .shellcheckrc to tune specific codes.
           shellcheck --severity=warning $(git ls-files '*.sh')
+
+      - name: JSON-validate the archinstall examples
+        run: |
+          # archinstall consumes these as strict JSON; a stray comment or
+          # trailing comma breaks the unattended install, so gate here.
+          for f in bootstrap/archinstall/*.json.example; do
+            python3 -m json.tool "$f" >/dev/null || { echo "::error file=$f::invalid JSON"; exit 1; }
+          done
 
   config-check:
     name: sway -C
@@ -83,3 +93,20 @@ jobs:
             echo "::error::sway -C reported config errors"
             exit 1
           fi
+
+  link-check:
+    name: markdown links (lychee)
+    runs-on: ubuntu-latest
+    # Informational only (fail: false): the README and bootstrap docs link
+    # to github.com/aajll/sync, which 404s until the dot-sway rename lands.
+    # Drop fail: false once the rename is done.
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check markdown links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          # Local file links are checked for existence, remote links for
+          # HTTP status; --no-progress keeps the log readable.
+          args: --no-progress '**/*.md'
+          fail: false
