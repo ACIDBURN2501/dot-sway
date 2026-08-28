@@ -57,6 +57,10 @@ These scripts live in `scripts/` and are invoked in place from `$HOME/.config/sw
     - **Empty/absent pool:** an already-set `wp.png` is left alone; otherwise it falls back to the committed `images/default.png`, so `wp.png` always resolves (no black desktop, no broken swaylock image) even on a fresh checkout with an empty pool.
     - **Lock screen:** the swaylock keybind (and the optional swayidle example in `config`) consume `images/wp.png`, so the lock screen follows rotation automatically — no extra wiring.
     - **Override the repo dir:** set `SWAY_DIR=/some/other/path` before invoking; the script resolves `images/`, `wallpaper_dir.local`, and the default pool underneath it.
+- `install-release.sh`: Installs a non-repo tool from a pinned release into `/opt/<name>/` with `/usr/local/bin` symlinks — the pattern for tools the distro doesn't package well (nvim, teams-for-linux). Verifies the SHA256 from the release notes before touching system dirs; a mismatch aborts before anything is written.
+    - **Usage:** `install-release.sh <name> <url> <sha256>` — the payload is detected by content: tarballs extract into `/opt/<name>/` and executables from a `bin/` dir (or the tarball root) get symlinked; a plain file is symlinked into `/usr/local/bin` as `<name>`.
+    - **Never overwrites:** if `/opt/<name>` already exists, it refuses and tells you to remove it first.
+    - **Needs sudo** for the install steps (one prompt). Not bound — run manually.
 - `check-core-features.sh`: Probes the local machine against the matrix in `docs/core-features.md` and prints a ✓/!/✗ table (binaries, packages, units, agent socket). Read-only — safe to run anywhere, no root needed.
     - **Exit code:** 0 when nothing is missing, 1 when any feature is ✗ (a degraded/N-A `!` does not fail).
     - **Not bound** — run manually after provisioning or hardware changes, or before claiming a distro column in the matrix is verified.

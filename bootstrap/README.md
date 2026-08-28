@@ -82,12 +82,13 @@ machines (nvim, teams-for-linux under `/opt` with `/usr/local/bin` symlinks):
    on iwd boxes) or `cargo install <name>` for Rust (e.g.
    `wayland-pipewire-idle-inhibit`). These land in `~/.local/bin` /
    `~/.cargo/bin`, already on `PATH`.
-3. **GitHub release binary** — download to `/opt/<name>/`, symlink the
+3. **GitHub release binary** — install to `/opt/<name>/`, symlink the
    binaries into `/usr/local/bin` (which is in sudo's `secure_path` and in
-   every default `PATH`). Pin the exact release URL and record its sha256
-   next to the download command in whatever notes you keep; re-verify on
-   re-download. No generic release-installer script is shipped — by the time
-   a tool needs it twice, the pattern is a two-line `curl` + `ln -s`.
+   every default `PATH`). Use `scripts/install-release.sh <name> <url>
+   <sha256>`: it pins the exact release URL, verifies the sha256 before
+   touching system dirs, installs, and symlinks (see
+   `scripts/SCRIPTS.md`). Keep the URL + sha256 in the release notes so
+   re-downloads re-verify.
 
 ## Design notes
 
