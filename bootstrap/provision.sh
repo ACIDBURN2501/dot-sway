@@ -113,18 +113,21 @@ stage_services() {
 
   # Network backend per distro baseline: iwd on Arch (pairs with impala in
   # scripts/network-tui.sh), NetworkManager on Debian (nmtui is the TUI).
-  # Do not run both on one box.
-  local net_probe="" ssh_unit=""
+  # Do not run both on one box. Probe by unit file, not binary: iwd 3.x
+  # moved its daemon to /usr/lib/iwd/iwd (never on PATH), the same gotcha
+  # class as Debian's sshd in /usr/sbin.
+  local net_unit="" ssh_unit=""
   case "$DISTRO" in
-  arch)   net_probe="iwd" ssh_unit="sshd" ;;
-  debian) net_probe="nmcli" ssh_unit="ssh" ;;
+  arch)   net_unit="iwd" ssh_unit="sshd" ;;
+  debian) net_unit="NetworkManager" ssh_unit="ssh" ;;
   esac
-  if [ -n "$net_probe" ] && command -v "$net_probe" >/dev/null 2>&1; then
-    case "$DISTRO" in
-    arch)   sudo systemctl enable --now iwd ;;
-    debian) sudo systemctl enable --now NetworkManager ;;
-    esac
-  elif [ -n "$net_probe" ]; then
+  local net_present=0
+  if [ -n "$net_unit" ] && systemctl list-unit-files "$net_unit.service" 2>/dev/null | grep -q "$net_unit"; then
+    net_present=1
+  fi
+  if [ "$net_present" -eq 1 ]; then
+    sudo systemctl enable --now "$net_unit"
+  elif [ -n "$net_unit" ]; then
     skip "services: network backend not installed (run the packages stage)"
   else
     skip "services: unknown distro; enable a network backend manually"
