@@ -6,6 +6,9 @@ configuration expects and the package that provides it per supported distro.
 Legend: ✓ verified working on a reference install · ✗ gap (fix below) ·
 ? to verify on your box (or on a fresh install)
 
+Reproduce a column on your own box: `scripts/check-core-features.sh`
+probes the machine and prints this matrix as ✓/!/✗ (exit 1 on any ✗).
+
 | Feature | Implementation | Arch package | Debian 13 package | Debian 13 (ref.) | Arch (ref.) |
 |---------|---------------|--------------|-------------------|--------|-------|
 | Terminal | kitty | `kitty` | `kitty` | ✓ | ✓ |

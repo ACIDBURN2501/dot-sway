@@ -57,6 +57,9 @@ These scripts live in `scripts/` and are invoked in place from `$HOME/.config/sw
     - **Empty/absent pool:** an already-set `wp.png` is left alone; otherwise it falls back to the committed `images/default.png`, so `wp.png` always resolves (no black desktop, no broken swaylock image) even on a fresh checkout with an empty pool.
     - **Lock screen:** the swaylock keybind (and the optional swayidle example in `config`) consume `images/wp.png`, so the lock screen follows rotation automatically — no extra wiring.
     - **Override the repo dir:** set `SWAY_DIR=/some/other/path` before invoking; the script resolves `images/`, `wallpaper_dir.local`, and the default pool underneath it.
+- `check-core-features.sh`: Probes the local machine against the matrix in `docs/core-features.md` and prints a ✓/!/✗ table (binaries, packages, units, agent socket). Read-only — safe to run anywhere, no root needed.
+    - **Exit code:** 0 when nothing is missing, 1 when any feature is ✗ (a degraded/N-A `!` does not fail).
+    - **Not bound** — run manually after provisioning or hardware changes, or before claiming a distro column in the matrix is verified.
 - `toggle_theme.sh`: Switches the desktop between dark and light themes in one keypress (`Mod+Shift+t`). Source of truth is Gnome's `org.gnome.desktop.interface color-scheme` when `gsettings` is available, otherwise `~/.config/sway/.theme_state`.
     - **Updates in lockstep:**
         - Sway colors via `$XDG_RUNTIME_DIR/sway/sway_theme_config` (sourced from `config`)
