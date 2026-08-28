@@ -78,7 +78,7 @@ jobs:
           chmod 700 "$XDG_RUNTIME_DIR"
           # images/wp.png is a runtime-managed symlink (gitignored), so it's absent
           # in a fresh checkout and `output * bg` would fail validation. Run the
-          # repo's own bootstrap: with an empty pool it seeds wp.png -> default.png,
+          # repo's own bootstrap: it seeds wp.png -> the bundled wallpaper,
           # exactly as a real first run does — no CI-specific special-casing.
           scripts/rotate-wallpaper.sh
           # `sway -C` prints parse errors but still exits 0 (observed), so the exit

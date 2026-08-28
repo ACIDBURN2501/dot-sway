@@ -4,9 +4,10 @@
 # background. Repoints the images/wp.png symlink (used by `output * bg` and
 # swaylock) and applies the change live via swaymsg.
 #
-# Empty/absent pool → fall back to the committed images/default.png so wp.png
-# always resolves (never a black desktop or a broken swaylock image), unless a
-# wallpaper is already set. Rotation is on-demand — bound to $mod+Shift+w. With
+# Empty/absent pool → fall back to the bundled wallpaper
+# (images/wallpapers/frederic-church-parthenon.jpg) so wp.png always resolves
+# (never a black desktop or a broken swaylock image), unless a wallpaper is
+# already set. Rotation is on-demand — bound to $mod+Shift+w. With
 # --if-unset the script only acts when wp.png isn't already a valid wallpaper,
 # so start/reload (config.d/wallpaper) bootstrap one on first run but leave an
 # existing wallpaper in place.
@@ -21,7 +22,7 @@ IF_UNSET=0
 SWAY_DIR="${SWAY_DIR:-$HOME/.config/sway}"
 WALLPAPER_DIR="$SWAY_DIR/images/wallpapers"
 LINK="$SWAY_DIR/images/wp.png"
-DEFAULT="$SWAY_DIR/images/default.png"   # committed fallback when the pool is empty
+DEFAULT="$SWAY_DIR/images/wallpapers/frederic-church-parthenon.jpg"   # committed fallback when the pool is empty
 
 # Machine-local pool override — wallpaper_dir.local (gitignored, like
 # compose_key.local) holds one path to an external wallpaper folder.
@@ -63,7 +64,7 @@ fi
 if [[ "${#candidates[@]}" -eq 0 ]]; then
   [[ -e "$LINK" ]] && exit 0
   [[ -e "$DEFAULT" ]] || exit 0
-  ln -sfn "default.png" "$LINK"
+  ln -sfn "wallpapers/frederic-church-parthenon.jpg" "$LINK"
   apply_bg
   exit 0
 fi
