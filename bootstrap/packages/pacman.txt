@@ -9,7 +9,7 @@ kitty
 wofi
 mako
 swaylock
-swaynag
+# swaynag — bundled in the sway package on Arch
 swayidle
 grim
 slurp
@@ -24,7 +24,7 @@ iwd
 # networkmanager   # alternative to iwd — do NOT enable both (stage_services)
 pipewire
 pipewire-pulse
-wpctl
+wireplumber   # ships wpctl
 # kanshi           # extra/kanshi/config — optional; scripts/monitor-hotplug.sh replaces it
 
 # --- XDG portals (docs/xdg-defaults.md) ---------------------------------------
