@@ -39,7 +39,7 @@ flatpak
 age
 rage
 tailscale
-ufw
+ufw   # skip on Docker/libvirt hosts — ufw breaks container/VM networking (docs/core-features.md)
 snapper
 # sops             # only if you add sops-managed structured secrets
 

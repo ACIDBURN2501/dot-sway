@@ -23,7 +23,7 @@ probes the machine and prints this matrix as ✓/!/✗ (exit 1 on any ✗).
 | Bluetooth | waybar module + `bluetoothctl` (bluetuith optional) | `bluez` | `bluez` | ✓ | ✓ |
 | Network daemon | iwd on Arch, NetworkManager on Debian | `iwd` | `network-manager` (ships `nmcli` **and** `nmtui`) | ✓ (NM) | ✓ (NM) |
 | Network TUI | `scripts/network-tui.sh`: impala → nmtui → iwctl → ip | `iwd`, impala via pipx | `networkmanager` (nmtui) | ✓ (nmtui) | ✓ (nmtui) |
-| Firewall | ufw, SSH rate-limited before enable | `ufw` | `ufw` | ✗ | ✗ |
+| Firewall | ufw, SSH rate-limited before enable | `ufw` | `ufw` | ✗ | ✗ (intentional) |
 | Portals | file picker / screenshot / screencast (`wlr;gtk` preference) | `xdg-desktop-portal` `-wlr` `-gtk` | same three | ✓ (wlr+gtk+gnome backends) | ✓ (wlr+gtk+gnome backends) |
 | Clipboard | wl-clipboard (standard `Ctrl+C`/`V` in kitty) | `wl-clipboard` | `wl-clipboard` | ✓ | ✓ |
 | SSH agent | distro-provided user unit on both (Debian 13: gnome-keyring `ssh-agent.socket`, self-exports `SSH_AUTH_SOCK`; Arch: openssh `ssh-agent.service` + `.socket`); `bootstrap/user/` unit is the fallback for systems without one | `openssh` | `openssh-client` + gnome-keyring | ✓ | ✓ |
@@ -38,9 +38,13 @@ probes the machine and prints this matrix as ✓/!/✗ (exit 1 on any ✗).
 - **Debian 13 (trixie):** `ufw` and `age` are packaged but not installed by
   default. Both are one command: `sudo apt-get install -y ufw age`, then the
   `services` and `secrets` provisioner stages light up.
-- **Arch (reference):** `ufw`, `age`, `rage`, and `snapper` were not installed
-  on the reference install; the `packages` stage installs all four (snapper
-  stays dormant until btrfs is present).
+- **Arch (reference):** **`ufw` is intentionally absent** — this host runs
+  Docker, libvirt, and Tailscale, and enabling ufw would break container/VM
+  networking. The `packages` stage still lists it for fresh boxes (it stays
+  inert until the `services` stage enables it, which never happens on this
+  host). Remaining useful delta on this box: `age` (needed by the `secrets`
+  stage) and `rage` only if you encrypt new secrets here; `snapper` stays
+  dormant until btrfs is present.
 - **rage on Debian:** not packaged in trixie. Decrypting secrets only needs
   `age`; to *encrypt* a new secret, do it on an Arch box (rage is packaged
   there) or via pipx.
@@ -58,8 +62,9 @@ Known intentional drift pattern:
   `extra/wofi/wofi-power.sh` (remove those options) with `extra/EXTRA.md`
   updated to match.
 - **NetworkManager instead of iwd** on the wired reference install (no Wi-Fi
-  radio): NetworkManager is the active daemon and iwd (installed per manifest)
-  stays disabled. iwd remains the baseline where a radio exists.
+  radio): NetworkManager is the active daemon and iwd was removed in 2026-08
+  (radio-less box — nothing gained by keeping it dormant). iwd remains the
+  baseline where a radio exists.
 - **Keychain over the user ssh-agent** on the reference install: keychain sets
   `SSH_AGENT_PID`, which keeps the distro ssh-agent unit dormant; the agent
   works via keychain, not the provisioner's env-export path.
