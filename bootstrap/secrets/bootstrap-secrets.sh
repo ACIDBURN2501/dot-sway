@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
 #
 # bootstrap-secrets.sh: decrypt bootstrap/secrets/*.age into
-# ~/.local/share/dot-sway/secrets/ (0600 files in a 0700 dir).
+# ~/.local/share/sync/secrets/ (0600 files in a 0700 dir).
 #
 # Identity: prefers the user's SSH ed25519 key — age accepts OpenSSH keys
 # natively, so the key you already carry for git is the key that unlocks
-# the secrets. Falls back to a dedicated age key at ~/.config/dot-sway/age.key,
+# the secrets. Falls back to a dedicated age key at ~/.config/sync/age.key,
 # created once and printed for offline backup.
 #
 # Idempotent: re-running re-decrypts over existing files; it never
@@ -17,8 +17,8 @@ set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SRC_DIR="$REPO_ROOT/secrets"
-OUT_DIR="$HOME/.local/share/dot-sway/secrets"
-FALLBACK_KEY="$HOME/.config/dot-sway/age.key"
+OUT_DIR="$HOME/.local/share/sync/secrets"
+FALLBACK_KEY="$HOME/.config/sync/age.key"
 
 # --- Helpers -----------------------------------------------------------------
 
