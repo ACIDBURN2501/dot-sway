@@ -4,7 +4,10 @@
 # describes. Stages are idempotent by construction — re-run any time, or
 # pass stage names to run a subset.
 #
-# Usage: bootstrap/provision.sh [stage ...]
+# Usage: bootstrap/provision.sh [--check] [stage ...]
+#
+#   --check  dry run: each stage reports what it would do, changing nothing
+#   --help   show usage
 #
 #   Stages (run in this order when none are given):
 #     packages    install the distro manifest (pacman.txt on Arch, debian.txt on Debian 13)
@@ -34,6 +37,7 @@ USER_UNIT_SRC="$REPO_ROOT/bootstrap/user/systemd"
 USER_UNIT_DST="$HOME/.config/systemd/user"
 
 ALL_STAGES=(packages aur flatpak services sway user-units portals secrets tailscale)
+CHECK=0
 
 # --- Distro detection --------------------------------------------------------
 
@@ -65,12 +69,49 @@ manifest() {
 
 # --- Stages ------------------------------------------------------------------
 
+usage() {
+  cat <<'EOF'
+Usage: bootstrap/provision.sh [--check] [stage ...]
+
+Brings a machine (fresh or drifted) to the state this repo describes.
+Stages are idempotent; re-run any time, or pass names to run a subset.
+
+  --check  dry run: each stage reports what it would do, changing nothing
+  --help   show this usage
+
+Stages (run in this order when none are given):
+  packages    install the distro manifest (pacman.txt on Arch, debian.txt on Debian 13)
+  aur         build AUR packages from bootstrap/packages/aur.txt (needs yay; Arch only)
+  flatpak     install apps from packages/flatpak.txt
+  services    network backend (iwd on Arch, NetworkManager on Debian),
+              ufw (SSH rate-limited first), ssh, snapper (btrfs only)
+  sway        verify/refresh ~/.config/sway (never clones from inside itself)
+  user-units  ssh-agent user unit + SSH_AUTH_SOCK (only when the distro
+              doesn't already provide an agent unit)
+  portals     ensure the wlr + gtk portal backends are present
+  secrets     decrypt bootstrap/secrets/*.age (see bootstrap/secrets/README.md)
+  tailscale   join the tailnet when secrets/tailscale_authkey is present
+EOF
+}
+
 stage_packages() {
   case "$DISTRO" in
   arch)
     local list
     list="$(manifest pacman.txt)"
     if [ -z "$list" ]; then skip "packages: no manifest or empty"; return 0; fi
+    if [ "$CHECK" -eq 1 ]; then
+      local pkg missing=()
+      while IFS= read -r pkg; do
+        pacman -Qi "$pkg" >/dev/null 2>&1 || missing+=("$pkg")
+      done <<<"$list"
+      if [ ${#missing[@]} -gt 0 ]; then
+        log "packages: would install: ${missing[*]}"
+      else
+        log "packages: all present"
+      fi
+      return 0
+    fi
     log "packages: installing from packages/pacman.txt (pacman)"
     printf '%s\n' "$list" | sudo pacman -S --needed -
     ;;
@@ -78,6 +119,18 @@ stage_packages() {
     local dlist
     dlist="$(manifest debian.txt)"
     if [ -z "$dlist" ]; then skip "packages: no debian.txt manifest or empty"; return 0; fi
+    if [ "$CHECK" -eq 1 ]; then
+      local dname missing_d=()
+      while IFS= read -r dname; do
+        dpkg-query -W -f='${Status}' "$dname" 2>/dev/null | grep -q 'ok installed' || missing_d+=("$dname")
+      done <<<"$dlist"
+      if [ ${#missing_d[@]} -gt 0 ]; then
+        log "packages: would install: ${missing_d[*]}"
+      else
+        log "packages: all present"
+      fi
+      return 0
+    fi
     log "packages: installing from packages/debian.txt (apt)"
     # shellcheck disable=SC2086  # word-splitting the manifest into args is intended
     sudo apt-get install -y --no-install-recommends $dlist
@@ -93,6 +146,10 @@ stage_aur() {
   local list
   list="$(manifest aur.txt)"
   if [ -z "$list" ]; then skip "aur: no manifest or empty"; return 0; fi
+  if [ "$CHECK" -eq 1 ]; then
+    log "aur: would build $(printf '%s\n' "$list" | wc -l) packages"
+    return 0
+  fi
   log "aur: building $(printf '%s\n' "$list" | wc -l) packages (this can take a while)"
   # shellcheck disable=SC2086  # word-splitting the manifest into args is intended
   yay -S --needed --noconfirm $list
@@ -103,6 +160,10 @@ stage_flatpak() {
   local list
   list="$(manifest flatpak.txt)"
   if [ -z "$list" ]; then skip "flatpak: no manifest or empty"; return 0; fi
+  if [ "$CHECK" -eq 1 ]; then
+    log "flatpak: would install $(printf '%s\n' "$list" | wc -l) apps"
+    return 0
+  fi
   log "flatpak: installing apps from packages/flatpak.txt"
   # shellcheck disable=SC2086  # word-splitting the manifest into args is intended
   flatpak install -y --non-interactive $list
@@ -124,6 +185,33 @@ stage_services() {
   local net_present=0
   if [ -n "$net_unit" ] && systemctl list-unit-files "$net_unit.service" 2>/dev/null | grep -q "$net_unit"; then
     net_present=1
+  fi
+  if [ "$CHECK" -eq 1 ]; then
+    if [ "$net_present" -eq 1 ]; then
+      log "services: would enable+start $net_unit"
+    elif [ -n "$net_unit" ]; then
+      skip "services: network backend not installed (run the packages stage)"
+    else
+      skip "services: unknown distro; enable a network backend manually"
+    fi
+    if command -v ufw >/dev/null 2>&1; then
+      log "services: would enable ufw (SSH rate-limited first)"
+    else
+      skip "services: ufw not installed (run the packages stage)"
+    fi
+    if [ -n "$ssh_unit" ] && systemctl list-unit-files "$ssh_unit.service" 2>/dev/null | grep -q "$ssh_unit"; then
+      log "services: would enable+start $ssh_unit"
+    else
+      skip "services: $ssh_unit not present (install openssh-server)"
+    fi
+    local fs_check
+    fs_check="$(findmnt -no FSTYPE / || true)"
+    if [ "$fs_check" = "btrfs" ] && command -v snapper >/dev/null 2>&1; then
+      log "services: would ensure snapper config and enable timeline/cleanup timers"
+    else
+      skip "snapper: / is '$fs_check' (needs btrfs and the snapper package)"
+    fi
+    return 0
   fi
   if [ "$net_present" -eq 1 ]; then
     sudo systemctl enable --now "$net_unit"
@@ -174,12 +262,16 @@ stage_sway() {
   elif [ -d "$HOME/.config/sway/.git" ]; then
     if [ -n "$(git -C "$HOME/.config/sway" status --porcelain 2>/dev/null)" ]; then
       skip "sway: ~/.config/sway has local changes; git pull left to you"
+    elif [ "$CHECK" -eq 1 ]; then
+      log "sway: would git pull --ff-only"
     else
       git -C "$HOME/.config/sway" pull --ff-only
       log "sway: refreshed"
     fi
   elif [ -e "$HOME/.config/sway" ]; then
     skip "sway: ~/.config/sway exists but is not a git checkout; left alone"
+  elif [ "$CHECK" -eq 1 ]; then
+    log "sway: would symlink ~/.config/sway -> $REPO_ROOT"
   else
     mkdir -p "$HOME/.config"
     ln -sfn "$REPO_ROOT" "$HOME/.config/sway"
@@ -197,6 +289,19 @@ stage_user_units() {
   local distro_agent=0
   if systemctl --user cat ssh-agent.service >/dev/null 2>&1; then
     distro_agent=1
+  fi
+  if [ "$CHECK" -eq 1 ]; then
+    if [ "$distro_agent" -eq 1 ]; then
+      log "user-units: ssh-agent.service provided by the system; env left to it"
+      if [ -f "$HOME/.config/environment.d/20-ssh-agent.conf" ]; then
+        log "user-units: would remove stale environment.d/20-ssh-agent.conf"
+      fi
+    else
+      log "user-units: would install ssh-agent.service, environment.d export, and ~/.profile block"
+    fi
+    return 0
+  fi
+  if [ "$distro_agent" -eq 1 ]; then
     skip "user-units: ssh-agent.service provided by the system; env left to it"
   else
     mkdir -p "$USER_UNIT_DST"
@@ -254,6 +359,10 @@ stage_portals() {
     esac
   done
   if [ ${#missing[@]} -gt 0 ]; then
+    if [ "$CHECK" -eq 1 ]; then
+      log "portals: would install missing backends: ${missing[*]}"
+      return 0
+    fi
     log "portals: installing missing backends: ${missing[*]}"
     case "$DISTRO" in
     arch)   sudo pacman -S --needed "${missing[@]}" ;;
@@ -267,6 +376,16 @@ stage_portals() {
 stage_secrets() {
   local script="$REPO_ROOT/bootstrap/secrets/bootstrap-secrets.sh"
   if [ ! -f "$script" ]; then skip "secrets: no bootstrap helper"; return 0; fi
+  if [ "$CHECK" -eq 1 ]; then
+    local n
+    n="$(find "$REPO_ROOT/bootstrap/secrets" -maxdepth 1 -name '*.age' 2>/dev/null | wc -l)"
+    if [ "$n" -gt 0 ]; then
+      log "secrets: would decrypt $n file(s) to ~/.local/share/sync/secrets"
+    else
+      log "secrets: nothing to decrypt (no *.age files)"
+    fi
+    return 0
+  fi
   bash "$script"
 }
 
@@ -274,6 +393,14 @@ stage_tailscale() {
   command -v tailscale >/dev/null 2>&1 || { skip "tailscale: not installed"; return 0; }
   local key_file="$SECRETS_DIR/tailscale_authkey"
   [ -f "$key_file" ] || { skip "tailscale: no authkey in $SECRETS_DIR"; return 0; }
+  if [ "$CHECK" -eq 1 ]; then
+    if tailscale status --json 2>/dev/null | jq -e '.BackendState == "Running"' >/dev/null; then
+      skip "tailscale: already on the tailnet"
+    else
+      log "tailscale: would join the tailnet"
+    fi
+    return 0
+  fi
   if tailscale status --json 2>/dev/null | jq -e '.BackendState == "Running"' >/dev/null; then
     skip "tailscale: already on the tailnet"
     return 0
@@ -297,17 +424,26 @@ main() {
   if [ $# -gt 0 ]; then
     local arg
     for arg in "$@"; do
+      case "$arg" in
+      --help|-h) usage; return 0 ;;
+      --check) CHECK=1; continue ;;
+      esac
       case " ${ALL_STAGES[*]} " in
         *" $arg "*) stages+=("$arg") ;;
         *) printf 'unknown stage: %s (available: %s)\n' "$arg" "${ALL_STAGES[*]}" >&2; exit 1 ;;
       esac
     done
-  else
+  fi
+  if [ ${#stages[@]} -eq 0 ]; then
     stages=("${ALL_STAGES[@]}")
   fi
   local stage
   for stage in "${stages[@]}"; do
-    printf '[provision] %s\n' "$stage"
+    if [ "$CHECK" -eq 1 ]; then
+      printf '[provision] %s (dry run)\n' "$stage"
+    else
+      printf '[provision] %s\n' "$stage"
+    fi
     run_stage "$stage"
   done
   printf '[provision] done\n'

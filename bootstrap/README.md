@@ -51,7 +51,9 @@ A `preseed.cfg` for fully unattended Debian installs is a possible later
 addition, not a current one.
 
 Both flows end at the same point: `provision.sh` stages re-run safely — pass
-names to run a subset (`provision.sh tailscale`). Cloning straight into
+names to run a subset (`provision.sh tailscale`). `provision.sh --check`
+reports what any stage would do without changing anything — run it first on
+a box you care about. Cloning straight into
 `~/.config/sway` also works; the `sway` stage then just verifies the checkout.
 If `~/.config/sway` already has local edits, the `sway` stage leaves it
 alone — per-machine drift (e.g. a trimmed power menu) is preserved on purpose.
@@ -68,7 +70,7 @@ alone — per-machine drift (e.g. a trimmed power menu) is preserved on purpose.
 | `packages/flatpak.txt` | Flatpak app manifest, all commented out by default. |
 | `user/systemd/ssh-agent.service` | User unit installed by the `user-units` stage (only if the distro doesn't already ship one). |
 | `secrets/` | Age-encrypted secrets, decrypted on each machine. See [`secrets/README.md`](secrets/README.md). |
-| `provision.sh` | The provisioner. Stages: `packages aur flatpak services sway user-units portals secrets tailscale`. |
+| `provision.sh` | The provisioner. Stages: `packages aur flatpak services sway user-units portals secrets tailscale`. `--check` dry-runs any stage; `--help` lists them. |
 
 ## Non-repo tools
 
