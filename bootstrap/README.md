@@ -102,9 +102,11 @@ machines (nvim, teams-for-linux under `/opt` with `/usr/local/bin` symlinks):
 - **Network backend is a per-distro baseline**: iwd on Arch (impala is the
   TUI), NetworkManager on Debian (nmtui is the TUI). Don't run both on one
   box; `scripts/network-tui.sh` probes either.
-- **ssh-agent follows the distro**: Debian 13 ships one (gnome-keyring's
-  `ssh-agent.socket`, self-exporting `SSH_AUTH_SOCK`); on Arch the `user-units`
-  stage installs `user/systemd/ssh-agent.service` and exports the socket via
-  `environment.d`. The stage probes first and never clobbers a distro agent.
+- **ssh-agent follows the distro**: both supported distros ship a user unit
+  (Debian 13: gnome-keyring's `ssh-agent.socket`, self-exporting
+  `SSH_AUTH_SOCK`; Arch: openssh's `ssh-agent.service` + `.socket`). The
+  `user-units` stage probes first and only installs
+  `user/systemd/ssh-agent.service` as a fallback on systems without one,
+  exporting the socket via `environment.d` in that case.
 - **Secrets use age's native OpenSSH-key support**: your existing SSH key is
   the identity, no GPG, no plugins.

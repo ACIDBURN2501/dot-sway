@@ -185,11 +185,12 @@ stage_sway() {
 }
 
 stage_user_units() {
-  # Probe first — this repo's contract is probe-and-degrade. If the distro
-  # ships an ssh-agent user unit, it also owns SSH_AUTH_SOCK (Debian 13:
-  # gnome-keyring's ssh-agent.socket sets it via set-environment, pointing at
-  # %t/openssh_agent) — so we only install a unit and export a socket path
-  # when we provide the unit ourselves.
+  # Probe first — this repo's contract is probe-and-degrade. Both supported
+  # distros ship a user unit (Debian 13: gnome-keyring's ssh-agent.socket,
+  # self-exporting SSH_AUTH_SOCK via set-environment at %t/openssh_agent;
+  # Arch: openssh's ssh-agent.service + .socket, which leave SSH_AUTH_SOCK to
+  # the session environment) — so we only install a unit and export a socket
+  # path when we provide the unit ourselves.
   local distro_agent=0
   if systemctl --user cat ssh-agent.service >/dev/null 2>&1; then
     distro_agent=1
