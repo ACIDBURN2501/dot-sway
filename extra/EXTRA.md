@@ -70,7 +70,7 @@ Changes take effect the next time wofi is launched.
 
 ### Power Menu
 
-The `extra/wofi/wofi-power.sh` script provides a power menu using wofi with options to lock, logout, suspend, reboot, and shutdown. This script is independent of theme management but will use the active theme.
+The `extra/wofi/wofi-power.sh` script provides a power menu using wofi with options to shutdown, reboot, suspend, hibernate, and logout. This script is independent of theme management but will use the active theme. Machines without suspend/hibernate support may trim the menu locally — the provisioner never overwrites local changes.
 
 ## Mako Notification Daemon (Optional)
 
