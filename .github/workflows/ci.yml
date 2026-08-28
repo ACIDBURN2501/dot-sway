@@ -5,7 +5,8 @@ name: CI
 # PR. `lint` is the load-bearing job (pure static analysis, always runs clean
 # anywhere); `config-check` is best-effort (installs upstream sway from apt,
 # which is vanilla — not SwayFX — and may lag the version you run);
-# `link-check` is informational until the dot-sway → sync rename lands.
+# `link-check` is blocking, and red until the dot-sway → sync rename lands
+# (see that job's comment).
 
 on:
   push:
@@ -97,9 +98,9 @@ jobs:
   link-check:
     name: markdown links (lychee)
     runs-on: ubuntu-latest
-    # Informational only (fail: false): the README and bootstrap docs link
-    # to github.com/aajll/sync, which 404s until the dot-sway rename lands.
-    # Drop fail: false once the rename is done.
+    # Blocking: the README and bootstrap docs link to github.com/aajll/sync,
+    # which 404s until the dot-sway → sync rename lands, so expect this job
+    # red until the rename happens.
     steps:
       - uses: actions/checkout@v4
 
@@ -109,4 +110,3 @@ jobs:
           # Local file links are checked for existence, remote links for
           # HTTP status; --no-progress keeps the log readable.
           args: --no-progress '**/*.md'
-          fail: false
