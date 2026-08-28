@@ -1,8 +1,8 @@
-# Sway/Swayfx Desktop Configuration
+# sync — Sway/Swayfx Desktop Configuration
 
-[![CI](https://github.com/aajll/dot-sway/actions/workflows/ci.yml/badge.svg)](https://github.com/aajll/dot-sway/actions/workflows/ci.yml)
+[![CI](https://github.com/aajll/sync/actions/workflows/ci.yml/badge.svg)](https://github.com/aajll/sync/actions/workflows/ci.yml)
 
-A portable Sway (and Swayfx) configuration with **Waybar** as the status bar, a unified dark/light theme across bar, terminal, launcher, and notifications, and a monitor-hotplug daemon that handles clamshell mode and per-monitor profiles.
+A portable Sway (and Swayfx) configuration with **Waybar** as the status bar, a unified dark/light theme across bar, terminal, launcher, and notifications, and a monitor-hotplug daemon that handles clamshell mode and per-monitor profiles. Doubles as the config/installer for supported machines: **Arch Linux (rolling)** and **Debian 13 (Trixie)** — see [bootstrap/](bootstrap/README.md).
 
 <p align="center">
   <img src="images/preview.png" alt="Desktop preview." />
@@ -22,10 +22,12 @@ A portable Sway (and Swayfx) configuration with **Waybar** as the status bar, a 
 
 ## Zero → online (new machine)
 
-Fresh Arch → this desktop in three commands, no ISO build: the `archinstall`
-JSON pair plus a staged, idempotent provisioner (packages, services,
+Fresh **Arch** (unattended, via `archinstall`) or fresh **Debian 13**
+(standard installer) → this desktop with no ISO build: per-distro package
+manifests plus a staged, idempotent provisioner (packages, services,
 ssh-agent, portals, age-encrypted secrets, tailscale) live in
-[`bootstrap/`](bootstrap/README.md).
+[`bootstrap/`](bootstrap/README.md). What "core" means and what is verified
+per distro: [docs/core-features.md](docs/core-features.md).
 
 ## Setup
 
@@ -42,6 +44,7 @@ Log into the Sway session; `config.d/waybar` and the theme/monitor hooks start a
 | Doc | Topic |
 |-----|-------|
 | [requirements.md](docs/requirements.md) | Dependencies and optional integrations |
+| [core-features.md](docs/core-features.md) | The "just works" matrix, per distro |
 | [xdg-defaults.md](docs/xdg-defaults.md) | Default terminal, MIME associations, desktop portals |
 | [status-bar.md](docs/status-bar.md) | Waybar layout, adding modules, theming |
 | [theming.md](docs/theming.md) | Dark/light toggle, wallpaper rotation |

@@ -1,14 +1,17 @@
 # Bootstrap: zero → online
 
-Brings a fresh Arch install to this desktop without building an ISO.
-Three layers, in order:
+Brings a fresh install to this desktop without building an ISO. Two supported
+targets — **Arch Linux (rolling)** and **Debian 13 (trixie)** — with three
+layers, in order:
 
-1. **`archinstall/`** — the JSON pair that installs the base system unattended.
-2. **`packages/`** — the package manifests (pacman / AUR / flatpak).
+1. **`archinstall/`** — the JSON pair that installs the Arch base system unattended.
+2. **`packages/`** — per-distro package manifests (pacman / apt / AUR / flatpak).
 3. **`provision.sh`** — a staged, idempotent provisioner that applies the rest
    (services, sway checkout, ssh-agent, portals, secrets, tailscale).
 
 ## The flow
+
+### Arch (unattended)
 
 1. Boot the [Arch ISO](https://archlinux.org/download/) on the new machine
    (ethernet is DHCP by default; for Wi-Fi, `iwctl` in the live environment).
@@ -25,26 +28,64 @@ Three layers, in order:
    from the credentials file).
 4. Clone this repo and run the provisioner:
    ```bash
-   git clone https://github.com/aajll/dot-sway ~/dot-sway
-   ~/dot-sway/bootstrap/provision.sh
+   git clone https://github.com/aajll/sync ~/sync
+   ~/sync/bootstrap/provision.sh
    ```
-   Cloning straight into `~/.config/sway` also works; the `sway` stage then
-   just verifies the checkout. Stages re-run safely — pass names to run a
-   subset (`provision.sh tailscale`).
 5. Log into Sway. Done.
+
+### Debian 13 (standard installer, then one command)
+
+Debian has no archinstall equivalent, so the base install is the standard
+[debian-installer](https://www.debian.org/CD/) run (~10 minutes; choose the
+"desktop environment: none" task set and add `ssh-server`). Then:
+
+```bash
+git clone https://github.com/aajll/sync ~/sync
+~/sync/bootstrap/provision.sh
+```
+
+The provisioner detects the distro and switches manifests (`debian.txt` via
+`apt-get`), service units (`ssh` not `sshd`), and network backend
+(NetworkManager — the Debian baseline; `nmtui` is the network TUI).
+A `preseed.cfg` for fully unattended Debian installs is a possible later
+addition, not a current one.
+
+Both flows end at the same point: `provision.sh` stages re-run safely — pass
+names to run a subset (`provision.sh tailscale`). Cloning straight into
+`~/.config/sway` also works; the `sway` stage then just verifies the checkout.
+If `~/.config/sway` already has local edits, the `sway` stage leaves it
+alone — per-machine drift (e.g. a trimmed power menu) is preserved on purpose.
 
 ## Files
 
 | Path | Purpose |
 |------|---------|
-| `archinstall/user_configuration.json(.example)` | Base install: hostname, locale, keyboard, bootloader, swap. No disk layout on purpose — generate it (step 2). |
+| `archinstall/user_configuration.json(.example)` | Arch base install: hostname, locale, keyboard, bootloader, swap. No disk layout on purpose — generate it (step 2). |
 | `archinstall/user_credentials.json(.example)` | Username + **password hash** (`openssl passwd -6`). The real file holds a secret: both real files are gitignored. |
-| `packages/pacman.txt` | System package manifest — single source of truth; the archinstall JSON's `packages` list stays empty. |
+| `packages/pacman.txt` | Arch package manifest. |
+| `packages/debian.txt` | Debian 13 package manifest, verified on a trixie reference install. |
 | `packages/aur.txt` | AUR manifest (yay), all commented out by default. |
 | `packages/flatpak.txt` | Flatpak app manifest, all commented out by default. |
 | `user/systemd/ssh-agent.service` | User unit installed by the `user-units` stage (only if the distro doesn't already ship one). |
 | `secrets/` | Age-encrypted secrets, decrypted on each machine. See [`secrets/README.md`](secrets/README.md). |
-| `provision.sh` | The provisioner. Stages: `pacman aur flatpak services sway user-units portals secrets tailscale`. |
+| `provision.sh` | The provisioner. Stages: `packages aur flatpak services sway user-units portals secrets tailscale`. |
+
+## Non-repo tools
+
+Three tiers, in preference order — codifying what already exists on the
+machines (nvim, teams-for-linux under `/opt` with `/usr/local/bin` symlinks):
+
+1. **Distro package** — always first; the manifests carry it.
+2. **Language-native tool** — `pipx install <name>` for Python (e.g. `impala`
+   on iwd boxes) or `cargo install <name>` for Rust (e.g.
+   `wayland-pipewire-idle-inhibit`). These land in `~/.local/bin` /
+   `~/.cargo/bin`, already on `PATH`.
+3. **GitHub release binary** — download to `/opt/<name>/`, symlink the
+   binaries into `/usr/local/bin` (which is in sudo's `secure_path` and in
+   every default `PATH`). Pin the exact release URL and record its sha256
+   next to the download command in whatever notes you keep; re-verify on
+   re-download. No generic release-installer script is shipped — by the time
+   a tool needs it twice, the pattern is a two-line `curl` + `ln -s`.
 
 ## Design notes
 
@@ -55,10 +96,15 @@ Three layers, in order:
   the decrypted secrets dir and the marker-guarded `~/.profile` block.
 - **`services` ordering matters on a remote box**: `ufw limit 22/tcp` runs
   before `ufw enable` so provisioning over SSH can't lock itself out.
-- **Snapper is btrfs-gated**: `archinstall` defaults to ext4, and
-  `snapper create-config` refuses anything else. Choose btrfs for `/` in the
-  interactive archinstall pass if you want system snapshots.
-- **iwd, not NetworkManager**: coherent with `scripts/network-tui.sh` probing
-  `impala` first. Don't enable both.
+- **Snapper is btrfs-gated** on both distros: the default installers give
+  ext4, and `snapper create-config` refuses anything else. Choose btrfs for
+  `/` if you want system snapshots.
+- **Network backend is a per-distro baseline**: iwd on Arch (impala is the
+  TUI), NetworkManager on Debian (nmtui is the TUI). Don't run both on one
+  box; `scripts/network-tui.sh` probes either.
+- **ssh-agent follows the distro**: Debian 13 ships one (gnome-keyring's
+  `ssh-agent.socket`, self-exporting `SSH_AUTH_SOCK`); on Arch the `user-units`
+  stage installs `user/systemd/ssh-agent.service` and exports the socket via
+  `environment.d`. The stage probes first and never clobbers a distro agent.
 - **Secrets use age's native OpenSSH-key support**: your existing SSH key is
   the identity, no GPG, no plugins.
