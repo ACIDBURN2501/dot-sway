@@ -4,8 +4,7 @@ name: CI
 # Sway config, and check markdown links, on every push and PR. `lint` is the load-bearing job (pure static analysis, always runs clean
 # anywhere); `config-check` is best-effort (installs upstream sway from apt,
 # which is vanilla — not SwayFX — and may lag the version you run);
-# `link-check` is blocking, and red until the dot-sway → sync rename lands
-# (see that job's comment).
+# `link-check` is blocking.
 
 on:
   push:
@@ -97,9 +96,7 @@ jobs:
   link-check:
     name: markdown links (lychee)
     runs-on: ubuntu-latest
-    # Blocking: the README and bootstrap docs link to github.com/aajll/sync,
-    # which 404s until the dot-sway → sync rename lands, so expect this job
-    # red until the rename happens.
+    # Blocking: every markdown link in the repo must resolve.
     steps:
       - uses: actions/checkout@v4
 
