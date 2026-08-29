@@ -269,6 +269,13 @@ bindsym $mod+r mode "resize"
     bindsym --locked XF86MonBrightnessDown exec $HOME/.config/sway/scripts/brightness-control.sh down
     bindsym --locked XF86MonBrightnessUp exec $HOME/.config/sway/scripts/brightness-control.sh up
 
+    # MPRIS transport — any MPRIS player (mpv, browsers, Spotify). Silent when
+    # playerctl or a player is absent; --locked keeps them working on the lock screen.
+    bindsym --locked XF86AudioPlay exec playerctl play-pause
+    bindsym --locked XF86AudioPause exec playerctl play-pause
+    bindsym --locked XF86AudioNext exec playerctl next
+    bindsym --locked XF86AudioPrev exec playerctl previous
+
     # Hardware fallbacks for devices without working media keys
     bindsym --locked $super+F10 exec $HOME/.config/sway/scripts/volume-control.sh mute
     bindsym --locked $super+F11 exec $HOME/.config/sway/scripts/volume-control.sh down

@@ -17,6 +17,7 @@ Legend: ✓ working · ! degraded or N/A (box-specific — see notes) · ✗ gap
 | Screenshots | grim + slurp (`Ctrl+Alt+s`) | `grim` `slurp` | `grim` `slurp` | ✓ | ✓ |
 | Lock / idle | swaylock + swayidle | `swaylock` `swayidle` | `swaylock` `swayidle` | ✓ | ✓ |
 | Volume | `scripts/volume-control.sh` (wpctl → pactl → silent) | `wireplumber` (ships wpctl) | `wireplumber` (ships wpctl) | ✓ | ✓ |
+| Media (MPRIS) | transport keys + waybar `mpris` module (native, libplayerctl; waybar ≥ 0.12) | `playerctl` | `playerctl` | ! (packaged, not yet installed) | ✓ |
 | Backlight | `brightness-control.sh` (brightnessctl), `external-brightness.sh` (ddcutil) | `brightnessctl` `ddcutil` | `brightnessctl` `ddcutil` | ✓ | ✓ |
 | Battery | waybar native module (upower/D-Bus) | `upower` | `upower` | ✓ | ✓ |
 | Bluetooth | waybar module + `bluetoothctl` (bluetuith optional) | `bluez` | `bluez` | ✓ | ✓ |

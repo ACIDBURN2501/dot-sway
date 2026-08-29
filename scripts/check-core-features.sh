@@ -101,6 +101,14 @@ check_volume() {
   fi
 }
 
+check_media() {
+  if has_bin playerctl; then
+    report "✓" "Media (MPRIS)" "playerctl + waybar mpris module"
+  else
+    report "✗" "Media (MPRIS)" "playerctl not installed"
+  fi
+}
+
 check_backlight() {
   if ! has_bin brightnessctl; then
     report "✗" "Backlight" "brightnessctl not installed"
@@ -287,6 +295,7 @@ main() {
   check_screenshots
   check_lock_idle
   check_volume
+  check_media
   check_backlight
   check_battery
   check_bluetooth

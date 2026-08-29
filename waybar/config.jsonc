@@ -1,7 +1,7 @@
 // Waybar layout for the Sway desktop.
 //
 //   Left:    workspaces, sway mode
-//   Center:  brightness, volume, theme, DND, bluetooth, network
+//   Center:  brightness, volume, media, theme, DND, bluetooth, network
 //   Right:   tray, battery, clock
 //
 // Three modules under custom/* shell out to scripts in waybar/modules/
@@ -14,7 +14,7 @@
   "spacing": 6,
 
   "modules-left": ["sway/workspaces", "sway/mode"],
-  "modules-center": ["custom/brightness", "pulseaudio", "custom/theme", "custom/dnd", "bluetooth", "network"],
+  "modules-center": ["custom/brightness", "pulseaudio", "mpris", "custom/theme", "custom/dnd", "bluetooth", "network"],
   "modules-right": ["tray", "battery", "clock"],
 
   "sway/workspaces": {
@@ -56,6 +56,19 @@
     "on-click": "$HOME/.config/sway/scripts/volume-control.sh mute",
     "on-scroll-up": "$HOME/.config/sway/scripts/volume-control.sh up",
     "on-scroll-down": "$HOME/.config/sway/scripts/volume-control.sh down"
+  },
+
+  "mpris": {
+    "format": "{player_icon} {dynamic}",
+    "format-paused": "{status_icon} {dynamic}",
+    "player-icons": {
+      "default": "󰎈"
+    },
+    "status-icons": {
+      "paused": "󰏤"
+    },
+    "dynamic-len": 40,
+    "tooltip-format": "{player} ({status})\n{title} — {artist}\n{album}"
   },
 
   "custom/theme": {
