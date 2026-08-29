@@ -1,6 +1,6 @@
 # Waybar (Status Bar)
 
-**What:** The status bar — workspace and mode indicators, brightness, audio, theme, DND, bluetooth, network, tray, battery, clock — plus the contract custom shell modules must follow.
+**What:** The status bar — workspace and mode indicators, brightness, audio, theme, DND, stay-awake, bluetooth, network, tray, battery, clock — plus the contract custom shell modules must follow.
 **Where:** `waybar/` — `config.jsonc` (layout), `style.css` + `colors-{dark,light}.css` (palette), `modules/` (custom shell modules). Launched from `config.d/waybar`.
 **Verified:** parse errors print to stderr when run in the foreground; the theme and DND custom modules are exercised by the CI theme suite (`tests/theme-sandbox.sh`).
 
@@ -11,14 +11,14 @@ Waybar is launched by `config.d/waybar` on Sway start. The snippet points `wayba
 | Cluster | Modules |
 |---------|---------|
 | Left    | `sway/workspaces`, `sway/mode` |
-| Center  | `custom/brightness`, `pulseaudio`, `mpris`, `custom/theme`, `custom/dnd`, `bluetooth`, `network` |
+| Center  | `custom/brightness`, `pulseaudio`, `mpris`, `custom/theme`, `custom/dnd`, `custom/stay-awake`, `bluetooth`, `network` |
 | Right   | `tray`, `battery`, `clock` |
 
-Battery, audio, bluetooth, network, clock, and media (MPRIS now-playing with click-to-transport; hides itself when no player is active) use Waybar's native event-driven modules (D-Bus, no polling). Brightness, theme, and DND are custom shell modules under `waybar/modules/`.
+Battery, audio, bluetooth, network, clock, and media (MPRIS now-playing with click-to-transport; hides itself when no player is active) use Waybar's native event-driven modules (D-Bus, no polling). Brightness, theme, DND, and stay-awake are custom shell modules under `waybar/modules/`.
 
 ## Toggle state
 
-Theme (🌙/☀️) and DND (🧘) read per-session flag files written by the toggle scripts (`scripts/toggle.sh` — see [SCRIPTS.md](../scripts/SCRIPTS.md)). `theme.sh` resolves gnome gsettings → theme flag → `.theme_state`; `dnd.sh` shows the icon only while the `dnd` flag is set and mako is present.
+Theme (🌙/☀️) and DND (🧘) read per-session flag files written by the toggle scripts (`scripts/toggle.sh` — see [SCRIPTS.md](../scripts/SCRIPTS.md)). `theme.sh` resolves gnome gsettings → theme flag → `.theme_state`; `dnd.sh` shows the icon only while the `dnd` flag is set and mako is present; `stay-awake.sh` shows ☕ only while the `stay-awake` flag is set (idle lock and screen-off suspended).
 
 ## Adding modules
 
