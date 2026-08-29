@@ -22,6 +22,10 @@ wallpaper_dir.local
 # waybar/colors-{dark,light}.css depending on current theme state.
 waybar/colors.css
 
+# Machine-local event hook overlay — per-machine automation lives here;
+# tracked samples under hooks/ stay generic (docs/hooks.md).
+hooks.local/
+
 # archinstall JSON pair — the real files hold a password hash and
 # machine-specific details; only the .example forms are committed.
 bootstrap/archinstall/user_credentials.json

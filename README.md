@@ -40,6 +40,7 @@ Log into the Sway session; `config.d/waybar` and the theme/monitor hooks start a
 | [README.md](docs/README.md) | The docs index — one page per component, in reading order |
 | [bootstrap.md](docs/bootstrap.md) | Zero to online: base install, package manifests, provisioner |
 | [sway.md](docs/sway.md) | The core config: keybindings, drop-ins, per-machine overlays |
+| [hooks.md](docs/hooks.md) | Event hooks: drop-in automation per event, with a machine-local overlay |
 | [waybar.md](docs/waybar.md) | The status bar: layout, the module output contract, theming |
 | [theming.md](docs/theming.md) | Dark/light toggle and wallpaper rotation |
 | [hardware.md](docs/hardware.md) | Media keys, monitor hotplug, clamshell, floating windows |

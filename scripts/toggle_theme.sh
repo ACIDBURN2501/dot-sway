@@ -9,6 +9,7 @@ set -euo pipefail
 
 THEME_STATE_FILE="$HOME/.config/sway/.theme_state"
 TOGGLE_SCRIPT="$HOME/.config/sway/scripts/toggle.sh"
+HOOKS_SCRIPT="$HOME/.config/sway/scripts/hooks.sh"
 
 # Per-user runtime dir (0700, wiped on logout), not world-writable /tmp. The
 # fallback keeps things working if the variable is unset (rare; only outside a
@@ -108,6 +109,10 @@ toggle_theme() {
       notify-send -t 2000 -u low "Theme" "Switched to Light Mode ☀️" || true
     fi
   fi
+
+  # Post-flip hooks (docs/hooks.md): additive, fire-and-forget. Missing
+  # script (partial checkout) or missing hook dirs are silent no-ops.
+  "$HOOKS_SCRIPT" theme-set || true
 }
 
 # Generate Sway theme configuration based on theme

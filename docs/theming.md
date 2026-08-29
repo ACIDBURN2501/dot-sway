@@ -2,7 +2,7 @@
 
 **What:** The unified dark/light theme across bar, terminal, launcher, and notifications, plus on-demand wallpaper rotation.
 **Where:** `scripts/toggle_theme.sh` and `scripts/rotate-wallpaper.sh`; the palettes in `waybar/colors-{dark,light}.css`; per-app bits in `extra/{kitty,wofi,mako}`.
-**Verified:** `tests/theme-sandbox.sh` (28 assertions) in CI, running the real `toggle_theme.sh` in a throwaway `$HOME` with session binaries stubbed.
+**Verified:** `tests/theme-sandbox.sh` (40 assertions, including the dispatcher section) in CI, running the real `toggle_theme.sh` in a throwaway `$HOME` with session binaries stubbed.
 
 ## Theme toggle (dark/light)
 
