@@ -40,7 +40,7 @@ Log into the Sway session; `config.d/waybar` and the theme/monitor hooks start a
 | [requirements.md](docs/requirements.md) | Dependencies and optional integrations |
 | [core-features.md](docs/core-features.md) | The "just works" matrix, per distro |
 | [xdg-defaults.md](docs/xdg-defaults.md) | Default terminal, MIME associations, desktop portals |
-| [status-bar.md](docs/status-bar.md) | Waybar layout, adding modules, theming |
+| [waybar.md](docs/waybar.md) | Waybar layout, adding modules, theming |
 | [theming.md](docs/theming.md) | Dark/light toggle, wallpaper rotation |
 | [hardware.md](docs/hardware.md) | Media keys, monitor hotplug, clamshell, floating windows |
 | [troubleshooting.md](docs/troubleshooting.md) | Symptom → check table |
