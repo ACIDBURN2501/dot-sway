@@ -114,7 +114,7 @@ Examples:
   - `colors-dark.css` / `colors-light.css` — `@define-color` palettes. Both files **must define the same names** so `style.css` resolves in either palette.
   - `modules/` — custom shell modules for state Waybar can't read natively (DDC/CI brightness, theme indicator, mako DND).
 - **`scripts/`:** Utilities bound to keybinds or `exec` lines — monitor hotplug, theme toggle, media key handlers, etc.
-- **`extra/`:** Standalone configs for adjacent tools (kanshi, wofi, mako, swhkd).
+- **`extra/`:** Standalone configs for adjacent tools (wofi, mako, swhkd).
 
 ## Common Workflows
 

@@ -16,7 +16,7 @@ A portable Sway (and Swayfx) configuration with **Waybar** as the status bar, a 
 | `config.d/` | Drop-in Sway snippets: `waybar` (launches the bar), `wallpaper` (bootstraps `images/wp.png`; rotate on demand with `$mod+Shift+w`), `floating_windows`. |
 | `waybar/` | Status bar: `config.jsonc` layout, `style.css`, `colors-{dark,light}.css` palettes, custom `modules/`. |
 | `scripts/` | Utilities bound to keybinds / `exec` lines. See [`scripts/SCRIPTS.md`](scripts/SCRIPTS.md). |
-| `extra/` | Standalone configs for adjacent tools (kanshi, wofi, mako, swhkd). See [`extra/EXTRA.md`](extra/EXTRA.md). |
+| `extra/` | Standalone configs for adjacent tools (wofi, mako, swhkd). See [`extra/EXTRA.md`](extra/EXTRA.md). |
 | `bootstrap/` | Zero → online: archinstall JSON, package manifests, provisioner. See [`bootstrap/README.md`](bootstrap/README.md). |
 | `tests/` | Executable checks, currently the sandboxed theme-pipeline suite. |
 | `docs/` | Topic documentation (below). |

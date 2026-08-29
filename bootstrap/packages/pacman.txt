@@ -26,7 +26,6 @@ iwd
 pipewire
 pipewire-pulse
 wireplumber   # ships wpctl
-# kanshi           # extra/kanshi/config — optional; scripts/monitor-hotplug.sh replaces it
 
 # --- XDG portals (docs/xdg-defaults.md) ---------------------------------------
 # wlr = screencopy/screencast, gtk = file picker & settings. The portal package
