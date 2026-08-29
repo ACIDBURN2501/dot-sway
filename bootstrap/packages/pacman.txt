@@ -18,6 +18,8 @@ wl-clipboard   # Ctrl+C/V in kitty (matrix Clipboard row; Debian parity)
 # --- Status bar & script dependencies (docs/requirements.md) ------------------
 jq
 upower
+playerctl        # MPRIS transport keys + waybar mpris module readout
+wob              # volume/brightness OSD bar (extra/wob/wob.ini)
 brightnessctl
 ddcutil
 bluez

@@ -41,13 +41,17 @@ Used by Waybar modules and scripts:
 - `ddcutil` — external monitor brightness (optional)
 - `wpctl` (PipeWire) or `pactl` (PulseAudio) — audio; Waybar's `pulseaudio` module reads via libpulse, so either works as long as the socket is provided (PipeWire's `pipewire-pulse` daemon counts)
 - `bluez` / `bluetoothctl` — bluetooth state and interactive control
+- `playerctl` — MPRIS transport (play/pause/next/previous keys) and the track readout for Waybar's `mpris` module. Waybar must be built against libplayerctl (both distro packages are).
+- `wob` — transient OSD bar for volume/brightness changes; fed by the control scripts via `scripts/osd-bar.sh`, silently skipped when absent. Config in `extra/wob/wob.ini`.
 - `iproute2` (`ip`) — read-only network inspection; Waybar's `network` module reads via netlink regardless of what manages the connection
 
 ## Click handlers
 
-- **Audio** (left-click mute, scroll adjust) → `scripts/volume-control.sh`
-- **Bluetooth** (left-click) → `scripts/bluetooth-tui.sh` — probes for [`bluetuith`](https://github.com/darkhz/bluetuith), falls back to `bluetoothctl`.
-- **Network** (left-click) → `scripts/network-tui.sh` — probes `impala` → `nmtui` → `iwctl`, falls back to a read-only `ip` summary. Install [`impala`](https://github.com/pythops/impala) for the recommended iwd TUI.
+- **Audio** (left-click quick menu: devices and mutes; right-click mute; scroll adjust) → `scripts/quick-menu.sh audio` + `scripts/volume-control.sh`
+- **Media (MPRIS)** (left-click play/pause, middle previous, right next) → Waybar's `mpris` module itself (libplayerctl, no helper)
+- **Bluetooth** (left-click quick menu: connect/disconnect and radio; right-click radio toggle) → `scripts/quick-menu.sh bluetooth` + `scripts/toggle-bluetooth.sh`. Pairing stays in the TUI (left-click menu → pair entry).
+- **Network** (left-click quick menu: scan, saved networks, masked password entry; right-click TUI) → `scripts/quick-menu.sh network` + `scripts/network-tui.sh` — the TUI probes `impala` → `nmtui` → `iwctl`, falls back to a read-only `ip` summary. Install [`impala`](https://github.com/pythops/impala) for the recommended iwd TUI.
+- **Power** (`Super+Ctrl+p`) → `scripts/quick-menu.sh power` → `extra/wofi/wofi-power.sh`
 - **Theme** / **DND** (left-click) → respective toggle scripts under `scripts/`
 
 Prefer GUI tools? Swap the `on-click` lines in `waybar/config.jsonc`: `pavucontrol` (audio), `blueman-manager` (bluetooth), `nm-connection-editor` / `nmtui` (network).

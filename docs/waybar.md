@@ -11,10 +11,10 @@ Waybar is launched by `config.d/waybar` on Sway start. The snippet points `wayba
 | Cluster | Modules |
 |---------|---------|
 | Left    | `sway/workspaces`, `sway/mode` |
-| Center  | `custom/brightness`, `pulseaudio`, `custom/theme`, `custom/dnd`, `bluetooth`, `network` |
+| Center  | `custom/brightness`, `pulseaudio`, `mpris`, `custom/theme`, `custom/dnd`, `bluetooth`, `network` |
 | Right   | `tray`, `battery`, `clock` |
 
-Battery, audio, bluetooth, network, and clock use Waybar's native event-driven modules (D-Bus, no polling). Brightness, theme, and DND are custom shell modules under `waybar/modules/`.
+Battery, audio, bluetooth, network, clock, and media (MPRIS now-playing with click-to-transport; hides itself when no player is active) use Waybar's native event-driven modules (D-Bus, no polling). Brightness, theme, and DND are custom shell modules under `waybar/modules/`.
 
 ## Toggle state
 
