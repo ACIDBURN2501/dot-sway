@@ -1,9 +1,14 @@
 #!/usr/bin/env bash
 # Theme toggle script for Sway/Swayfx
 # Syncs with Gnome when available, falls back to Sway-only theming
+#
+# Keeps the per-session `theme` flag (scripts/toggle.sh) in sync: written
+# on every flip and at init (the runtime dir is wiped on logout, so every
+# session re-derives it). Read by the waybar theme indicator.
 set -euo pipefail
 
 THEME_STATE_FILE="$HOME/.config/sway/.theme_state"
+TOGGLE_SCRIPT="$HOME/.config/sway/scripts/toggle.sh"
 
 # Per-user runtime dir (0700, wiped on logout), not world-writable /tmp. The
 # fallback keeps things working if the variable is unset (rare; only outside a
@@ -35,6 +40,13 @@ get_current_theme() {
   fi
 }
 
+# Refresh the theme flag with the resolved value. Called on every flip and
+# from init: the runtime dir is wiped on logout, so every session
+# re-derives the flag at startup.
+set_theme_flag() {
+  "$TOGGLE_SCRIPT" set theme "$1"
+}
+
 # Toggle theme
 toggle_theme() {
   local current; current=$(get_current_theme)
@@ -59,6 +71,7 @@ toggle_theme() {
 
   # Save state for Sway
   echo "$new_theme" > "$THEME_STATE_FILE"
+  set_theme_flag "$new_theme"
 
   # Generate Sway theme config
   generate_theme_config "$new_theme"
@@ -258,6 +271,9 @@ update_waybar_theme() {
 # Initialize theme on startup
 init_theme() {
   local current; current=$(get_current_theme)
+  # Seed the flag for this session (init runs at Sway startup, after the
+  # runtime dir has been wiped).
+  set_theme_flag "$current"
   generate_theme_config "$current"
   update_wofi_theme "$current"
   update_kitty_theme "$current"
