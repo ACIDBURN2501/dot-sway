@@ -37,6 +37,21 @@ The provisioner detects the distro and switches manifests (`debian.txt` via `apt
 
 Both flows end at the same point: `provision.sh` stages re-run safely — pass names to run a subset (`provision.sh tailscale`). `provision.sh --check` reports what any stage would do without changing anything — run it first on a box you care about. Cloning straight into `~/.config/sway` also works; the `sway` stage then just verifies the checkout. If `~/.config/sway` already has local edits, the `sway` stage leaves it alone — per-machine drift (e.g. a trimmed power menu) is preserved on purpose.
 
+### NoCloud `cidata` variant (Arch, decision)
+
+The Arch base install is also drivable from stock virtualization tooling via a config drive with the `cidata` filesystem label (the cloud-init NoCloud standard) — Proxmox, Packer, and friends all know how to attach one. **Decision: Option A — cloud-init NoCloud on the installed system.** `cloud-init` goes into the base install, its NoCloud datasource is pointed at the local `cidata` disk, and first boot applies the user-data (authorized keys, tailscale authkey, credentials) before `provision.sh` finishes the rest. Option B — a live-environment assist that copies the archinstall JSON pair and secrets from the mounted drive into `archinstall --config` — is the fallback if the on-drive pair proves fragile against archinstall schema churn in practice.
+
+The file set maps one-to-one onto the reference user-data set:
+
+| Repo file / stage | NoCloud user-data file |
+|---|---|
+| `archinstall/user_credentials.json` (username, password hash) | credentials |
+| `secrets/` (age-encrypted, decrypted per machine) | credentials (decrypted at first boot) |
+| ssh stage (the user's public key) | `authorized_keys` |
+| `tailscale` stage | `tailscale_authkey` |
+
+Labeling: the drive's filesystem label must be `cidata` (vfat); on Proxmox a cloud-init drive carries the label automatically. Two caveats travel with the variant: an encrypted unattended install still needs a human for the LUKS passphrase, and the config drive carries install secrets in the clear — treat any such drive as a secret. Implementation is a follow-up ticket whose acceptance bar is the full drive-attached flow exercised on a VM.
+
 ## Files
 
 | Path | Purpose |
