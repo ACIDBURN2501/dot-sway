@@ -23,7 +23,6 @@ Bound with both `bindsym` (`XF86…` keysyms) and `bindcode` (raw Linux input co
 On keyboards that expose media keys through a separate hotkey device Sway doesn't bind reliably, run `swhkd` alongside Sway:
 
 ```bash
-swhks &
 pkexec swhkd --config "$HOME/.config/swhkd/swhkdrc"
 ```
 

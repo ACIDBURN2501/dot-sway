@@ -1,8 +1,7 @@
 name: CI
 
 # Lint the shell scripts, validate the archinstall examples, syntax-check the
-# Sway config, and (informationally) check markdown links, on every push and
-# PR. `lint` is the load-bearing job (pure static analysis, always runs clean
+# Sway config, and check markdown links, on every push and PR. `lint` is the load-bearing job (pure static analysis, always runs clean
 # anywhere); `config-check` is best-effort (installs upstream sway from apt,
 # which is vanilla — not SwayFX — and may lag the version you run);
 # `link-check` is blocking, and red until the dot-sway → sync rename lands

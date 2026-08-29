@@ -3,8 +3,8 @@
 The features that make a machine feel whole. Each row lists what the
 configuration expects and the package that provides it per supported distro.
 
-Legend: ✓ verified working on a reference install · ✗ gap (fix below) ·
-? to verify on your box (or on a fresh install)
+Legend: ✓ working · ! degraded or N/A (box-specific — see notes) ·
+✗ gap (fix below)
 
 Reproduce a column on your own box: `scripts/check-core-features.sh`
 probes the machine and prints this matrix as ✓/!/✗ (exit 1 on any ✗).
@@ -27,7 +27,7 @@ probes the machine and prints this matrix as ✓/!/✗ (exit 1 on any ✗).
 | Portals | file picker / screenshot / screencast (`wlr;gtk` preference) | `xdg-desktop-portal` `-wlr` `-gtk` | same three | ✓ (wlr+gtk+gnome backends) | ✓ (wlr+gtk+gnome backends) |
 | Clipboard | wl-clipboard (standard `Ctrl+C`/`V` in kitty) | `wl-clipboard` | `wl-clipboard` | ✓ | ✓ |
 | SSH agent | distro-provided user unit on both (Debian 13: gnome-keyring `ssh-agent.socket`, self-exports `SSH_AUTH_SOCK`; Arch: openssh `ssh-agent.service` + `.socket`); `bootstrap/user/` unit is the fallback for systems without one | `openssh` | `openssh-client` + gnome-keyring | ✓ | ✓ |
-| Secrets | age-encrypted, identity = SSH ed25519 key | `age` `rage` | `age` (rage not packaged — encrypt on an Arch box) | ✗ (age not installed) | ✗ (age/rage not installed) |
+| Secrets | age-encrypted, identity = SSH ed25519 key | `age` `rage` | `age` (rage not packaged — encrypt on an Arch box) | ! (age installed; no rage) | ! (age installed; no rage) |
 | Tailscale | joins via `secrets/tailscale_authkey` | `tailscale` | not in archive — vendor repo (pkgs.tailscale.com) | ✓ (vendor) | ✓ |
 | System snapshots | snapper, btrfs-gated (default installs are ext4 → N/A) | `snapper` | `snapper` | ✗ (ext4 — N/A) | ✗ (ext4 — N/A) |
 | Text / PDF / images | gnome-text-editor, evince, loupe (MIME map in `setup-defaults.sh`) | same | same | ✓ | ✓ |
@@ -42,9 +42,9 @@ probes the machine and prints this matrix as ✓/!/✗ (exit 1 on any ✗).
   Docker, libvirt, and Tailscale, and enabling ufw would break container/VM
   networking. The `packages` stage still lists it for fresh boxes (it stays
   inert until the `services` stage enables it, which never happens on this
-  host). Remaining useful delta on this box: `age` (needed by the `secrets`
-  stage) and `rage` only if you encrypt new secrets here; `snapper` stays
-  dormant until btrfs is present.
+  host). Remaining useful delta on this box: `rage` only if you encrypt new
+  secrets here (`age` was installed in 2026-08); `snapper` stays dormant
+  until btrfs is present.
 - **rage on Debian:** not packaged in trixie. Decrypting secrets only needs
   `age`; to *encrypt* a new secret, do it on an Arch box (rage is packaged
   there) or via pipx.

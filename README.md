@@ -12,7 +12,7 @@ A portable Sway (and Swayfx) configuration with **Waybar** as the status bar, a 
 
 | Path | What it is |
 |------|-----------|
-| `config` | Primary Sway config. Includes `config.d/*`, `compose_key.local` (copy `compose_key.local.example`), and theme/SwayFX snippets generated under `/tmp`. |
+| `config` | Primary Sway config. Includes `config.d/*`, `compose_key.local` (copy `compose_key.local.example`), and theme/SwayFX snippets generated under `$XDG_RUNTIME_DIR/sway/`. |
 | `config.d/` | Drop-in Sway snippets: `waybar` (launches the bar), `wallpaper` (bootstraps `images/wp.png`; rotate on demand with `$mod+Shift+w`), `floating_windows`. |
 | `waybar/` | Status bar: `config.jsonc` layout, `style.css`, `colors-{dark,light}.css` palettes, custom `modules/`. |
 | `scripts/` | Utilities bound to keybinds / `exec` lines. See [`scripts/SCRIPTS.md`](scripts/SCRIPTS.md). |
