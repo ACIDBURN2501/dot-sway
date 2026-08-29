@@ -52,12 +52,14 @@ new_sandbox() { # sets HOME_ RUNTIME_ BIN_ GNOME_LOG_
   rm -f "$Sway/.theme_state"
 }
 install_gnome_stub() { # gsettings stub that pretends GNOME is in dark mode
+  # POSIX sh only: the stub runs under /bin/sh, which is dash on the CI
+  # runner. `[[` would parse as a command-not-found and the stub would
+  # return empty, which the script reads as "light".
   cat > "$BIN_/gsettings" <<EOF
 #!/bin/sh
 echo "gsettings \$*" >> "$GNOME_LOG_"
-if [[ "\${1-}" == get && "\${3-}" == color-scheme ]]; then
+if [ "\${1-}" = get ] && [ "\${3-}" = color-scheme ]; then
   echo "string 'prefer-dark'"
-  exit 0
 fi
 exit 0
 EOF
