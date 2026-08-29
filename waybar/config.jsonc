@@ -85,7 +85,9 @@
   "network": {
     "format-wifi": "󰖩 {signalStrength}%",
     "format-ethernet": "󰈀",
+    "format-linked": "󰈀",
     "format-disconnected": "󰤭",
+    "format-disabled": "",
     "tooltip-format-wifi": "{essid} — {ipaddr}\n↓ {bandwidthDownBits} ↑ {bandwidthUpBits}",
     "tooltip-format-ethernet": "{ifname} — {ipaddr}",
     "on-click": "$HOME/.config/sway/scripts/network-tui.sh"
