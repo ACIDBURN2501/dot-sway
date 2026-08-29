@@ -70,7 +70,7 @@ new_sandbox() { # sets HOME_ RUNTIME_ BIN_ LOG_ ARGV_ SB
 # NEVER call these scripts with the suite's own environment: the real
 # swayidle would attach to the caller's session.
 run_sandbox() { # run_sandbox <script> [args...]
-  env HOME="$HOME_" XDG_RUNTIME_DIR="$RUNTIME_" PATH="$BIN_" IDLE_STUB_HOLD="${IDLE_STUB_HOLD:-}" \
+  env HOME="$HOME_" XDG_CONFIG_HOME="$HOME_/.config" XDG_RUNTIME_DIR="$RUNTIME_" PATH="$BIN_" IDLE_STUB_HOLD="${IDLE_STUB_HOLD:-}" \
     /bin/bash "$@"
 }
 
