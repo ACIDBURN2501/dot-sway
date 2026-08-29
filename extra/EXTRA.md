@@ -120,6 +120,7 @@ not reliably bind separate `Consumer Control`, WMI, or vendor hotkey devices.
 **Configuration:**
 - The sample config in `extra/swhkd/swhkdrc` calls the same helper scripts used by the main Sway config
 - Copy it to `~/.config/swhkd/swhkdrc`
+- The sample's absolute paths point at the maintainer's home (`/home/ajl/...`). Since `swhkd` runs as root (whose `$HOME` is `/root`), adjust them to the real user's `~/.config/sway` on each host before starting the daemon
 - Keep the config limited to media keys to avoid overlapping with your normal Sway bindings
 
 **Startup:**
