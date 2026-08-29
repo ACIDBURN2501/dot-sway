@@ -74,7 +74,7 @@ These scripts live in `scripts/` and are invoked in place from `$HOME/.config/sw
         - Wofi theme by symlinking `~/.config/wofi/style.css`
         - Mako notification theme (when installed) with `makoctl reload`
         - Gnome `gtk-theme` (when available)
-    - **Status indicator:** `waybar/modules/theme.sh` emits 🌙 (dark) or ☀️ (light) at the left quarter point of the bar; click toggles. Resolution: gnome gsettings → `theme` flag → `.theme_state` → dark, so hybrid sessions keep gnome as the live source of truth.
+    - **Status indicator:** `waybar/modules/theme.sh` emits 🌙 (dark) or ☀️ (light) in the center cluster; click toggles. Resolution: gnome gsettings → `theme` flag → `.theme_state` → dark, so hybrid sessions keep gnome as the live source of truth.
     - **Subcommands:**
         - `toggle_theme.sh toggle` — flip
         - `toggle_theme.sh init` — re-apply current theme to all components (invoked at Sway startup)
