@@ -305,3 +305,7 @@ include /etc/sway/config.d/*
 
 # SSH agent socket
 exec sh -c 'ssh-add -l >/dev/null 2>&1 || ssh-add ~/.ssh/github'
+
+# Post-boot hooks (docs/hooks.md). `exec` fires once per session start; a
+# reload does not re-run it. Silent no-op until a hook is added.
+exec $HOME/.config/sway/scripts/hooks.sh post-boot

@@ -1,0 +1,13 @@
+#!/bin/sh
+# Example post-boot hook (non-executable by design).
+#
+# Fires: once per Sway session start. Wired as `exec` in `config`, so a
+# `swaymsg reload` does not re-fire it.
+# Receives: the event name ($1 = "post-boot").
+# Exit codes: a non-zero exit is logged by scripts/hooks.sh and skipped;
+# the remaining hooks still run.
+#
+# To activate:
+#   cp post-boot.sample myhook.sh && chmod +x myhook.sh
+
+exit 0

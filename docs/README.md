@@ -6,6 +6,7 @@ One page per component, in reading order. Every page opens with the same three a
 |---|---|
 | [bootstrap.md](bootstrap.md) | Zero to online: base install, package manifests, provisioner |
 | [sway.md](sway.md) | The core config: keybindings, drop-ins, per-machine overlays |
+| [hooks.md](hooks.md) | Event hooks: drop-in automation per event, with a machine-local overlay |
 | [waybar.md](waybar.md) | The status bar: layout, the module output contract, theming |
 | [theming.md](theming.md) | Dark/light toggle and wallpaper rotation |
 | [hardware.md](hardware.md) | Media keys, monitor hotplug, clamshell, floating windows |

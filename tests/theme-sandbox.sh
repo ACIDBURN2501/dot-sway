@@ -203,6 +203,32 @@ assert "toggle asks gnome for Adwaita"      bash -c "grep -q 'set org.gnome.desk
 assert "state file tracks the gnome flip"   eq "$(cat "$HOME_/.config/sway/.theme_state")" "light"
 assert "gnome flip refreshes theme flag (light)" eq "$(cat "$RUNTIME_/sway/toggles/theme")" "light"
 
+# -------------------------------------- S12: event hook dispatcher (scripts/hooks.sh)
+new_sandbox
+run_helper scripts/hooks.sh some-event
+assert "dispatcher no-ops on unknown event" eq "$RC" 0
+
+mkdir -p "$Sway/hooks/test.d"
+printf '#!/bin/sh\nprintf "%%s\\n" "$1" > "%s/hook_out"\n' "$HOME_" > "$Sway/hooks/test.d/one.sh"
+chmod +x "$Sway/hooks/test.d/one.sh"
+printf '#!/bin/sh\nexit 3\n' > "$Sway/hooks/test.d/fail.sh"
+chmod +x "$Sway/hooks/test.d/fail.sh"
+printf '#!/bin/sh\ntouch "%s/second_ran"\n' "$HOME_" > "$Sway/hooks/test.d/two.sh"
+chmod +x "$Sway/hooks/test.d/two.sh"
+printf '#!/bin/sh\ntouch "%s/sample_ran"\n' "$HOME_" > "$Sway/hooks/test.d/three.sample"
+run_helper scripts/hooks.sh test
+assert "tracked hook ran with event name" eq "$(cat "$HOME_/hook_out" 2>/dev/null)" "test"
+assert "failing hook did not stop the rest" bash -c "[[ -f '$HOME_/second_ran' ]]"
+assert "non-executable sample does not run" bash -c "[[ ! -f '$HOME_/sample_ran' ]]"
+
+mkdir -p "$Sway/hooks/order.d" "$Sway/hooks.local/order.d"
+printf '#!/bin/sh\necho t >> "%s/order"\n' "$HOME_" > "$Sway/hooks/order.d/tracked.sh"
+chmod +x "$Sway/hooks/order.d/tracked.sh"
+printf '#!/bin/sh\necho l >> "%s/order"\n' "$HOME_" > "$Sway/hooks.local/order.d/overlay.sh"
+chmod +x "$Sway/hooks.local/order.d/overlay.sh"
+run_helper scripts/hooks.sh order
+assert "hooks.local overlay runs after tracked" eq "$(tr -d '\n' < "$HOME_/order" 2>/dev/null)" "tl"
+
 echo
 echo "$pass/$((pass + fail)) assertions passed"
 [[ "$fail" -eq 0 ]]
