@@ -1,4 +1,4 @@
-# sync — Sway/Swayfx Desktop Configuration
+# sync — Sway/SwayFX Desktop Configuration
 
 [![CI](https://github.com/aajll/sync/actions/workflows/ci.yml/badge.svg)](https://github.com/aajll/sync/actions/workflows/ci.yml)
 
@@ -18,6 +18,7 @@ A portable Sway (and Swayfx) configuration with **Waybar** as the status bar, a 
 | `scripts/` | Utilities bound to keybinds / `exec` lines. See [`scripts/SCRIPTS.md`](scripts/SCRIPTS.md). |
 | `extra/` | Standalone configs for adjacent tools (kanshi, wofi, mako, swhkd). See [`extra/EXTRA.md`](extra/EXTRA.md). |
 | `bootstrap/` | Zero → online: archinstall JSON, package manifests, provisioner. See [`bootstrap/README.md`](bootstrap/README.md). |
+| `tests/` | Executable checks, currently the sandboxed theme-pipeline suite. |
 | `docs/` | Topic documentation (below). |
 
 ## Zero → online (new machine)
@@ -51,4 +52,4 @@ Log into the Sway session; `config.d/waybar` and the theme/monitor hooks start a
 | [hardware.md](docs/hardware.md) | Media keys, monitor hotplug, clamshell, floating windows |
 | [troubleshooting.md](docs/troubleshooting.md) | Symptom → check table |
 
-Contributor conventions live in [`AGENTS.md`](AGENTS.md).
+Contributor conventions live in [`CONTRIBUTING.md`](CONTRIBUTING.md); agent conventions live in [`AGENTS.md`](AGENTS.md).
