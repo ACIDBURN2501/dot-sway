@@ -1,20 +1,26 @@
 // Waybar layout for the Sway desktop.
 //
-//   Left:    workspaces, sway mode
-//   Center:  brightness, volume, theme, DND, bluetooth, network
+//   Left:    workspaces, sway mode, [quarter spacer], theme, DND
+//   Center:  brightness, volume, bluetooth, network
 //   Right:   tray, battery, clock
 //
-// Three modules under custom/* shell out to scripts in waybar/modules/
+// The theme + DND indicators form the "toggle group", parked at the bar's
+// left quarter (halfway between the edge and the center cluster) by
+// custom/quarter-spacer, a px gap banded from the output width — see
+// style.css. Right-quarter variant: move the group to the front of
+// modules-right with the spacer after custom/dnd; see docs/waybar.md.
+//
+// Four modules under custom/* shell out to scripts in waybar/modules/
 // for logic that has no native equivalent (DDC/CI brightness cache,
-// theme state, mako DND mode).
+// theme flag, DND flag, quarter-point spacer).
 {
   "layer": "top",
   "position": "top",
   "height": 32,
   "spacing": 6,
 
-  "modules-left": ["sway/workspaces", "sway/mode"],
-  "modules-center": ["custom/brightness", "pulseaudio", "custom/theme", "custom/dnd", "bluetooth", "network"],
+  "modules-left": ["sway/workspaces", "sway/mode", "custom/quarter-spacer", "custom/theme", "custom/dnd"],
+  "modules-center": ["custom/brightness", "pulseaudio", "bluetooth", "network"],
   "modules-right": ["tray", "battery", "clock"],
 
   "sway/workspaces": {
@@ -25,6 +31,13 @@
 
   "sway/mode": {
     "format": "<span style=\"italic\">{}</span>"
+  },
+
+  "custom/quarter-spacer": {
+    "exec": "$HOME/.config/sway/waybar/modules/quarter-spacer.sh",
+    "interval": 5,
+    "return-type": "json",
+    "tooltip": false
   },
 
   "battery": {
