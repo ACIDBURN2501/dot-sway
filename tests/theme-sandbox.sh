@@ -51,6 +51,40 @@ new_sandbox() { # sets HOME_ RUNTIME_ BIN_ GNOME_LOG_
   # the sandbox really is a fresh box.
   rm -f "$Sway/.theme_state"
 }
+install_mako_stubs() { # stateful makoctl: modes live in a file, reload resets it
+  # `reload` mimics the daemon restart that drops custom modes in production;
+  # the sync helper under test must re-add DoNDisturb after that reset.
+  cat > "$BIN_/makoctl" <<EOF
+#!/bin/sh
+STATE="$SB/mako_modes"
+[ -f "\$STATE" ] || echo default > "\$STATE"
+cmd="\${1-}"
+if [ "\$cmd" = reload ]; then
+  echo default > "\$STATE"
+elif [ "\$cmd" = mode ]; then
+  if [ "\${2-}" = -a ]; then
+    grep -qx "\$3" "\$STATE" || echo "\$3" >> "\$STATE"
+  elif [ "\${2-}" = -r ]; then
+    if grep -q "\$3" "\$STATE"; then
+      grep -v "\$3" "\$STATE" > "\$STATE.tmp" && mv "\$STATE.tmp" "\$STATE"
+    fi
+  else
+    cat "\$STATE"
+  fi
+fi
+exit 0
+EOF
+  chmod +x "$BIN_/makoctl"
+  # pgrep lies that mako is running, so the reload (and sync) path executes.
+  printf '#!/bin/sh\nexit 0\n' > "$BIN_/pgrep"
+  chmod +x "$BIN_/pgrep"
+}
+run_helper() { # run_helper <script> [args...] → sets RC and OUT
+  local script="$1"
+  shift
+  OUT=$(env -u SWAYSOCK HOME="$HOME_" XDG_RUNTIME_DIR="$RUNTIME_" PATH="$BIN_:$PATH" \
+    bash "$HOME_/.config/sway/$script" "$@" 2>/dev/null) && RC=0 || RC=$?
+}
 install_gnome_stub() { # gsettings stub that pretends GNOME is in dark mode
   # POSIX sh only: the stub runs under /bin/sh, which is dash on the CI
   # runner. `[[` would parse as a command-not-found and the stub would
@@ -136,10 +170,27 @@ echo "user moon theme" > "$HOME_/.config/kitty/themes/tokyo_night_moon.conf"
 run_tts init
 assert "user kitty theme wins" eq "$(cat "$HOME_/.config/kitty/current-theme.conf")" "user moon theme"
 
-# ---------------------------------------------------------------- S9: bad usage
+# ------------------------------------- S9: bad usage
 new_sandbox
 run_tts bogus
 assert "unknown arg exits non-zero" bash -c "[[ $RC -ne 0 ]]"
+
+# ------------------- S11: mako DoNDisturb survives a theme-flip reload (makoctl restarts)
+new_sandbox
+install_mako_stubs
+run_helper scripts/toggle.sh set dnd
+run_tts toggle
+assert "flag set: flip re-applies DoNDisturb after reload" has "$SB/mako_modes" "DoNDisturb"
+
+new_sandbox
+install_mako_stubs
+run_tts toggle
+assert "flag unset: flip leaves DoNDisturb off" bash -c "! grep -q 'DoNDisturb' '$SB/mako_modes' 2>/dev/null"
+
+new_sandbox
+rm -f "$Sway/scripts/toggle.sh"
+run_helper scripts/mako-mode-sync.sh
+assert "helper exits 0 without flag store" eq "$RC" 0
 
 # ------------------------------------- S10: GNOME present → gsettings is source of truth
 new_sandbox
