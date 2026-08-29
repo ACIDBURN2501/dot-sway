@@ -163,7 +163,7 @@ update_wofi_theme() {
 update_kitty_theme() {
   local theme="$1"
   local kitty_conf="$HOME/.config/kitty"
-  local user_themes="$kitty_conf/themes/themes"
+  local user_themes="$kitty_conf/themes"
   local repo_kitty="$HOME/.config/sway/extra/kitty"
 
   # Select appropriate Tokyo Night theme. User-installed themes win; the

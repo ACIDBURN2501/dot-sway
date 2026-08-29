@@ -80,11 +80,10 @@ assert "init does not create .theme_state" bash -c "[[ ! -f '$HOME_/.config/sway
 assert "init writes dark sway_theme_config" has "$RUNTIME_/sway/sway_theme_config" 'set $bg_color #323232'
 assert "init links waybar dark palette"  link_to "$Sway/waybar/colors.css" "colors-dark.css"
 assert "init links wofi dark style"     link_to "$HOME_/.config/wofi/style.css" "$Sway/extra/wofi/style-dark.css"
-# NOTE: the doubled themes/themes/ staging dir below is a known oddity;
-# see the kitty section of extra/EXTRA.md.
+# Theme files stage into kitty's conventional dir, ~/.config/kitty/themes/.
 assert "init seeds user kitty.conf"     same_as "$HOME_/.config/kitty/kitty.conf" "$Sway/extra/kitty/kitty.conf"
-assert "init seeds kitty moon theme"    same_as "$HOME_/.config/kitty/themes/themes/tokyo_night_moon.conf" "$Sway/extra/kitty/themes/tokyo_night_moon.conf"
-assert "init sets current-theme=moon"   same_as "$HOME_/.config/kitty/current-theme.conf" "$HOME_/.config/kitty/themes/themes/tokyo_night_moon.conf"
+assert "init seeds kitty moon theme"    same_as "$HOME_/.config/kitty/themes/tokyo_night_moon.conf" "$Sway/extra/kitty/themes/tokyo_night_moon.conf"
+assert "init sets current-theme=moon"   same_as "$HOME_/.config/kitty/current-theme.conf" "$HOME_/.config/kitty/themes/tokyo_night_moon.conf"
 assert "init seeds managed mako config" same_as "$HOME_/.config/mako/config" "$Sway/extra/mako/config-dark"
 
 # ------------------------------------------------- S2: toggle dark→light (notify-send fails)
@@ -94,12 +93,12 @@ assert "toggle flips state to light"  eq "$(cat "$HOME_/.config/sway/.theme_stat
 assert "toggle writes light config"   has "$RUNTIME_/sway/sway_theme_config" 'set $bg_color #f0f0f0'
 assert "toggle links waybar light"    link_to "$Sway/waybar/colors.css" "colors-light.css"
 assert "toggle links wofi light"      link_to "$HOME_/.config/wofi/style.css" "$Sway/extra/wofi/style-light.css"
-assert "toggle sets current-theme=day" same_as "$HOME_/.config/kitty/current-theme.conf" "$HOME_/.config/kitty/themes/themes/tokyo_night_day.conf"
+assert "toggle sets current-theme=day" same_as "$HOME_/.config/kitty/current-theme.conf" "$HOME_/.config/kitty/themes/tokyo_night_day.conf"
 
 # ---------------------------------------------------------- S3: round trip back to dark
 run_tts toggle
 assert "round trip returns to dark" eq "$(cat "$HOME_/.config/sway/.theme_state")" "dark"
-assert "round trip sets current-theme=moon" same_as "$HOME_/.config/kitty/current-theme.conf" "$HOME_/.config/kitty/themes/themes/tokyo_night_moon.conf"
+assert "round trip sets current-theme=moon" same_as "$HOME_/.config/kitty/current-theme.conf" "$HOME_/.config/kitty/themes/tokyo_night_moon.conf"
 
 # ----------------------------------------------------------------------- S4: get
 run_tts get
@@ -125,12 +124,12 @@ mkdir -p "$HOME_/.config/kitty"
 echo "custom kitty.conf" > "$HOME_/.config/kitty/kitty.conf"
 run_tts toggle
 assert "user kitty.conf untouched" eq "$(cat "$HOME_/.config/kitty/kitty.conf")" "custom kitty.conf"
-assert "current-theme still updated for user kitty" same_as "$HOME_/.config/kitty/current-theme.conf" "$HOME_/.config/kitty/themes/themes/tokyo_night_day.conf"
+assert "current-theme still updated for user kitty" same_as "$HOME_/.config/kitty/current-theme.conf" "$HOME_/.config/kitty/themes/tokyo_night_day.conf"
 
 # ------------------------------------------------ S8: user-installed kitty theme wins over repo copy
 new_sandbox
-mkdir -p "$HOME_/.config/kitty/themes/themes"
-echo "user moon theme" > "$HOME_/.config/kitty/themes/themes/tokyo_night_moon.conf"
+mkdir -p "$HOME_/.config/kitty/themes"
+echo "user moon theme" > "$HOME_/.config/kitty/themes/tokyo_night_moon.conf"
 run_tts init
 assert "user kitty theme wins" eq "$(cat "$HOME_/.config/kitty/current-theme.conf")" "user moon theme"
 

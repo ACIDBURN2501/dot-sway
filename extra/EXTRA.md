@@ -78,7 +78,7 @@ Location: `extra/kitty/`
 
 The theme toggle themes kitty with [Tokyo Night](https://github.com/folke/tokyonight.nvim) (by Folke Lemaitre — the files carry their own MIT license headers, and the full license text is in `themes/LICENSE`). `scripts/toggle_theme.sh` seeds a fresh box on first `init`:
 
-- `themes/tokyo_night_moon.conf` / `themes/tokyo_night_day.conf` are copied into `~/.config/kitty/themes/themes/` (a user-installed theme there always wins).
+- `themes/tokyo_night_moon.conf` / `themes/tokyo_night_day.conf` are copied into kitty's conventional theme directory, `~/.config/kitty/themes/` (a user-installed `tokyo_night_*.conf` there always wins).
 - `kitty.conf` is copied to `~/.config/kitty/kitty.conf` **only if absent** — it carries the `include current-theme.conf` line and socket-based remote control for live `kitty @ set-colors`. A user-authored kitty.conf is never touched; if yours lacks the include, add it manually.
 
 ## Mako Notification Daemon (Optional)
