@@ -36,7 +36,7 @@ A few names differ from the Arch world:
 
 Used by Waybar modules and scripts:
 
-- `upower` — battery
+- `upower` — battery state for the Waybar module, and power transitions for `scripts/power-events.sh` (battery low / fully charged / AC plugged / unplugged → notification + hook, see `docs/hooks.md`)
 - `brightnessctl` — laptop backlight
 - `ddcutil` — external monitor brightness (optional)
 - `wpctl` (PipeWire) or `pactl` (PulseAudio) — audio; Waybar's `pulseaudio` module reads via libpulse, so either works as long as the socket is provided (PipeWire's `pipewire-pulse` daemon counts)

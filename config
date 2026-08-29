@@ -311,6 +311,12 @@ exec_always ~/.config/sway/scripts/monitor-hotplug.sh
 # Optional: Mako notification daemon (only starts if installed)
 exec command -v mako && mako || true
 
+# Optional: battery/AC power event watcher (only runs when upower is
+# installed and a battery is present — silent on desktops). Polls UPower
+# every 30s and fires one notification plus one hook per power transition
+# (docs/hooks.md).
+exec $HOME/.config/sway/scripts/power-events.sh
+
 # Optional: wob OSD bar for volume/brightness feedback (only starts if
 # installed; config in extra/wob/wob.ini). The control scripts write new
 # values to $XDG_RUNTIME_DIR/sway/wob.sock via scripts/osd-bar.sh. The fifo

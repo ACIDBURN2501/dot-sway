@@ -1,0 +1,12 @@
+# Example power-plugged hook (non-executable by design).
+#
+# Fires: once per transition, when the AC is connected — the UPower state
+# moves from discharging to charging (scripts/power-events.sh, 30s poll).
+# Receives: the event name ($1 = "power-plugged").
+# Exit codes: a non-zero exit is logged by scripts/hooks.sh and skipped;
+# the remaining hooks still run.
+#
+# To activate:
+#   cp power-plugged.sample myhook.sh && chmod +x myhook.sh
+
+exit 0
