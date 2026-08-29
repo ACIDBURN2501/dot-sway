@@ -15,7 +15,7 @@ Legend: ✓ working · ! degraded or N/A (box-specific — see notes) · ✗ gap
 | Notifications | mako daemon + `extra/mako/` theme configs | `mako` | `mako-notifier` | ✓ | ✓ |
 | Exit confirm | swaynag (`Mod+Shift+e`) | bundled in `sway` | bundled in `sway` | ✓ | ✓ |
 | Screenshots | grim + slurp (`Ctrl+Alt+s`) | `grim` `slurp` | `grim` `slurp` | ✓ | ✓ |
-| Lock / idle | swaylock + swayidle | `swaylock` `swayidle` | `swaylock` `swayidle` | ✓ | ✓ |
+| Lock / idle | `config.d/idle`: lock at 600s idle (default, tunable in `~/.config/sway/idle.conf`), display off at 900s, lock before suspend; stay-awake toggle `$super+Ctrl+s` | `swaylock` `swayidle` | `swaylock` `swayidle` | ! (pending redeploy) | ! (pending redeploy) |
 | Volume | `scripts/volume-control.sh` (wpctl → pactl → silent) | `wireplumber` (ships wpctl) | `wireplumber` (ships wpctl) | ✓ | ✓ |
 | Media (MPRIS) | transport keys + waybar `mpris` module (native, libplayerctl; waybar ≥ 0.12) | `playerctl` | `playerctl` | ! (packaged, not yet installed) | ✓ |
 | OSD (volume/brightness) | `wob` fed by the control scripts via `scripts/osd-bar.sh` (silent skip when absent) | `wob` | `wob` | ! (packaged, not yet installed) | ! (packaged, not yet installed) |

@@ -84,10 +84,14 @@ check_screenshots() {
 }
 
 check_lock_idle() {
-  if has_bin swaylock && has_bin swayidle; then
-    report "✓" "Lock / idle" "swaylock + swayidle"
-  else
+  # A running swayidle is the feature; a merely installed binary is not
+  # (config.d/idle starts it via scripts/idle-manager.sh).
+  if ! has_bin swaylock || ! has_bin swayidle; then
     report "✗" "Lock / idle" "swaylock or swayidle missing"
+  elif pgrep -x swayidle >/dev/null 2>&1; then
+    report "✓" "Lock / idle" "swayidle running"
+  else
+    report "✗" "Lock / idle" "swayidle installed but not running (config.d/idle not deployed?)"
   fi
 }
 

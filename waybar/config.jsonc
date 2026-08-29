@@ -14,7 +14,7 @@
   "spacing": 6,
 
   "modules-left": ["sway/workspaces", "sway/mode"],
-  "modules-center": ["custom/brightness", "pulseaudio", "mpris", "custom/theme", "custom/dnd", "bluetooth", "network"],
+  "modules-center": ["custom/brightness", "pulseaudio", "mpris", "custom/theme", "custom/dnd", "custom/stay-awake", "bluetooth", "network"],
   "modules-right": ["tray", "battery", "clock"],
 
   "sway/workspaces": {
@@ -84,6 +84,13 @@
     "interval": 2,
     "on-click": "$HOME/.config/sway/scripts/toggle-mako-dnd.sh",
     "tooltip-format": "Click to toggle Do Not Disturb"
+  },
+
+  "custom/stay-awake": {
+    "exec": "$HOME/.config/sway/waybar/modules/stay-awake.sh",
+    "interval": 2,
+    "on-click": "$HOME/.config/sway/scripts/toggle-stay-awake.sh",
+    "tooltip-format": "Stay awake: idle lock and screen-off suspended. Click to toggle."
   },
 
   "bluetooth": {

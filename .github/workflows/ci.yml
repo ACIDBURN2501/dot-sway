@@ -128,3 +128,6 @@ jobs:
 
       - name: Run the power-events suite
         run: bash tests/power-sandbox.sh "$GITHUB_WORKSPACE"
+
+      - name: Run the idle suite
+        run: bash tests/idle-sandbox.sh "$GITHUB_WORKSPACE"

@@ -29,6 +29,7 @@ A few names differ from the Arch world:
 
 - `sway` (or `swayfx`), `swaymsg`, `swaynag`
 - `waybar` (≥ 0.9)
+- `swayidle`, `swaylock` — idle lock and screen-off (`config.d/idle` via `scripts/idle-manager.sh`) and the `$super+l` lock keybind
 - `bash`, `jq`
 - A Nerd Font (config uses `SauceCodePro Nerd Font`, `Symbols Nerd Font` fallback)
 
@@ -64,6 +65,5 @@ Optional, picked up automatically when installed: `gsettings` (Gnome `color-sche
 
 - `grim`, `slurp` — screenshots
 - `wl-clipboard` (`wl-copy`) — puts each screenshot on the clipboard as well as on disk. Without it captures still save, they just aren't pastable. A clipboard *history* needs a manager on top ([`cliphist`](https://github.com/sentriz/cliphist), `clipman`); neither is wired up here.
-- `swayidle`, `swaylock` — idle locking
-- `wayland-pipewire-idle-inhibit` — holds an idle inhibitor while audio plays so videos don't trigger the lock. `cargo install wayland-pipewire-idle-inhibit` (needs `libpipewire-0.3-dev` and `libclang-dev` at build time); the binary must be on the Sway session's `PATH`.
+- `wayland-pipewire-idle-inhibit` — holds an idle inhibitor while audio plays so videos don't trigger the idle lock. `cargo install wayland-pipewire-idle-inhibit` (needs `libpipewire-0.3-dev` and `libclang-dev` at build time); the binary must be on the Sway session's `PATH`.
 - `dbus-update-activation-environment`, `systemctl --user import-environment` — XDG/Wayland env propagation. See [xdg-defaults.md](xdg-defaults.md).
