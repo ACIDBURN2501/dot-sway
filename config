@@ -27,8 +27,9 @@ exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CU
 exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
 
 # Screen snipping
-# Snip to file (Save to ~/Pictures)
-bindsym Control+Mod1+s exec grim -g "$(slurp)" ~/Pictures/Screenshots/screenshot-$(date +'%Y-%m-%d-%H%M%S').png
+# Snip to file (Save to ~/Pictures). The dir is created on demand — a fresh
+# box has no desktop environment to seed XDG dirs, so the bind self-heals.
+bindsym Control+Mod1+s exec sh -c 'mkdir -p ~/Pictures/Screenshots && grim -g "$(slurp)" ~/Pictures/Screenshots/screenshot-$(date +%Y-%m-%d-%H%M%S).png'
 
 # Screen locking
 bindsym $super+l exec swaylock -f -i ~/.config/sway/images/wp.png
@@ -59,8 +60,8 @@ output * bg ~/.config/sway/images/wp.png fill
 
 # Hold an idle inhibitor while any PipeWire stream is active, so swayidle
 # doesn't lock the screen during video playback (e.g. Twitch, where the site
-# doesn't request the Wake Lock API itself).
-exec wayland-pipewire-idle-inhibit
+# doesn't request the Wake Lock API itself). Optional — skipped if uninstalled.
+exec sh -c 'command -v wayland-pipewire-idle-inhibit >/dev/null && exec wayland-pipewire-idle-inhibit'
 
 ### Input configuration
 # Default compose key. Per-device override lives in the gitignored
