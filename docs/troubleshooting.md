@@ -1,5 +1,9 @@
 # Troubleshooting
 
+**What:** Symptom → check for the failures that actually happen.
+**Where:** this page.
+**Verified:** each row names the check that reproduces the symptom; add a row only when you have verified both sides.
+
 | Symptom | Check |
 |---------|-------|
 | No bar at all | `pgrep waybar`; if empty, run `waybar -c waybar/config.jsonc -s waybar/style.css` and inspect stderr |

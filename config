@@ -1,5 +1,5 @@
 # Sway configuration — the `sync` repo (see README.md).
-# Repo docs: docs/ (requirements, theming, hardware, troubleshooting).
+# Repo docs: docs/ (index: docs/README.md).
 # Per-machine overrides: config.d/ drop-ins and the gitignored .local files.
 
 

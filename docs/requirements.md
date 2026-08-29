@@ -1,5 +1,9 @@
 # Requirements
 
+**What:** The dependency contract (probe-and-degrade) — what each feature needs, and the three ways to satisfy it.
+**Where:** this page; the installable truth is the `bootstrap/packages/*.txt` manifests.
+**Verified:** the manifests are checked against reference installs; at runtime, features light up as their tools appear.
+
 Dependencies follow a **probe-and-degrade** contract. This file *names* what each feature needs; it never hardcodes or force-installs. For any dependency you have three choices:
 
 1. **Install it yourself** — everything is probed at runtime (`command -v`, `upower -e`, …), so the feature lights up automatically once the tool is present.
