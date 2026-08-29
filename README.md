@@ -37,12 +37,15 @@ Log into the Sway session; `config.d/waybar` and the theme/monitor hooks start a
 
 | Doc | Topic |
 |-----|-------|
-| [requirements.md](docs/requirements.md) | Dependencies and optional integrations |
-| [core-features.md](docs/core-features.md) | The "just works" matrix, per distro |
-| [xdg-defaults.md](docs/xdg-defaults.md) | Default terminal, MIME associations, desktop portals |
-| [status-bar.md](docs/status-bar.md) | Waybar layout, adding modules, theming |
-| [theming.md](docs/theming.md) | Dark/light toggle, wallpaper rotation |
+| [README.md](docs/README.md) | The docs index — one page per component, in reading order |
+| [bootstrap.md](docs/bootstrap.md) | Zero to online: base install, package manifests, provisioner |
+| [sway.md](docs/sway.md) | The core config: keybindings, drop-ins, per-machine overlays |
+| [waybar.md](docs/waybar.md) | The status bar: layout, the module output contract, theming |
+| [theming.md](docs/theming.md) | Dark/light toggle and wallpaper rotation |
 | [hardware.md](docs/hardware.md) | Media keys, monitor hotplug, clamshell, floating windows |
-| [troubleshooting.md](docs/troubleshooting.md) | Symptom → check table |
+| [requirements.md](docs/requirements.md) | The dependency contract (probe-and-degrade) |
+| [core-features.md](docs/core-features.md) | The "just works" matrix, verified per distro |
+| [xdg-defaults.md](docs/xdg-defaults.md) | Default terminal, MIME associations, desktop portals |
+| [troubleshooting.md](docs/troubleshooting.md) | Symptom → check |
 
 Contributor conventions live in [`CONTRIBUTING.md`](CONTRIBUTING.md); agent conventions live in [`AGENTS.md`](AGENTS.md).

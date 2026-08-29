@@ -1,10 +1,12 @@
 # Core Features — the "just works" matrix
 
-The features that make a machine feel whole. Each row lists what the configuration expects and the package that provides it per supported distro.
+**What:** The capability matrix — what the configuration expects, per distro, and what is verified on the reference machines.
+**Where:** this page; the source of truth is `scripts/check-core-features.sh`, which probes the machine and prints the matrix as ✓/!/✗ (exit 1 on any ✗).
+**Verified:** the reference columns were checked in 2026-08; re-run the script on any box to re-verify a column.
+
+Each row lists what the configuration expects and the package that provides it per supported distro.
 
 Legend: ✓ working · ! degraded or N/A (box-specific — see notes) · ✗ gap (fix below)
-
-Reproduce a column on your own box: `scripts/check-core-features.sh` probes the machine and prints this matrix as ✓/!/✗ (exit 1 on any ✗).
 
 | Feature | Implementation | Arch package | Debian 13 package | Debian 13 (ref.) | Arch (ref.) |
 |---------|---------------|--------------|-------------------|--------|-------|

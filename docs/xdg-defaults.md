@@ -1,6 +1,8 @@
 # XDG Defaults (Terminal, MIME, Portals)
 
-Session-level defaults that make Sway behave like a first-class desktop on a GNOME-based distro. None of this lives in the Sway `config` file; it is XDG/session state, applied by [`scripts/setup-defaults.sh`](../scripts/setup-defaults.sh) (idempotent; user-level steps run without root, root steps are printed).
+**What:** The session-level defaults — terminal, MIME associations, portals — that make Sway behave like a first-class desktop on a GNOME-based distro.
+**Where:** applied by [`scripts/setup-defaults.sh`](../scripts/setup-defaults.sh) (idempotent; user-level steps run without root, root steps are printed); none of it lives in the Sway `config` file, it is XDG/session state.
+**Verified:** the checks at the bottom of this page.
 
 > **Scope — Debian 13 with a GNOME fallback session; Arch with caveats.** This is where the "GNOME owns the app defaults, Sway has to co-exist" friction actually shows up, so the commands below assume `apt` and Debian's package names. On **Arch** the four terminal layers and the MIME/portals sections apply as-is (packages from pacman — see `bootstrap/packages/pacman.txt`), but the Nautilus layer has no equivalent (no GNOME fallback session). The Nautilus terminal extension is the sharp edge on Debian: its Python binding is upstream-named `nautilus-python` (Debian/Ubuntu rename it `python3-nautilus`), and `nautilus-open-any-terminal` isn't packaged for Debian at all (it *is* on the Arch AUR). Translate package names rather than pasting these verbatim.
 

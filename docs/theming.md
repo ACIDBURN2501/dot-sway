@@ -1,5 +1,9 @@
 # Theme Toggle & Wallpaper
 
+**What:** The unified dark/light theme across bar, terminal, launcher, and notifications, plus on-demand wallpaper rotation.
+**Where:** `scripts/toggle_theme.sh` and `scripts/rotate-wallpaper.sh`; the palettes in `waybar/colors-{dark,light}.css`; per-app bits in `extra/{kitty,wofi,mako}`.
+**Verified:** `tests/theme-sandbox.sh` (28 assertions) in CI, running the real `toggle_theme.sh` in a throwaway `$HOME` with session binaries stubbed.
+
 ## Theme toggle (dark/light)
 
 A single keybind (`Mod+Shift+t`) flips Sway, Waybar, kitty, wofi, mako, and (under GNOME) Gnome's `color-scheme` between dark and light. The script is `scripts/toggle_theme.sh`; it runs `init` at Sway startup to bootstrap all components.

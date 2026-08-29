@@ -1,13 +1,15 @@
 # Hardware Integration
 
-Media keys, external displays, and per-app window rules.
+**What:** Media keys, monitor hotplug (including clamshell), and per-app floating windows.
+**Where:** keybindings in `config`; `scripts/` (volume, brightness, monitor-hotplug); `config.d/floating_windows`; the `extra/swhkd/` fallback for odd keyboards.
+**Verified:** the per-distro rows in [core-features.md](core-features.md); per-machine hotplug behaviour is logged in `$XDG_RUNTIME_DIR/sway/monitor-hotplug.log`.
 
 ## Media keys
 
 Bound with both `bindsym` (`XF86…` keysyms) and `bindcode` (raw Linux input codes) so they work across built-in, external USB, and separate-consumer-control keyboards.
 
-- `scripts/volume-control.sh` prefers `wpctl`, falls back to `pactl`.
-- `scripts/brightness-control.sh` uses `brightnessctl`, with a `ddcutil` cache for external monitors.
+- `scripts/volume-control.sh` handles mute, volume, and mic mute (the fallback chain is in the matrix).
+- `scripts/brightness-control.sh` handles the laptop backlight; `external-brightness.sh` handles external monitors (the matrix row has the tooling).
 
 | Code | Key |
 |------|-----|
