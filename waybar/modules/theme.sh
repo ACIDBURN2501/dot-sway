@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Theme indicator for status bar
 # Shows current theme: ☀️ (light) or 🌙 (dark)
 

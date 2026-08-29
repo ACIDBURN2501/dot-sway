@@ -7,6 +7,7 @@ A single keybind (`Mod+Shift+t`) flips Sway, Waybar, kitty, wofi, mako, and (und
 - **Status indicator:** 🌙 dark / ☀️ light (`waybar/modules/theme.sh`).
 - **Gnome sync:** when `gsettings` reports `org.gnome.desktop.interface color-scheme`, that is the source of truth; otherwise `.theme_state` is.
 - **Live Waybar repaint:** symlink swap + `SIGUSR2`, no restart.
+- **Kitty:** Tokyo Night (MIT, bundled in `extra/kitty/themes/`). On a fresh box, `init` seeds `~/.config/kitty/` (theme files + a minimal `kitty.conf`); existing kitty configs are never overwritten. See `extra/EXTRA.md`.
 
 ```bash
 scripts/toggle_theme.sh toggle   # flip

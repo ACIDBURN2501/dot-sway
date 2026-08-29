@@ -48,6 +48,11 @@ probes the machine and prints this matrix as ✓/!/✗ (exit 1 on any ✗).
 - **rage on Debian:** not packaged in trixie. Decrypting secrets only needs
   `age`; to *encrypt* a new secret, do it on an Arch box (rage is packaged
   there) or via pipx.
+- **SSH agent (Arch reference):** the box runs keychain, so
+  `SSH_AUTH_SOCK` comes from keychain rather than the distro
+  `ssh-agent.socket` the matrix row describes. The feature works either
+  way; the distro unit (or the `bootstrap/user/` fallback) is what a fresh
+  box gets.
 - **Snapper:** irrelevant until a machine has btrfs on `/` — the default
   installers give ext4 on purpose (simpler).
 - **impala:** PyPI (pipx) on iwd boxes only; Debian's nmtui path covers the

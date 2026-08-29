@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Theme toggle script for Sway/Swayfx
 # Syncs with Gnome when available, falls back to Sway-only theming
 
@@ -160,23 +160,39 @@ update_wofi_theme() {
 update_kitty_theme() {
     local theme="$1"
     local kitty_conf="$HOME/.config/kitty"
-    local themes_dir="$kitty_conf/themes/themes"
+    local user_themes="$kitty_conf/themes/themes"
+    local repo_kitty="$HOME/.config/sway/extra/kitty"
 
-    # Select appropriate Tokyo Night theme
+    # Select appropriate Tokyo Night theme. User-installed themes win; the
+    # repo bundles MIT-licensed copies (extra/kitty/themes/) so a fresh box
+    # gets live kitty theming without any manual setup.
     if [[ "$theme" == "dark" ]]; then
-        local theme_file="$themes_dir/tokyo_night_moon.conf"
+        local theme_name="tokyo_night_moon.conf"
     else
-        local theme_file="$themes_dir/tokyo_night_day.conf"
+        local theme_name="tokyo_night_day.conf"
     fi
 
-    # Update current-theme.conf if theme file exists
-    if [[ -f "$theme_file" ]]; then
-        cp "$theme_file" "$kitty_conf/current-theme.conf"
+    if [[ -f "$user_themes/$theme_name" ]]; then
+        local theme_file="$user_themes/$theme_name"
+    elif [[ -f "$repo_kitty/themes/$theme_name" ]]; then
+        mkdir -p "$user_themes"
+        cp "$repo_kitty/themes/$theme_name" "$user_themes/$theme_name"
+        local theme_file="$user_themes/$theme_name"
+    else
+        return 0
+    fi
 
-        # Update running kitty instances if kitty remote control is available
-        if command -v kitty &>/dev/null; then
-            kitty @ set-colors --all --configured "$theme_file" &>/dev/null || true
-        fi
+    # Seed a minimal kitty.conf on a fresh box so the theme is actually
+    # loaded. A user-authored kitty.conf is never touched.
+    if [[ ! -f "$kitty_conf/kitty.conf" && -f "$repo_kitty/kitty.conf" ]]; then
+        cp "$repo_kitty/kitty.conf" "$kitty_conf/kitty.conf"
+    fi
+
+    cp "$theme_file" "$kitty_conf/current-theme.conf"
+
+    # Update running kitty instances if kitty remote control is available
+    if command -v kitty &>/dev/null; then
+        kitty @ set-colors --all --configured "$theme_file" &>/dev/null || true
     fi
 }
 
@@ -201,13 +217,23 @@ update_mako_theme() {
         local theme_file="$mako_extra/config-light"
     fi
 
-    # Copy theme config if it exists
+    # Copy theme config if it exists — but never clobber a user-customized
+    # config: only write when the file is absent or still one of our two
+    # theme files.
     if [[ -f "$theme_file" ]]; then
-        cp "$theme_file" "$mako_conf/config"
+        local managed=0
+        if [[ ! -f "$mako_conf/config" ]]; then
+            managed=1
+        elif cmp -s "$mako_conf/config" "$mako_extra/config-dark" || cmp -s "$mako_conf/config" "$mako_extra/config-light"; then
+            managed=1
+        fi
+        if [[ "$managed" -eq 1 ]]; then
+            cp "$theme_file" "$mako_conf/config"
 
-        # Reload mako if it's running
-        if command -v makoctl &>/dev/null && pgrep -x mako &>/dev/null; then
-            makoctl reload &>/dev/null || true
+            # Reload mako if it's running
+            if command -v makoctl &>/dev/null && pgrep -x mako &>/dev/null; then
+                makoctl reload &>/dev/null || true
+            fi
         fi
     fi
 }

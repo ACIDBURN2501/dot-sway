@@ -72,6 +72,15 @@ Changes take effect the next time wofi is launched.
 
 The `extra/wofi/wofi-power.sh` script provides a power menu using wofi with options to shutdown, reboot, suspend, hibernate, and logout. This script is independent of theme management but will use the active theme. Machines without suspend/hibernate support may trim the menu locally — the provisioner never overwrites local changes.
 
+## Kitty Terminal Theme
+
+Location: `extra/kitty/`
+
+The theme toggle themes kitty with [Tokyo Night](https://github.com/folke/tokyonight.nvim) (by Folke Lemaitre — the files carry their own MIT license headers, and the full license text is in `themes/LICENSE`). `scripts/toggle_theme.sh` seeds a fresh box on first `init`:
+
+- `themes/tokyo_night_moon.conf` / `themes/tokyo_night_day.conf` are copied into `~/.config/kitty/themes/themes/` (a user-installed theme there always wins).
+- `kitty.conf` is copied to `~/.config/kitty/kitty.conf` **only if absent** — it carries the `include current-theme.conf` line and socket-based remote control for live `kitty @ set-colors`. A user-authored kitty.conf is never touched; if yours lacks the include, add it manually.
+
 ## Mako Notification Daemon (Optional)
 
 Location: `extra/mako/`
@@ -116,7 +125,6 @@ not reliably bind separate `Consumer Control`, WMI, or vendor hotkey devices.
 **Startup:**
 
 ```bash
-swhks &
 pkexec swhkd --config "$HOME/.config/swhkd/swhkdrc"
 ```
 
