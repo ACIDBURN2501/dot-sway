@@ -5,6 +5,7 @@ These scripts live in `scripts/` and are invoked in place from `$HOME/.config/sw
 - `move-ws-to-active.sh`: Moves all workspaces to the currently focused output. Not bound by default — available for a keybind or manual use.
 - `move-ws-to-output.sh`: Moves all workspaces to a specific output (arg 1). Not bound by default — available for a keybind or manual use.
 - `toggle-touchpad.sh`: Toggles the touchpad on/off and sends a notification.
+- `mako-mode-sync.sh`: Re-applies mako's `DoNDisturb` mode from the `dnd` toggle flag. Called by `toggle_theme.sh` after every `makoctl reload`, which restarts the daemon and silently drops active custom modes. Read-then-act (`makoctl mode` first, add only if absent, remove only if present), so it is idempotent. Silent no-op when `makoctl` or the flag store is absent.
 - `screenshot.sh`: Captures with `grim`, writes the PNG to `~/Pictures/Screenshots`, and copies it to the clipboard so it can be pasted directly instead of attached from disk.
     - **Modes** (arg 1, default `region`): `region` (drag a selection with `slurp`), `screen` (whole output layout), `output` (focused output, via `grim -o` so its scale is preserved), `window` (focused window).
     - **Bound by default:** `Ctrl+Alt+s` → `region`, `Print` → `screen`. `output` and `window` are unbound; add a keybind if you want them.

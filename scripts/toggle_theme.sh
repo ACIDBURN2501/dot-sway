@@ -246,9 +246,11 @@ update_mako_theme() {
     if [[ "$managed" -eq 1 ]]; then
       cp "$theme_file" "$mako_conf/config"
 
-      # Reload mako if it's running
+      # Reload mako if it's running. The restart silently drops any active
+      # custom mode, so re-apply the DoNDisturb state from the dnd flag.
       if command -v makoctl &>/dev/null && pgrep -x mako &>/dev/null; then
         makoctl reload &>/dev/null || true
+        "$HOME/.config/sway/scripts/mako-mode-sync.sh" || true
       fi
     fi
   fi
