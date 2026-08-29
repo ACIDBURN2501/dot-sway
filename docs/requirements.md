@@ -8,6 +8,19 @@ Dependencies follow a **probe-and-degrade** contract. This file *names* what eac
 
 Only **Core** below is load-bearing; everything after it is opt-in.
 
+## Package names (Debian 13)
+
+A few names differ from the Arch world:
+
+| Tool | Debian 13 package |
+|------|-------------------|
+| mako | `mako-notifier` (provides `mako`, `makoctl`) |
+| wpctl | `wireplumber` (ships `wpctl`) |
+| swaynag | bundled in `sway` |
+| rage | not packaged — decrypting secrets only needs `age`; encrypt on an Arch box |
+
+`bootstrap/packages/debian.txt` is the verified manifest (checked on a trixie reference install).
+
 ## Core
 
 - `sway` (or `swayfx`), `swaymsg`, `swaynag`

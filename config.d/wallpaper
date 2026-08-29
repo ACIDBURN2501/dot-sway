@@ -4,5 +4,5 @@
 # persists across logins and reloads. Rotate on demand with $mod+Shift+w.
 # Picks a random .png/.jpg/.jpeg from the pool (images/wallpapers/, or the
 # folder named in wallpaper_dir.local if present) and repoints images/wp.png —
-# or falls back to the committed images/default.png when the pool is empty.
+# or falls back to the bundled Church wallpaper when the pool is empty.
 exec_always ~/.config/sway/scripts/rotate-wallpaper.sh --if-unset

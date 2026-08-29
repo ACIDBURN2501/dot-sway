@@ -1,0 +1,53 @@
+# Debian 13 (trixie) manifest for bootstrap/provision.sh — one package per
+# line, # comments allowed. Verified against a Debian 13 (trixie) reference
+# install (2026-08).
+# The provisioner runs: apt-get install -y --no-install-recommends < this file.
+#
+# Debian package-name gotchas vs the Arch manifest (pacman.txt):
+#   mako    -> mako-notifier   (provides /usr/bin/mako + makoctl)
+#   wpctl   -> wireplumber     (Debian ships wpctl inside wireplumber)
+#   swaynag -> bundled in sway (no separate package on Debian)
+
+# --- Desktop core (config/, waybar/, extra/) ---------------------------------
+sway
+waybar
+kitty
+wofi
+mako-notifier
+swaylock
+swayidle
+grim
+slurp
+
+# --- Status bar & script dependencies (docs/requirements.md) ------------------
+jq
+upower
+brightnessctl
+ddcutil
+bluez
+wireplumber
+pipewire
+pipewire-pulse
+wl-clipboard
+network-manager  # Debian baseline; ships nmcli AND nmtui; the alternative is iwd — not both
+
+# --- XDG portals (docs/xdg-defaults.md): wlr for screencopy/screencast,
+# --- gtk for file picker & settings. All verified on trixie.
+xdg-desktop-portal
+xdg-desktop-portal-wlr
+xdg-desktop-portal-gtk
+# flatpak        # only if you use flatpak apps (verified packaged on trixie)
+
+# --- Provisioning infrastructure (bootstrap/) ---------------------------------
+age
+ufw
+# tailscale    # NOT in the Debian archive — add the vendor repo
+#              # (pkgs.tailscale.com) first, then uncomment. The `tailscale`
+#              # provisioner stage skips until the package is present.
+# rage         # not packaged on trixie — decrypting secrets only needs `age`;
+#                # to encrypt new ones, do it on an Arch box (rage) or via pipx
+
+# --- Default apps from the MIME map in scripts/setup-defaults.sh ---------------
+gnome-text-editor
+evince
+loupe

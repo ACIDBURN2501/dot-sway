@@ -54,9 +54,16 @@ These scripts live in `scripts/` and are invoked in place from `$HOME/.config/sw
 
 - `rotate-wallpaper.sh`: Picks a random `.png/.jpg/.jpeg` from the wallpaper pool, repoints the `images/wp.png` symlink at it, and applies the change live via `swaymsg output * bg`. Bound to `$mod+Shift+w` for on-demand switching. `config.d/wallpaper` runs it with `--if-unset` on start/reload, which only picks when `wp.png` isn't already set — so reloads and logins keep the current wallpaper.
     - **Pool location:** `images/wallpapers/` by default. A `wallpaper_dir.local` file at the repo root (gitignored — copy `wallpaper_dir.local.example`) redirects it to any external folder, e.g. a synced image library; only top-level files are scanned, so a subfolder of a larger collection works.
-    - **Empty/absent pool:** an already-set `wp.png` is left alone; otherwise it falls back to the committed `images/default.png`, so `wp.png` always resolves (no black desktop, no broken swaylock image) even on a fresh checkout with an empty pool.
+    - **Empty/absent pool:** an already-set `wp.png` is left alone; otherwise it falls back to the bundled wallpaper (`images/wallpapers/frederic-church-parthenon.jpg`), so `wp.png` always resolves (no black desktop, no broken swaylock image) even on a fresh checkout with an empty pool.
     - **Lock screen:** the swaylock keybind (and the optional swayidle example in `config`) consume `images/wp.png`, so the lock screen follows rotation automatically — no extra wiring.
     - **Override the repo dir:** set `SWAY_DIR=/some/other/path` before invoking; the script resolves `images/`, `wallpaper_dir.local`, and the default pool underneath it.
+- `install-release.sh`: Installs a non-repo tool from a pinned release into `/opt/<name>/` with `/usr/local/bin` symlinks — the pattern for tools the distro doesn't package well (nvim, teams-for-linux). Verifies the SHA256 from the release notes before touching system dirs; a mismatch aborts before anything is written.
+    - **Usage:** `install-release.sh <name> <url> <sha256>` — the payload is detected by content: tarballs extract into `/opt/<name>/` and executables from a `bin/` dir (or the tarball root) get symlinked; a plain file is symlinked into `/usr/local/bin` as `<name>`.
+    - **Never overwrites:** if `/opt/<name>` already exists, it refuses and tells you to remove it first.
+    - **Needs sudo** for the install steps (one prompt). Not bound — run manually.
+- `check-core-features.sh`: Probes the local machine against the matrix in `docs/core-features.md` and prints a ✓/!/✗ table (binaries, packages, units, agent socket). Read-only — safe to run anywhere, no root needed.
+    - **Exit code:** 0 when nothing is missing, 1 when any feature is ✗ (a degraded/N-A `!` does not fail).
+    - **Not bound** — run manually after provisioning or hardware changes, or before claiming a distro column in the matrix is verified.
 - `toggle_theme.sh`: Switches the desktop between dark and light themes in one keypress (`Mod+Shift+t`). Source of truth is Gnome's `org.gnome.desktop.interface color-scheme` when `gsettings` is available, otherwise `~/.config/sway/.theme_state`.
     - **Updates in lockstep:**
         - Sway colors via `$XDG_RUNTIME_DIR/sway/sway_theme_config` (sourced from `config`)

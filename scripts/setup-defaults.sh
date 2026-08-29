@@ -1,7 +1,9 @@
 #!/usr/bin/env bash
 #
-# setup-defaults.sh: Configure XDG defaults for a Sway session on a
-# GNOME-based distro (default terminal, MIME associations, desktop portals).
+# setup-defaults.sh: Configure XDG defaults for a Sway session (default
+# terminal, MIME associations, desktop portals). User-level steps are
+# distro-agnostic; the printed root steps branch on distro (Arch vs
+# Debian/Ubuntu-with-GNOME-fallback).
 #
 # Idempotent. The user-level steps run without root; anything needing root
 # (apt, update-alternatives) is printed as a copy-paste block rather than
@@ -99,9 +101,36 @@ set_mime_defaults() {
   done
 }
 
+# Root steps are distro-specific (package manager + GNOME-fallback extras).
+# Unknown distros fall back to the Debian/Ubuntu block.
+detect_distro() {
+  if [ -f /etc/arch-release ]; then
+    DISTRO="arch"
+  elif [ -f /etc/debian_version ]; then
+    DISTRO="debian"
+  else
+    DISTRO="unknown"
+  fi
+}
+
 print_root_steps() {
   echo "[root] the following need root and are NOT run by this script:"
-  cat <<EOF
+  case "$DISTRO" in
+  arch)
+    # No GNOME fallback session on Arch: the portal stack is the only root
+    # step. The MIME map's desktop IDs (org.gnome.TextEditor & co) are the
+    # same on Arch; the pacman packages are gnome-text-editor, evince, loupe.
+    cat <<EOF
+
+  # Screenshot / screencast portal for wlroots (sway-portals.conf wants wlr;gtk):
+  sudo pacman -S --needed xdg-desktop-portal xdg-desktop-portal-wlr xdg-desktop-portal-gtk
+
+  # Optional: default apps from the MIME map above (same desktop IDs on Arch):
+  # sudo pacman -S --needed gnome-text-editor evince loupe
+EOF
+    ;;
+  *)
+    cat <<EOF
 
   # Screenshot / screencast portal for wlroots (sway-portals.conf wants wlr;gtk):
   sudo apt install xdg-desktop-portal-wlr
@@ -120,11 +149,14 @@ print_root_steps() {
   nautilus -q
 
 EOF
+    ;;
+  esac
 }
 
 # --- Main --------------------------------------------------------------------
 
 main() {
+  detect_distro
   set_terminal
   set_mime_defaults
   print_root_steps

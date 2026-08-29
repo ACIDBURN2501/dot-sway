@@ -1,0 +1,7 @@
+# AUR manifest for bootstrap/provision.sh — built via yay (see pacman.txt).
+# Everything is commented out by default: AUR builds are slow and
+# version-fragile. Uncomment a line to have the `aur` stage build it.
+#
+# wayland-pipewire-idle-inhibit   # or: cargo install (docs/requirements.md)
+# bluetuith                       # TUI bluetooth control (scripts/bluetooth-tui.sh)
+# impala                          # TUI iwd client (scripts/network-tui.sh)

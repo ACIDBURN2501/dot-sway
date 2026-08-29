@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -euo pipefail
 
 # monitor-profiles.example.sh — per-monitor settings for monitor-hotplug.sh
 #

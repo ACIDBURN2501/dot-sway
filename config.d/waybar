@@ -14,6 +14,7 @@
 # exit (status 0) ends supervision immediately.
 exec sh -c '\
   state=$(cat $HOME/.config/sway/.theme_state 2>/dev/null || echo dark); \
+  case $state in dark|light) ;; *) state=dark;; esac; \
   ln -sfn "colors-${state}.css" $HOME/.config/sway/waybar/colors.css; \
   fails=0; \
   while ! waybar -c $HOME/.config/sway/waybar/config.jsonc -s $HOME/.config/sway/waybar/style.css; do \

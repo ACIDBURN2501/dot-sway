@@ -1,8 +1,8 @@
-# Sway/Swayfx Desktop Configuration
+# sync — Sway/SwayFX Desktop Configuration
 
-[![CI](https://github.com/aajll/dot-sway/actions/workflows/ci.yml/badge.svg)](https://github.com/aajll/dot-sway/actions/workflows/ci.yml)
+[![CI](https://github.com/aajll/sync/actions/workflows/ci.yml/badge.svg)](https://github.com/aajll/sync/actions/workflows/ci.yml)
 
-A portable Sway (and Swayfx) configuration with **Waybar** as the status bar, a unified dark/light theme across bar, terminal, launcher, and notifications, and a monitor-hotplug daemon that handles clamshell mode and per-monitor profiles.
+A portable Sway (and Swayfx) configuration with **Waybar** as the status bar, a unified dark/light theme across bar, terminal, launcher, and notifications, and a monitor-hotplug daemon that handles clamshell mode and per-monitor profiles. Doubles as the config/installer for supported machines: **Arch Linux (rolling)** and **Debian 13 (Trixie)** — see [bootstrap/](bootstrap/README.md).
 
 <p align="center">
   <img src="images/preview.png" alt="Desktop preview." />
@@ -12,12 +12,23 @@ A portable Sway (and Swayfx) configuration with **Waybar** as the status bar, a 
 
 | Path | What it is |
 |------|-----------|
-| `config` | Primary Sway config. Includes `config.d/*`, `compose_key.local` (copy `compose_key.local.example`), and theme/SwayFX snippets generated under `/tmp`. |
+| `config` | Primary Sway config. Includes `config.d/*`, `compose_key.local` (copy `compose_key.local.example`), and theme/SwayFX snippets generated under `$XDG_RUNTIME_DIR/sway/`. |
 | `config.d/` | Drop-in Sway snippets: `waybar` (launches the bar), `wallpaper` (bootstraps `images/wp.png`; rotate on demand with `$mod+Shift+w`), `floating_windows`. |
 | `waybar/` | Status bar: `config.jsonc` layout, `style.css`, `colors-{dark,light}.css` palettes, custom `modules/`. |
 | `scripts/` | Utilities bound to keybinds / `exec` lines. See [`scripts/SCRIPTS.md`](scripts/SCRIPTS.md). |
 | `extra/` | Standalone configs for adjacent tools (kanshi, wofi, mako, swhkd). See [`extra/EXTRA.md`](extra/EXTRA.md). |
+| `bootstrap/` | Zero → online: archinstall JSON, package manifests, provisioner. See [`bootstrap/README.md`](bootstrap/README.md). |
+| `tests/` | Executable checks, currently the sandboxed theme-pipeline suite. |
 | `docs/` | Topic documentation (below). |
+
+## Zero → online (new machine)
+
+Fresh **Arch** (unattended, via `archinstall`) or fresh **Debian 13**
+(standard installer) → this desktop with no ISO build: per-distro package
+manifests plus a staged, idempotent provisioner (packages, services,
+ssh-agent, portals, age-encrypted secrets, tailscale) live in
+[`bootstrap/`](bootstrap/README.md). What "core" means and what is verified
+per distro: [docs/core-features.md](docs/core-features.md).
 
 ## Setup
 
@@ -34,10 +45,11 @@ Log into the Sway session; `config.d/waybar` and the theme/monitor hooks start a
 | Doc | Topic |
 |-----|-------|
 | [requirements.md](docs/requirements.md) | Dependencies and optional integrations |
+| [core-features.md](docs/core-features.md) | The "just works" matrix, per distro |
 | [xdg-defaults.md](docs/xdg-defaults.md) | Default terminal, MIME associations, desktop portals |
 | [status-bar.md](docs/status-bar.md) | Waybar layout, adding modules, theming |
 | [theming.md](docs/theming.md) | Dark/light toggle, wallpaper rotation |
 | [hardware.md](docs/hardware.md) | Media keys, monitor hotplug, clamshell, floating windows |
 | [troubleshooting.md](docs/troubleshooting.md) | Symptom → check table |
 
-Contributor conventions live in [`AGENTS.md`](AGENTS.md).
+Contributor conventions live in [`CONTRIBUTING.md`](CONTRIBUTING.md); agent conventions live in [`AGENTS.md`](AGENTS.md).

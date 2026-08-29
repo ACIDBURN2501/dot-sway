@@ -70,7 +70,16 @@ Changes take effect the next time wofi is launched.
 
 ### Power Menu
 
-The `extra/wofi/wofi-power.sh` script provides a power menu using wofi with options to lock, logout, suspend, reboot, and shutdown. This script is independent of theme management but will use the active theme.
+The `extra/wofi/wofi-power.sh` script provides a power menu using wofi with options to shutdown, reboot, suspend, hibernate, and logout. This script is independent of theme management but will use the active theme. Machines without suspend/hibernate support may trim the menu locally — the provisioner never overwrites local changes.
+
+## Kitty Terminal Theme
+
+Location: `extra/kitty/`
+
+The theme toggle themes kitty with [Tokyo Night](https://github.com/folke/tokyonight.nvim) (by Folke Lemaitre — the files carry their own MIT license headers, and the full license text is in `themes/LICENSE`). `scripts/toggle_theme.sh` seeds a fresh box on first `init`:
+
+- `themes/tokyo_night_moon.conf` / `themes/tokyo_night_day.conf` are copied into `~/.config/kitty/themes/themes/` (a user-installed theme there always wins).
+- `kitty.conf` is copied to `~/.config/kitty/kitty.conf` **only if absent** — it carries the `include current-theme.conf` line and socket-based remote control for live `kitty @ set-colors`. A user-authored kitty.conf is never touched; if yours lacks the include, add it manually.
 
 ## Mako Notification Daemon (Optional)
 
@@ -111,12 +120,12 @@ not reliably bind separate `Consumer Control`, WMI, or vendor hotkey devices.
 **Configuration:**
 - The sample config in `extra/swhkd/swhkdrc` calls the same helper scripts used by the main Sway config
 - Copy it to `~/.config/swhkd/swhkdrc`
+- The sample's absolute paths point at the maintainer's home (`/home/ajl/...`). Since `swhkd` runs as root (whose `$HOME` is `/root`), adjust them to the real user's `~/.config/sway` on each host before starting the daemon
 - Keep the config limited to media keys to avoid overlapping with your normal Sway bindings
 
 **Startup:**
 
 ```bash
-swhks &
 pkexec swhkd --config "$HOME/.config/swhkd/swhkdrc"
 ```
 

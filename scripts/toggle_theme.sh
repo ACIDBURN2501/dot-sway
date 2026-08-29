@@ -1,6 +1,7 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # Theme toggle script for Sway/Swayfx
 # Syncs with Gnome when available, falls back to Sway-only theming
+set -euo pipefail
 
 THEME_STATE_FILE="$HOME/.config/sway/.theme_state"
 
@@ -13,99 +14,101 @@ THEME_CONFIG_FILE="$RUNTIME_DIR/sway_theme_config"
 
 # Detect if running under Gnome
 is_gnome_available() {
-    command -v gsettings &>/dev/null && \
-    gsettings get org.gnome.desktop.interface color-scheme &>/dev/null
+  command -v gsettings &>/dev/null && \
+  gsettings get org.gnome.desktop.interface color-scheme &>/dev/null
 }
 
 # Get current theme state
 get_current_theme() {
-    if is_gnome_available; then
-        # Use Gnome's setting as source of truth
-        local gnome_scheme; gnome_scheme=$(gsettings get org.gnome.desktop.interface color-scheme)
-        if [[ "$gnome_scheme" == *"dark"* ]]; then
-            echo "dark"
-        else
-            echo "light"
-        fi
-    elif [[ -f "$THEME_STATE_FILE" ]]; then
-        cat "$THEME_STATE_FILE"
+  if is_gnome_available; then
+    # Use Gnome's setting as source of truth
+    local gnome_scheme; gnome_scheme=$(gsettings get org.gnome.desktop.interface color-scheme)
+    if [[ "$gnome_scheme" == *"dark"* ]]; then
+      echo "dark"
     else
-        echo "dark"  # Default to dark
+      echo "light"
     fi
+  elif [[ -f "$THEME_STATE_FILE" ]]; then
+    cat "$THEME_STATE_FILE"
+  else
+    echo "dark"  # Default to dark
+  fi
 }
 
 # Toggle theme
 toggle_theme() {
-    local current; current=$(get_current_theme)
-    local new_theme
+  local current; current=$(get_current_theme)
+  local new_theme
 
-    if [[ "$current" == "dark" ]]; then
-        new_theme="light"
+  if [[ "$current" == "dark" ]]; then
+    new_theme="light"
+  else
+    new_theme="dark"
+  fi
+
+  # Update Gnome if available
+  if is_gnome_available; then
+    if [[ "$new_theme" == "dark" ]]; then
+      gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
+      gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
     else
-        new_theme="dark"
+      gsettings set org.gnome.desktop.interface color-scheme 'prefer-light'
+      gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita'
     fi
+  fi
 
-    # Update Gnome if available
-    if is_gnome_available; then
-        if [[ "$new_theme" == "dark" ]]; then
-            gsettings set org.gnome.desktop.interface color-scheme 'prefer-dark'
-            gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita-dark'
-        else
-            gsettings set org.gnome.desktop.interface color-scheme 'prefer-light'
-            gsettings set org.gnome.desktop.interface gtk-theme 'Adwaita'
-        fi
+  # Save state for Sway
+  echo "$new_theme" > "$THEME_STATE_FILE"
+
+  # Generate Sway theme config
+  generate_theme_config "$new_theme"
+
+  # Update wofi theme
+  update_wofi_theme "$new_theme"
+
+  # Update kitty theme
+  update_kitty_theme "$new_theme"
+
+  # Update mako theme (optional - only if installed)
+  update_mako_theme "$new_theme"
+
+  # Update waybar theme (optional - only if config present)
+  update_waybar_theme "$new_theme"
+
+  # SIGUSR2 forces waybar to reread config + style. Only safe here, on an
+  # established session: signalling during `init` raced waybar's own startup
+  # (async D-Bus proxy setup) and segfaulted it in libgiomm. No-op if not running.
+  pkill -SIGUSR2 -x waybar 2>/dev/null || true
+
+  # Reload Sway to apply the generated colors. This no longer rotates the
+  # wallpaper: config.d/wallpaper runs rotate-wallpaper.sh with --if-unset, a
+  # no-op whenever wp.png is already set, so the current wallpaper persists.
+  swaymsg reload &>/dev/null || true
+
+  # Send notification if notify-send is available. A Sway desktop without a
+  # notification daemon is a normal state, so a failed notify-send must not
+  # fail the flip.
+  if command -v notify-send &>/dev/null; then
+    if [[ "$new_theme" == "dark" ]]; then
+      notify-send -t 2000 -u low "Theme" "Switched to Dark Mode 🌙" || true
+    else
+      notify-send -t 2000 -u low "Theme" "Switched to Light Mode ☀️" || true
     fi
-
-    # Save state for Sway
-    echo "$new_theme" > "$THEME_STATE_FILE"
-
-    # Generate Sway theme config
-    generate_theme_config "$new_theme"
-
-    # Update wofi theme
-    update_wofi_theme "$new_theme"
-
-    # Update kitty theme
-    update_kitty_theme "$new_theme"
-
-    # Update mako theme (optional - only if installed)
-    update_mako_theme "$new_theme"
-
-    # Update waybar theme (optional - only if config present)
-    update_waybar_theme "$new_theme"
-
-    # SIGUSR2 forces waybar to reread config + style. Only safe here, on an
-    # established session: signalling during `init` raced waybar's own startup
-    # (async D-Bus proxy setup) and segfaulted it in libgiomm. No-op if not running.
-    pkill -SIGUSR2 -x waybar 2>/dev/null || true
-
-    # Reload Sway to apply the generated colors. This no longer rotates the
-    # wallpaper: config.d/wallpaper runs rotate-wallpaper.sh with --if-unset, a
-    # no-op whenever wp.png is already set, so the current wallpaper persists.
-    swaymsg reload &>/dev/null || true
-
-    # Send notification if notify-send is available
-    if command -v notify-send &>/dev/null; then
-        if [[ "$new_theme" == "dark" ]]; then
-            notify-send -t 2000 -u low "Theme" "Switched to Dark Mode 🌙"
-        else
-            notify-send -t 2000 -u low "Theme" "Switched to Light Mode ☀️"
-        fi
-    fi
+  fi
 }
 
 # Generate Sway theme configuration based on theme
 generate_theme_config() {
-    local theme="$1"
+  local theme="$1"
 
-    cat > "$THEME_CONFIG_FILE" << EOF
+  cat > "$THEME_CONFIG_FILE" << EOF
 # Auto-generated theme configuration - Do not edit manually
 # Generated by toggle_theme.sh
 
 EOF
 
-    if [[ "$theme" == "dark" ]]; then
-        cat >> "$THEME_CONFIG_FILE" << 'EOF'
+  if [[ "$theme" == "dark" ]]; then
+    cat >> "$THEME_CONFIG_FILE" << 'EOF'
 # Dark Theme - Color Variables (Opaque)
 set $bg_color #323232
 set $bar_bg_color #323232
@@ -119,8 +122,8 @@ client.focused $indicator_color $indicator_color $text_color $indicator_color
 client.unfocused $bg_color $bg_color $inactive_text $bg_color
 client.focused_inactive $bg_color $bg_color $inactive_text $bg_color
 EOF
-    else
-        cat >> "$THEME_CONFIG_FILE" << 'EOF'
+  else
+    cat >> "$THEME_CONFIG_FILE" << 'EOF'
 # Light Theme - Color Variables (Opaque)
 set $bg_color #f0f0f0
 set $bar_bg_color #f0f0f0
@@ -134,82 +137,108 @@ client.focused $indicator_color $indicator_color #ffffff $indicator_color
 client.unfocused $bg_color $bg_color $inactive_text $bg_color
 client.focused_inactive $bg_color $bg_color $inactive_text $bg_color
 EOF
-    fi
+  fi
 }
 
 # Update wofi theme by symlinking the appropriate CSS file
 update_wofi_theme() {
-    local theme="$1"
-    local wofi_dir="$HOME/.config/wofi"
-    local wofi_src="$HOME/.config/sway/extra/wofi"
+  local theme="$1"
+  local wofi_dir="$HOME/.config/wofi"
+  local wofi_src="$HOME/.config/sway/extra/wofi"
 
-    # Ensure wofi config directory exists
-    mkdir -p "$wofi_dir"
+  # Ensure wofi config directory exists
+  mkdir -p "$wofi_dir"
 
-    # Point style.css straight at the repo's theme source. Symlinking the
-    # source (rather than a manually-copied duplicate under ~/.config/wofi)
-    # means the launcher can never end up with a dangling style.css if the
-    # copy step was skipped, and edits to the templates take effect directly.
-    local target="$wofi_src/style-${theme}.css"
-    [[ -f "$target" ]] || return 0
+  # Point style.css straight at the repo's theme source. Symlinking the
+  # source (rather than a manually-copied duplicate under ~/.config/wofi)
+  # means the launcher can never end up with a dangling style.css if the
+  # copy step was skipped, and edits to the templates take effect directly.
+  local target="$wofi_src/style-${theme}.css"
+  [[ -f "$target" ]] || return 0
 
-    ln -sfn "$target" "$wofi_dir/style.css"
+  ln -sfn "$target" "$wofi_dir/style.css"
 }
 
 # Update kitty theme
 update_kitty_theme() {
-    local theme="$1"
-    local kitty_conf="$HOME/.config/kitty"
-    local themes_dir="$kitty_conf/themes/themes"
+  local theme="$1"
+  local kitty_conf="$HOME/.config/kitty"
+  local user_themes="$kitty_conf/themes/themes"
+  local repo_kitty="$HOME/.config/sway/extra/kitty"
 
-    # Select appropriate Tokyo Night theme
-    if [[ "$theme" == "dark" ]]; then
-        local theme_file="$themes_dir/tokyo_night_moon.conf"
-    else
-        local theme_file="$themes_dir/tokyo_night_day.conf"
-    fi
+  # Select appropriate Tokyo Night theme. User-installed themes win; the
+  # repo bundles MIT-licensed copies (extra/kitty/themes/) so a fresh box
+  # gets live kitty theming without any manual setup.
+  if [[ "$theme" == "dark" ]]; then
+    local theme_name="tokyo_night_moon.conf"
+  else
+    local theme_name="tokyo_night_day.conf"
+  fi
 
-    # Update current-theme.conf if theme file exists
-    if [[ -f "$theme_file" ]]; then
-        cp "$theme_file" "$kitty_conf/current-theme.conf"
+  if [[ -f "$user_themes/$theme_name" ]]; then
+    local theme_file="$user_themes/$theme_name"
+  elif [[ -f "$repo_kitty/themes/$theme_name" ]]; then
+    mkdir -p "$user_themes"
+    cp "$repo_kitty/themes/$theme_name" "$user_themes/$theme_name"
+    local theme_file="$user_themes/$theme_name"
+  else
+    return 0
+  fi
 
-        # Update running kitty instances if kitty remote control is available
-        if command -v kitty &>/dev/null; then
-            kitty @ set-colors --all --configured "$theme_file" &>/dev/null || true
-        fi
-    fi
+  # Seed a minimal kitty.conf on a fresh box so the theme is actually
+  # loaded. A user-authored kitty.conf is never touched.
+  if [[ ! -f "$kitty_conf/kitty.conf" && -f "$repo_kitty/kitty.conf" ]]; then
+    cp "$repo_kitty/kitty.conf" "$kitty_conf/kitty.conf"
+  fi
+
+  cp "$theme_file" "$kitty_conf/current-theme.conf"
+
+  # Update running kitty instances if kitty remote control is available
+  if command -v kitty &>/dev/null; then
+    kitty @ set-colors --all --configured "$theme_file" &>/dev/null || true
+  fi
 }
 
 # Update mako notification daemon theme (optional)
 update_mako_theme() {
-    local theme="$1"
-    local mako_extra="$HOME/.config/sway/extra/mako"
-    local mako_conf="$HOME/.config/mako"
+  local theme="$1"
+  local mako_extra="$HOME/.config/sway/extra/mako"
+  local mako_conf="$HOME/.config/mako"
 
-    # Only proceed if mako is installed
-    if ! command -v mako &>/dev/null; then
-        return 0
+  # Only proceed if mako is installed
+  if ! command -v mako &>/dev/null; then
+    return 0
+  fi
+
+  # Ensure mako config directory exists
+  mkdir -p "$mako_conf"
+
+  # Select appropriate theme config
+  if [[ "$theme" == "dark" ]]; then
+    local theme_file="$mako_extra/config-dark"
+  else
+    local theme_file="$mako_extra/config-light"
+  fi
+
+  # Copy theme config if it exists — but never clobber a user-customized
+  # config: only write when the file is absent or still one of our two
+  # theme files.
+  if [[ -f "$theme_file" ]]; then
+    local managed=0
+    if [[ ! -f "$mako_conf/config" ]]; then
+      managed=1
+    elif cmp -s "$mako_conf/config" "$mako_extra/config-dark" || cmp -s "$mako_conf/config" "$mako_extra/config-light"; then
+      managed=1
     fi
+    if [[ "$managed" -eq 1 ]]; then
+      cp "$theme_file" "$mako_conf/config"
 
-    # Ensure mako config directory exists
-    mkdir -p "$mako_conf"
-
-    # Select appropriate theme config
-    if [[ "$theme" == "dark" ]]; then
-        local theme_file="$mako_extra/config-dark"
-    else
-        local theme_file="$mako_extra/config-light"
+      # Reload mako if it's running
+      if command -v makoctl &>/dev/null && pgrep -x mako &>/dev/null; then
+        makoctl reload &>/dev/null || true
+      fi
     fi
-
-    # Copy theme config if it exists
-    if [[ -f "$theme_file" ]]; then
-        cp "$theme_file" "$mako_conf/config"
-
-        # Reload mako if it's running
-        if command -v makoctl &>/dev/null && pgrep -x mako &>/dev/null; then
-            makoctl reload &>/dev/null || true
-        fi
-    fi
+  fi
 }
 
 # Update waybar theme by symlinking the active palette. The live reload signal
@@ -217,38 +246,38 @@ update_mako_theme() {
 # on startup, and signalling it mid-startup crashes it (see toggle_theme).
 # Safe no-op when the waybar dir is absent (e.g., user still on swaybar).
 update_waybar_theme() {
-    local theme="$1"
-    local waybar_dir="$HOME/.config/sway/waybar"
-    local target="colors-${theme}.css"
+  local theme="$1"
+  local waybar_dir="$HOME/.config/sway/waybar"
+  local target="colors-${theme}.css"
 
-    [[ -d "$waybar_dir" && -f "$waybar_dir/$target" ]] || return 0
+  [[ -d "$waybar_dir" && -f "$waybar_dir/$target" ]] || return 0
 
-    ln -sfn "$target" "$waybar_dir/colors.css"
+  ln -sfn "$target" "$waybar_dir/colors.css"
 }
 
 # Initialize theme on startup
 init_theme() {
-    local current; current=$(get_current_theme)
-    generate_theme_config "$current"
-    update_wofi_theme "$current"
-    update_kitty_theme "$current"
-    update_mako_theme "$current"
-    update_waybar_theme "$current"
+  local current; current=$(get_current_theme)
+  generate_theme_config "$current"
+  update_wofi_theme "$current"
+  update_kitty_theme "$current"
+  update_mako_theme "$current"
+  update_waybar_theme "$current"
 }
 
 # Main command dispatcher
 case "${1:-toggle}" in
-    toggle)
-        toggle_theme
-        ;;
-    init)
-        init_theme
-        ;;
-    get)
-        get_current_theme
-        ;;
-    *)
-        echo "Usage: $0 {toggle|init|get}"
-        exit 1
-        ;;
+  toggle)
+    toggle_theme
+    ;;
+  init)
+    init_theme
+    ;;
+  get)
+    get_current_theme
+    ;;
+  *)
+    echo "Usage: $0 {toggle|init|get}"
+    exit 1
+    ;;
 esac

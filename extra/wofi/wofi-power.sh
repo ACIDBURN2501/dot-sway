@@ -1,4 +1,6 @@
 #!/bin/sh
+# POSIX sh (dash-compatible), so no pipefail.
+set -eu
 
 # Define power actions
 Shutdown_command="systemctl poweroff"
@@ -10,8 +12,9 @@ Suspend_command="systemctl suspend"
 # Menu options
 options="Shutdown\nReboot\nSuspend\nHibernate\nLogout"
 
-# Show menu
-chosen=$(printf '%b\n' "$options" | wofi --show dmenu --prompt "Power:" --width 20%)
+# Show menu; a dismissed menu leaves $chosen empty and the case below
+# falls through, so cancel exits 0 as before.
+chosen=$(printf '%b\n' "$options" | wofi --show dmenu --prompt "Power:" --width 20%) || chosen=""
 
 # Run the selected command
 case "$chosen" in
