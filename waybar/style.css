@@ -72,22 +72,11 @@ window#waybar {
 }
 
 /* Strip trailing divider from the last module of each cluster. */
-.modules-left > widget:last-child > #custom-dnd,
+.modules-left > widget:last-child > #battery,
 .modules-center > widget:last-child > #network,
 .modules-right > widget:last-child > #clock {
   border-right: 0;
 }
-
-/* --- Quarter-point toggle group ------------------------------------------- */
-/* Gap between the workspaces and the toggle group (custom/theme,
- * custom/dnd). custom/quarter-spacer emits a band class from the focused
- * output width — Waybar and GTK3 CSS have no percentage anchoring — and
- * the bands are tuned so the group lands near the 1/4 point at 1920 / 2560
- * / 3840 px bar widths. */
-#custom-quarter-spacer { min-width: 300px; }
-#custom-quarter-spacer.gap-s { min-width: 300px; }
-#custom-quarter-spacer.gap-m { min-width: 450px; }
-#custom-quarter-spacer.gap-l { min-width: 770px; }
 
 /* --- Clickable modules: subtle hover affordance -------------------------- */
 #custom-theme:hover,
