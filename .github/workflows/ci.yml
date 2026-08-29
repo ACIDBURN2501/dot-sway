@@ -125,3 +125,6 @@ jobs:
 
       - name: Run the quick-menu suite
         run: bash tests/quick-menu-sandbox.sh "$GITHUB_WORKSPACE"
+
+      - name: Run the power-events suite
+        run: bash tests/power-sandbox.sh "$GITHUB_WORKSPACE"

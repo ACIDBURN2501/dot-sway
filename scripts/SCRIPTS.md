@@ -35,6 +35,9 @@ These scripts live in `scripts/` and are invoked in place from `$HOME/.config/sw
 - `bluetooth-tui.sh`: Launches the best available bluetooth management TUI in kitty for the Waybar bluetooth click handler.
     - **Probe order:** `bluetuith` (recommended; ncurses TUI) → `bluetoothctl` (interactive shell). Also the pairing path for the quick menu (pairing needs an agent and a user confirmation).
     - **Adding a TUI:** install `bluetuith` and the script picks it up automatically.
+- `power-events.sh`: Battery/AC event watcher, started once per session by a guarded `exec` in `config` (next to the mako guard). Polls UPower's DisplayDevice every 30s and fires one notification plus one hook per transition: `battery-low` (≤20% on discharge, once per episode), `battery-charged`, `power-plugged`, `power-unplugged` (see `docs/hooks.md`). State lives in `$XDG_RUNTIME_DIR/sway/power-events.state` so each episode fires exactly once; a pid file keeps a stray second copy from double-notifying. Tunables for testing: `POWER_EVENTS_INTERVAL`, `POWER_EVENTS_LOW_PCT`.
+    - **Degradation:** without `upower`, without a battery (desktops), or without a usable runtime dir it exits 0 at the first probe — silent forever after.
+    - **Notifications:** ordinary urgency, so mako's DoNDisturb mode suppresses them like every other notification.
 - `monitor-hotplug.sh`: Auto-switches between "Mobile" (internal screen only) and "Docked" (external screen only) modes.
     - **Logic:**
         - If an external monitor is connected:

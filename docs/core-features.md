@@ -21,6 +21,7 @@ Legend: ✓ working · ! degraded or N/A (box-specific — see notes) · ✗ gap
 | OSD (volume/brightness) | `wob` fed by the control scripts via `scripts/osd-bar.sh` (silent skip when absent) | `wob` | `wob` | ! (packaged, not yet installed) | ! (packaged, not yet installed) |
 | Backlight | `brightness-control.sh` (brightnessctl), `external-brightness.sh` (ddcutil) | `brightnessctl` `ddcutil` | `brightnessctl` `ddcutil` | ✓ | ✓ |
 | Battery | waybar native module (upower/D-Bus) | `upower` | `upower` | ✓ | ✓ |
+| Power events | `scripts/power-events.sh`: notification + hook per transition (low, full, plugged, unplugged; silent without a battery) | `upower` | `upower` | ! (pending redeploy) | ! (desktop — no battery, watcher silent) |
 | Bluetooth | waybar module + `bluetoothctl` (bluetuith optional) | `bluez` | `bluez` | ✓ | ✓ |
 | Network daemon | iwd on Arch, NetworkManager on Debian | `iwd` | `network-manager` (ships `nmcli` **and** `nmtui`) | ✓ (NM) | ✓ (NM) |
 | Network TUI | `scripts/network-tui.sh`: impala → nmtui → iwctl → ip | `iwd`, impala via pipx | `networkmanager` (nmtui) | ✓ (nmtui) | ✓ (nmtui) |

@@ -31,3 +31,11 @@ max-visible=5
 
 # Format
 format=<b>%s</b>\n%b
+
+# Focus mode (scripts/toggle-mako-dnd.sh flips the DoNDisturb mode): hide
+# everything, except the toggle's own feedback so the flip is visible.
+[mode=DoNDisturb]
+invisible=1
+
+[mode=DoNDisturb app-name="Focus Mode"]
+invisible=0

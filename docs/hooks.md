@@ -2,7 +2,7 @@
 
 **What:** A drop-in extension point for per-event automation: on each event, every executable in the event's hook directory runs, in sorted order. Tracked hooks ship in the repo; machine-local hooks live in a gitignored overlay.
 **Where:** `scripts/hooks.sh` (dispatcher), `hooks/<event>.d/` (tracked), `hooks.local/<event>.d/` (machine-local, gitignored).
-**Verified:** `tests/theme-sandbox.sh` (dispatcher section) in CI, plus shellcheck on the dispatcher.
+**Verified:** `tests/theme-sandbox.sh` (dispatcher section) and `tests/power-sandbox.sh` (the four power events firing through the real dispatcher) in CI, plus shellcheck on the dispatcher.
 
 ## Events
 
@@ -10,6 +10,10 @@
 |---|---|---|
 | `post-boot` | Once per Sway session start. `exec` (not `exec_always`), so a `swaymsg reload` does not re-fire it. | end of `config` |
 | `theme-set` | After every theme flip, as the last side effect of `toggle_theme.sh` (after the flag write, waybar repaint, kitty, and mako). `init` does not fire it. | `scripts/toggle_theme.sh` |
+| `battery-low` | Once per discharge episode: the battery reaches 20% while unplugged (30s UPower poll). Re-arms on the next charge. | `scripts/power-events.sh` |
+| `battery-charged` | Once per charge episode: the battery reaches "fully-charged". Re-arms on the next discharge. | `scripts/power-events.sh` |
+| `power-plugged` | AC connected: the UPower state moves from discharging to charging/fully-charged. | `scripts/power-events.sh` |
+| `power-unplugged` | AC disconnected: the UPower state moves from charging to discharging. | `scripts/power-events.sh` |
 
 Adding a new event is a one-line change: call `scripts/hooks.sh <event>` from wherever the event happens. The dispatcher is event-agnostic.
 
