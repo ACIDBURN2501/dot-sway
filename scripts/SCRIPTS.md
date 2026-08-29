@@ -12,13 +12,20 @@ These scripts live in `scripts/` and are invoked in place from `$HOME/.config/sw
     - **Bound by default:** `Ctrl+Alt+s` → `region`, `Print` → `screen`. `output` and `window` are unbound; add a keybind if you want them.
     - **Degradation:** no `grim` or a cancelled `slurp` selection exits silently; without `wl-copy` the capture is still saved, just not copied; `window`/`output` need `jq` and fall through to no capture without it.
     - **Save location:** `SCREENSHOT_DIR` overrides the directory; it's created on first capture.
+- `osd-bar.sh`: Writes a 0-100 value to the wob OSD pipe (`$XDG_RUNTIME_DIR/sway/wob.sock`, config in `extra/wob/wob.ini`). Called by the volume/brightness control scripts after every change; wob not running or a missing pipe is a silent no-op — the OSD is feedback, never an error surface.
 - `volume-control.sh`: Handles mute, volume up/down, and mic mute.
     - Prefers `wpctl` on PipeWire systems.
     - Falls back to `pactl` for PulseAudio-compatible sessions.
     - Intended for media-key bindings that should work across built-in and USB keyboards.
+    - Pushes the new level to the wob OSD (`scripts/osd-bar.sh`); mic mute notifies instead (no numeric level worth a bar).
 - `brightness-control.sh`: Handles brightness up/down for laptop backlights.
-    - Uses `brightnessctl` when `/sys/class/backlight` is available.
+    - Uses `brightnessctl` when the backlight directory is available (`BACKLIGHT_DIR` overrides `/sys/class/backlight`, for tests).
     - Exits silently on desktops or systems without a controllable backlight.
+    - Pushes the new level to the wob OSD (`scripts/osd-bar.sh`).
+- `external-brightness.sh`: Brightness up/down for external monitors over DDC/CI (`ddcutil`). Bound to `$super+Shift+Up/Down`.
+    - A `getvcp` round-trip is slow, so the current/max pair is cached in `$XDG_RUNTIME_DIR/sway-brightness-ext` — the same cache `waybar/modules/brightness.sh` reads. Only a cache miss falls back to `getvcp`.
+    - Exits silently without `ddcutil`.
+    - Pushes the new level to the wob OSD (`scripts/osd-bar.sh`).
 - `network-tui.sh`: Launches the best available network management TUI in kitty for the Waybar network click handler.
     - **Probe order:** `impala` (recommended; requires `iwd` as the wifi backend) → `nmtui` (requires NetworkManager) → `iwctl` (iwd interactive shell).
     - **Fallback:** read-only `ip -c -br a` + `ip -c r` summary with `kitty --hold` so the window stays open.

@@ -42,6 +42,7 @@ Used by Waybar modules and scripts:
 - `wpctl` (PipeWire) or `pactl` (PulseAudio) — audio; Waybar's `pulseaudio` module reads via libpulse, so either works as long as the socket is provided (PipeWire's `pipewire-pulse` daemon counts)
 - `bluez` / `bluetoothctl` — bluetooth state and interactive control
 - `playerctl` — MPRIS transport (play/pause/next/previous keys) and the track readout for Waybar's `mpris` module. Waybar must be built against libplayerctl (both distro packages are).
+- `wob` — transient OSD bar for volume/brightness changes; fed by the control scripts via `scripts/osd-bar.sh`, silently skipped when absent. Config in `extra/wob/wob.ini`.
 - `iproute2` (`ip`) — read-only network inspection; Waybar's `network` module reads via netlink regardless of what manages the connection
 
 ## Click handlers

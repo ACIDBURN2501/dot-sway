@@ -302,6 +302,12 @@ exec_always ~/.config/sway/scripts/monitor-hotplug.sh
 # Optional: Mako notification daemon (only starts if installed)
 exec command -v mako && mako || true
 
+# Optional: wob OSD bar for volume/brightness feedback (only starts if
+# installed; config in extra/wob/wob.ini). The control scripts write new
+# values to $XDG_RUNTIME_DIR/sway/wob.sock via scripts/osd-bar.sh. The fifo
+# is held open read-write so a writer closing it can't HUP wob's stdin.
+exec sh -c 'command -v wob >/dev/null 2>&1 || exit 0; d="$XDG_RUNTIME_DIR/sway"; mkdir -p "$d"; p="$d/wob.sock"; [ -p "$p" ] || mkfifo "$p"; ini="$HOME/.config/sway/extra/wob/wob.ini"; exec 3<>"$p" || exit 0; if [ -f "$ini" ]; then exec wob -c "$ini" <&3; else exec wob <&3; fi'
+
 # Lid switch triggers
 bindswitch --locked lid:on exec ~/.config/sway/scripts/monitor-hotplug.sh --once
 bindswitch --locked lid:off exec ~/.config/sway/scripts/monitor-hotplug.sh --once

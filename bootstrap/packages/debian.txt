@@ -23,6 +23,7 @@ slurp
 jq
 upower
 playerctl        # MPRIS transport keys + waybar mpris module readout
+wob              # volume/brightness OSD bar (extra/wob/wob.ini)
 brightnessctl
 ddcutil
 bluez

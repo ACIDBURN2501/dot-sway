@@ -4,6 +4,8 @@ set -euo pipefail
 
 STEP="${EXTERNAL_BRIGHTNESS_STEP:-10}"
 ACTION="${1:-}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+OSD="$SCRIPT_DIR/osd-bar.sh"
 
 if ! command -v ddcutil >/dev/null 2>&1; then
   exit 0
@@ -42,4 +44,5 @@ esac
 
 if ddcutil setvcp 10 "$NEW" >/dev/null 2>&1; then
   printf "%s %s\n" "$NEW" "$MAX" > "$CACHE"
+  "$OSD" "$((NEW * 100 / MAX))"
 fi

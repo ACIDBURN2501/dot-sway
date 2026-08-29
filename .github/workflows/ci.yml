@@ -109,13 +109,16 @@ jobs:
           args: --no-progress '**/*.md'
 
   theme-tests:
-    name: theme pipeline (sandboxed)
+    name: sandboxed script suites
     runs-on: ubuntu-latest
-    # The suite runs scripts/toggle_theme.sh inside a throwaway $HOME with
-    # every session-external binary stubbed (swaymsg, gsettings, kitty, mako,
-    # notify-send, ...), so it needs no display, session, or root.
+    # Each suite runs its scripts inside a throwaway $HOME with every
+    # session-external binary stubbed, so they need no display, session, or
+    # root.
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run the sandboxed suite
+      - name: Run the theme suite
         run: bash tests/theme-sandbox.sh "$GITHUB_WORKSPACE"
+
+      - name: Run the OSD suite
+        run: bash tests/osd-sandbox.sh "$GITHUB_WORKSPACE"
