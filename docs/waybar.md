@@ -1,6 +1,6 @@
 # Waybar (Status Bar)
 
-**What:** The status bar — workspace and mode indicators, brightness, audio, theme, DND, bluetooth, network, tray, battery, clock — plus the contract custom shell modules must follow.
+**What:** The status bar — workspace and mode indicators, a quarter-point toggle group (theme, DND), brightness, audio, bluetooth, network, tray, battery, clock — plus the contract custom shell modules must follow.
 **Where:** `waybar/` — `config.jsonc` (layout), `style.css` + `colors-{dark,light}.css` (palette), `modules/` (custom shell modules). Launched from `config.d/waybar`.
 **Verified:** parse errors print to stderr when run in the foreground; the theme and DND custom modules are exercised by the CI theme suite (`tests/theme-sandbox.sh`).
 
@@ -10,11 +10,29 @@ Waybar is launched by `config.d/waybar` on Sway start. The snippet points `wayba
 
 | Cluster | Modules |
 |---------|---------|
-| Left    | `sway/workspaces`, `sway/mode` |
-| Center  | `custom/brightness`, `pulseaudio`, `custom/theme`, `custom/dnd`, `bluetooth`, `network` |
+| Left    | `sway/workspaces`, `sway/mode`, `custom/quarter-spacer`, `custom/theme`, `custom/dnd` |
+| Center  | `custom/brightness`, `pulseaudio`, `bluetooth`, `network` |
 | Right   | `tray`, `battery`, `clock` |
 
-Battery, audio, bluetooth, network, and clock use Waybar's native event-driven modules (D-Bus, no polling). Brightness, theme, and DND are custom shell modules under `waybar/modules/`.
+Battery, audio, bluetooth, network, and clock use Waybar's native event-driven modules (D-Bus, no polling). Brightness, theme, and DND are custom shell modules under `waybar/modules/`; the quarter-spacer is a small JSON module that sizes itself per output.
+
+## Quarter-point toggle group
+
+Theme (🌙/☀️) and DND (🧘) sit in `modules-left` behind `custom/quarter-spacer`, which pushes the group to the bar's left quarter point — halfway between the edge and the center. The right cluster stays dense (tray, battery, clock).
+
+The spacer emits JSON with a size class and `style.css` maps the class to a fixed pixel width, since Waybar's CSS has no percentage widget widths:
+
+| Output width | Class | Spacer |
+|--------------|-------|--------|
+| < 2200 (1920 laptop panel) | `gap-s` | 300px |
+| 2200–2999 (2560) | `gap-m` | 450px |
+| ≥ 3000 (3840) | `gap-l` | 770px |
+
+Widths assume a ~180px workspace group; many open workspaces push the group toward center. The spacer rereads the focused active output's width every 5s, so hotplug and monitor-profile switches re-band within one tick.
+
+**Right-quarter variant:** move the group to the front of `modules-right` — `"sway/mode", "custom/theme", "custom/dnd", "custom/quarter-spacer"` (spacer last) — and drop it from `modules-left`. The spacer CSS is side-agnostic.
+
+**State:** both indicators read per-session flag files written by the toggle scripts (`scripts/toggle.sh` — see [SCRIPTS.md](../scripts/SCRIPTS.md)). `theme.sh` resolves gnome gsettings → theme flag → `.theme_state`; `dnd.sh` shows the icon only while the `dnd` flag is set and mako is present.
 
 ## Adding modules
 

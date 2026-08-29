@@ -64,7 +64,9 @@ These scripts live in `scripts/` and are invoked in place from `$HOME/.config/sw
 - `check-core-features.sh`: Probes the local machine against the matrix in `docs/core-features.md` and prints a ✓/!/✗ table (binaries, packages, units, agent socket). Read-only — safe to run anywhere, no root needed.
     - **Exit code:** 0 when nothing is missing, 1 when any feature is ✗ (a degraded/N-A `!` does not fail).
     - **Not bound** — run manually after provisioning or hardware changes, or before claiming a distro column in the matrix is verified.
-- `toggle_theme.sh`: Switches the desktop between dark and light themes in one keypress (`Mod+Shift+t`). Source of truth is Gnome's `org.gnome.desktop.interface color-scheme` when `gsettings` is available, otherwise `~/.config/sway/.theme_state`.
+- `toggle.sh`: Per-session toggle flag store — plain files under `${XDG_RUNTIME_DIR:-/tmp}/sway/toggles/` (0700, wiped on logout), so toggled state resets to the fresh-session default on every start. Subcommands: `toggle.sh set <name> [value]`, `toggle.sh unset <name>`, `toggle.sh get <name>` (exit 0/1, prints nothing). Names are restricted to `[A-Za-z0-9_-]`. It's a dumb store: the owning toggle script writes its own flag; the Waybar indicators (`waybar/modules/theme.sh`, `waybar/modules/dnd.sh`) read it. Not bound — called by `toggle_theme.sh` and `toggle-mako-dnd.sh`.
+- `toggle-mako-dnd.sh`: Toggles mako's `DoNDisturb` mode (`makoctl mode -a/-r`) and sets/unsets the `dnd` flag for the Waybar indicator. Bound to `$mod+Shift+n`; the `custom/dnd` module's `on-click` calls it. No-op when `makoctl` is absent.
+- `toggle_theme.sh`: Switches the desktop between dark and light themes in one keypress (`Mod+Shift+t`). Source of truth is Gnome's `org.gnome.desktop.interface color-scheme` when `gsettings` is available, otherwise `~/.config/sway/.theme_state`. Writes the `theme` flag (with the resolved value) on every flip and at `init`, so the Waybar indicator matches on machines without gsettings.
     - **Updates in lockstep:**
         - Sway colors via `$XDG_RUNTIME_DIR/sway/sway_theme_config` (sourced from `config`)
         - Waybar palette by symlinking `waybar/colors.css` → `colors-{dark,light}.css`; `toggle` additionally sends `SIGUSR2` for a live reload (`init` deliberately doesn't — signalling waybar mid-startup races its async D-Bus setup and segfaults it)
@@ -72,7 +74,7 @@ These scripts live in `scripts/` and are invoked in place from `$HOME/.config/sw
         - Wofi theme by symlinking `~/.config/wofi/style.css`
         - Mako notification theme (when installed) with `makoctl reload`
         - Gnome `gtk-theme` (when available)
-    - **Status indicator:** `waybar/modules/theme.sh` emits 🌙 (dark) or ☀️ (light); click toggles.
+    - **Status indicator:** `waybar/modules/theme.sh` emits 🌙 (dark) or ☀️ (light) at the left quarter point of the bar; click toggles. Resolution: gnome gsettings → `theme` flag → `.theme_state` → dark, so hybrid sessions keep gnome as the live source of truth.
     - **Subcommands:**
         - `toggle_theme.sh toggle` — flip
         - `toggle_theme.sh init` — re-apply current theme to all components (invoked at Sway startup)
