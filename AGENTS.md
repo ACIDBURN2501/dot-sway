@@ -5,22 +5,15 @@ Conventions for contributing changes to this Sway + Waybar desktop configuration
 ## Build, Lint, & Test
 
 ### Linting
-`shellcheck` covers all shell scripts. CI (`.github/workflows/ci.yml`) runs it
-across every tracked `*.sh` and gates at **`--severity=warning`**, so the tree
-must stay warning-clean — not just error-clean. Reproduce the gate locally:
+`shellcheck` covers all shell scripts. CI (`.github/workflows/ci.yml`) runs it across every tracked `*.sh` and gates at **`--severity=warning`**, so the tree must stay warning-clean — not just error-clean. Reproduce the gate locally:
 
 ```bash
 shellcheck --severity=warning $(git ls-files '*.sh')
 ```
 
-Keep it green rather than suppressing: split `local x=$(cmd)` into two lines
-(SC2155), name throwaway loop vars `_` (SC2034), use `printf` over `echo -e` in
-`#!/bin/sh` scripts (SC3037). A repo-wide `.shellcheckrc` is the place for any
-code you genuinely want to disable, with a reason.
+Keep it green rather than suppressing: split `local x=$(cmd)` into two lines (SC2155), name throwaway loop vars `_` (SC2034), use `printf` over `echo -e` in `#!/bin/sh` scripts (SC3037). A repo-wide `.shellcheckrc` is the place for any code you genuinely want to disable, with a reason.
 
-CI's second job runs `sway -C` against the config. Note `sway -C` exits `0` even
-on parse errors, so the job greps its output for `[ERROR]` instead of trusting
-the exit code — do the same if you script config checks.
+CI's second job runs `sway -C` against the config. Note `sway -C` exits `0` even on parse errors, so the job greps its output for `[ERROR]` instead of trusting the exit code — do the same if you script config checks.
 
 ### Testing
 Manual — these are system-integration scripts.
@@ -49,6 +42,7 @@ Manual — these are system-integration scripts.
 - **Filenames:** `kebab-case.sh`.
 - **Variables/functions:** `snake_case`.
 - **Constants:** `UPPER_SNAKE_CASE`.
+- **Markdown:** one line per paragraph and per list item — the renderer decides where lines break, so never reflow prose to an 80-column (or any other) width. Fenced code blocks keep their authored line breaks, and table rows are already one per line.
 
 ### Script Structure
 1. Shebang + safety flags.

@@ -22,10 +22,7 @@ Wofi is referenced in the main Sway config but is optional - the configuration w
 
 ### Setup for Theme Switching
 
-No manual setup is required. The `toggle_theme.sh` script manages
-`~/.config/wofi/style.css` for you, pointing it straight at the active theme's
-source file in this repo (`extra/wofi/style-{dark,light}.css`). It runs on first
-toggle (`Mod+Shift+t`) and at Sway startup (`toggle_theme.sh init`).
+No manual setup is required. The `toggle_theme.sh` script manages `~/.config/wofi/style.css` for you, pointing it straight at the active theme's source file in this repo (`extra/wofi/style-{dark,light}.css`). It runs on first toggle (`Mod+Shift+t`) and at Sway startup (`toggle_theme.sh init`).
 
 If wofi ever launches in the wrong (or default) theme, re-apply the current one:
 
@@ -108,9 +105,7 @@ Location: `extra/mako/`
 
 Location: `extra/swhkd/swhkdrc`
 
-**Optional Feature:** [`swhkd`](https://github.com/waycrate/swhkd) is a hotkey
-daemon that can catch media keys on some keyboards and laptops where Sway does
-not reliably bind separate `Consumer Control`, WMI, or vendor hotkey devices.
+**Optional Feature:** [`swhkd`](https://github.com/waycrate/swhkd) is a hotkey daemon that can catch media keys on some keyboards and laptops where Sway does not reliably bind separate `Consumer Control`, WMI, or vendor hotkey devices.
 
 **When to use it:**
 - `libinput debug-events --show-keycodes` sees the media keys

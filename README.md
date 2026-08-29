@@ -4,9 +4,7 @@
 
 A portable Sway (and Swayfx) configuration with **Waybar** as the status bar, a unified dark/light theme across bar, terminal, launcher, and notifications, and a monitor-hotplug daemon that handles clamshell mode and per-monitor profiles. Doubles as the config/installer for supported machines: **Arch Linux (rolling)** and **Debian 13 (Trixie)** — see [bootstrap/](bootstrap/README.md).
 
-<p align="center">
-  <img src="images/preview.png" alt="Desktop preview." />
-</p>
+<p align="center"> <img src="images/preview.png" alt="Desktop preview." /> </p>
 
 ## Layout
 
@@ -23,12 +21,7 @@ A portable Sway (and Swayfx) configuration with **Waybar** as the status bar, a 
 
 ## Zero → online (new machine)
 
-Fresh **Arch** (unattended, via `archinstall`) or fresh **Debian 13**
-(standard installer) → this desktop with no ISO build: per-distro package
-manifests plus a staged, idempotent provisioner (packages, services,
-ssh-agent, portals, age-encrypted secrets, tailscale) live in
-[`bootstrap/`](bootstrap/README.md). What "core" means and what is verified
-per distro: [docs/core-features.md](docs/core-features.md).
+Fresh **Arch** (unattended, via `archinstall`) or fresh **Debian 13** (standard installer) → this desktop with no ISO build: per-distro package manifests plus a staged, idempotent provisioner (packages, services, ssh-agent, portals, age-encrypted secrets, tailscale) live in [`bootstrap/`](bootstrap/README.md). What "core" means and what is verified per distro: [docs/core-features.md](docs/core-features.md).
 
 ## Setup
 
