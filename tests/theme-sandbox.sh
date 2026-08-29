@@ -85,6 +85,7 @@ assert "init seeds user kitty.conf"     same_as "$HOME_/.config/kitty/kitty.conf
 assert "init seeds kitty moon theme"    same_as "$HOME_/.config/kitty/themes/tokyo_night_moon.conf" "$Sway/extra/kitty/themes/tokyo_night_moon.conf"
 assert "init sets current-theme=moon"   same_as "$HOME_/.config/kitty/current-theme.conf" "$HOME_/.config/kitty/themes/tokyo_night_moon.conf"
 assert "init seeds managed mako config" same_as "$HOME_/.config/mako/config" "$Sway/extra/mako/config-dark"
+assert "init seeds theme flag (dark)"    eq "$(cat "$RUNTIME_/sway/toggles/theme")" "dark"
 
 # ------------------------------------------------- S2: toggle dark→light (notify-send fails)
 run_tts toggle
@@ -94,11 +95,13 @@ assert "toggle writes light config"   has "$RUNTIME_/sway/sway_theme_config" 'se
 assert "toggle links waybar light"    link_to "$Sway/waybar/colors.css" "colors-light.css"
 assert "toggle links wofi light"      link_to "$HOME_/.config/wofi/style.css" "$Sway/extra/wofi/style-light.css"
 assert "toggle sets current-theme=day" same_as "$HOME_/.config/kitty/current-theme.conf" "$HOME_/.config/kitty/themes/tokyo_night_day.conf"
+assert "toggle refreshes theme flag (light)" eq "$(cat "$RUNTIME_/sway/toggles/theme")" "light"
 
 # ---------------------------------------------------------- S3: round trip back to dark
 run_tts toggle
 assert "round trip returns to dark" eq "$(cat "$HOME_/.config/sway/.theme_state")" "dark"
 assert "round trip sets current-theme=moon" same_as "$HOME_/.config/kitty/current-theme.conf" "$HOME_/.config/kitty/themes/tokyo_night_moon.conf"
+assert "round trip refreshes theme flag (dark)" eq "$(cat "$RUNTIME_/sway/toggles/theme")" "dark"
 
 # ----------------------------------------------------------------------- S4: get
 run_tts get
@@ -147,6 +150,7 @@ run_tts toggle
 assert "toggle asks gnome for prefer-light" bash -c "grep -q 'set org.gnome.desktop.interface color-scheme prefer-light' \"$GNOME_LOG_\""
 assert "toggle asks gnome for Adwaita"      bash -c "grep -q 'set org.gnome.desktop.interface gtk-theme Adwaita' \"$GNOME_LOG_\""
 assert "state file tracks the gnome flip"   eq "$(cat "$HOME_/.config/sway/.theme_state")" "light"
+assert "gnome flip refreshes theme flag (light)" eq "$(cat "$RUNTIME_/sway/toggles/theme")" "light"
 
 echo
 echo "$pass/$((pass + fail)) assertions passed"
