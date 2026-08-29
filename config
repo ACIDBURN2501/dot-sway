@@ -289,7 +289,7 @@ bindsym $mod+r mode "resize"
 
 # Status bar: Waybar is launched from config.d/waybar.
 
-# Daemon to handle monitor hotplugging (replaces kanshi)
+# Daemon to handle monitor hotplugging (docs/hardware.md)
 exec_always ~/.config/sway/scripts/monitor-hotplug.sh
 
 # Optional: Mako notification daemon (only starts if installed)
