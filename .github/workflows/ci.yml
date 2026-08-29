@@ -1,10 +1,11 @@
 name: CI
 
 # Lint the shell scripts, validate the archinstall examples, syntax-check the
-# Sway config, and check markdown links, on every push and PR. `lint` is the load-bearing job (pure static analysis, always runs clean
-# anywhere); `config-check` is best-effort (installs upstream sway from apt,
-# which is vanilla — not SwayFX — and may lag the version you run);
-# `link-check` is blocking.
+# Sway config, check markdown links, and run the sandboxed theme suite, on
+# every push and PR. `lint` is the load-bearing job (pure static analysis,
+# always runs clean anywhere); `config-check` is best-effort (installs
+# upstream sway from apt, which is vanilla — not SwayFX — and may lag the
+# version you run); `link-check` and `theme-tests` are blocking.
 
 on:
   push:
@@ -106,3 +107,15 @@ jobs:
           # Local file links are checked for existence, remote links for
           # HTTP status; --no-progress keeps the log readable.
           args: --no-progress '**/*.md'
+
+  theme-tests:
+    name: theme pipeline (sandboxed)
+    runs-on: ubuntu-latest
+    # The suite runs scripts/toggle_theme.sh inside a throwaway $HOME with
+    # every session-external binary stubbed (swaymsg, gsettings, kitty, mako,
+    # notify-send, ...), so it needs no display, session, or root.
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run the sandboxed suite
+        run: bash tests/theme-sandbox.sh "$GITHUB_WORKSPACE"
