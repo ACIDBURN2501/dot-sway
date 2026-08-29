@@ -16,11 +16,12 @@ options="Shutdown\nReboot\nSuspend\nHibernate\nLogout"
 # falls through, so cancel exits 0 as before.
 chosen=$(printf '%b\n' "$options" | wofi --show dmenu --prompt "Power:" --width 20%) || chosen=""
 
-# Run the selected command
+# Run the selected command — patterns match the menu labels verbatim
+# (the labels are capitalized).
 case "$chosen" in
-shutdown) eval "$Shutdown_command" ;;
-reboot) eval "$Reboot_command" ;;
-suspend) eval "$Suspend_command" ;;
-hibernate) eval "$Hibernate_command" ;;
-logout) eval "$Logout_command" ;;
+Shutdown) eval "$Shutdown_command" ;;
+Reboot) eval "$Reboot_command" ;;
+Suspend) eval "$Suspend_command" ;;
+Hibernate) eval "$Hibernate_command" ;;
+Logout) eval "$Logout_command" ;;
 esac

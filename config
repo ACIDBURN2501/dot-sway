@@ -134,6 +134,15 @@ default_floating_border pixel 2
     # Toggle theme (Dark/Light mode)
     bindsym $mod+Shift+t exec $HOME/.config/sway/scripts/toggle_theme.sh toggle
 
+    # Quick menus (wofi popups mirroring the bar panels): audio devices,
+    # network, bluetooth, power. The power key sits beside $mod+Ctrl+p (the
+    # touchpad toggle on Alt+Ctrl+p) — different modifiers, deliberate parity
+    # with the reference desktop's panel keys.
+    bindsym $super+Ctrl+a exec $HOME/.config/sway/scripts/quick-menu.sh audio
+    bindsym $super+Ctrl+w exec $HOME/.config/sway/scripts/quick-menu.sh network
+    bindsym $super+Ctrl+b exec $HOME/.config/sway/scripts/quick-menu.sh bluetooth
+    bindsym $super+Ctrl+p exec $HOME/.config/sway/scripts/quick-menu.sh power
+
     # Toggle Mako DND (Focus mode)
     bindsym $mod+Shift+m exec $HOME/.config/sway/scripts/toggle-mako-dnd.sh
 

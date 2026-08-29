@@ -67,7 +67,11 @@ Changes take effect the next time wofi is launched.
 
 ### Power Menu
 
-The `extra/wofi/wofi-power.sh` script provides a power menu using wofi with options to shutdown, reboot, suspend, hibernate, and logout. This script is independent of theme management but will use the active theme. Machines without suspend/hibernate support may trim the menu locally — the provisioner never overwrites local changes.
+The `extra/wofi/wofi-power.sh` script provides a power menu using wofi with options to shutdown, reboot, suspend, hibernate, and logout. It is reachable from `Super+Ctrl+p` (via `scripts/quick-menu.sh power`) and uses the active theme. Machines without suspend/hibernate support may trim the menu locally — the provisioner never overwrites local changes.
+
+### Quick Menus
+
+`scripts/quick-menu.sh` builds the bar panels' popups (audio devices, network, bluetooth, power) in wofi's dmenu mode, so they inherit this theme automatically — same styling pipeline as the launcher. Hotkeys: `Super+Ctrl+a` (audio), `Super+Ctrl+w` (network), `Super+Ctrl+b` (bluetooth), `Super+Ctrl+p` (power). See `scripts/SCRIPTS.md` for the menu contract.
 
 ## Kitty Terminal Theme
 

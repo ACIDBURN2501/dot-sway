@@ -40,8 +40,9 @@ new_sandbox() { # sets HOME_ RUNTIME_ BIN_ LOG_
   FIFO_="$RUNTIME_/sway/wob.sock"
   OSD_OUT_="$SB/osd_out"
   Sway="$HOME_/.config/sway"
-  mkdir -p "$HOME_/.config" "$RUNTIME_/sway" "$BIN_" "$SB/bl"
-  cp -a "$REPO" "$Sway"
+  mkdir -p "$HOME_/.config" "$RUNTIME_/sway" "$BIN_" "$Sway" "$SB/bl"
+  # Copy without .git and the wallpaper pool — heavy, and no suite needs them.
+  tar -C "$REPO" --exclude=./.git --exclude=./images/wallpapers -cf - . | tar -C "$Sway" -xf -
   : > "$LOG_"
   : > "$OSD_OUT_"
   mkfifo "$FIFO_"

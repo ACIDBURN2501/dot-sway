@@ -53,7 +53,8 @@
     "format-icons": {
       "default": ["󰕿", "󰖀", "󰕾"]
     },
-    "on-click": "$HOME/.config/sway/scripts/volume-control.sh mute",
+    "on-click": "$HOME/.config/sway/scripts/quick-menu.sh audio",
+    "on-click-right": "$HOME/.config/sway/scripts/volume-control.sh mute",
     "on-scroll-up": "$HOME/.config/sway/scripts/volume-control.sh up",
     "on-scroll-down": "$HOME/.config/sway/scripts/volume-control.sh down"
   },
@@ -92,7 +93,8 @@
     "format-connected-battery": "󰂱 {device_battery_percentage}%",
     "tooltip-format": "{controller_alias}\n{num_connections} connected",
     "tooltip-format-connected": "{device_enumerate}",
-    "on-click": "$HOME/.config/sway/scripts/bluetooth-tui.sh"
+    "on-click": "$HOME/.config/sway/scripts/quick-menu.sh bluetooth",
+    "on-click-right": "$HOME/.config/sway/scripts/toggle-bluetooth.sh"
   },
 
   "network": {
@@ -103,7 +105,8 @@
     "format-disabled": "",
     "tooltip-format-wifi": "{essid} — {ipaddr}\n↓ {bandwidthDownBits} ↑ {bandwidthUpBits}",
     "tooltip-format-ethernet": "{ifname} — {ipaddr}",
-    "on-click": "$HOME/.config/sway/scripts/network-tui.sh"
+    "on-click": "$HOME/.config/sway/scripts/quick-menu.sh network",
+    "on-click-right": "$HOME/.config/sway/scripts/network-tui.sh"
   },
 
   "tray": {

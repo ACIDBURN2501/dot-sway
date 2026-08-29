@@ -13,6 +13,8 @@ These scripts live in `scripts/` and are invoked in place from `$HOME/.config/sw
     - **Degradation:** no `grim` or a cancelled `slurp` selection exits silently; without `wl-copy` the capture is still saved, just not copied; `window`/`output` need `jq` and fall through to no capture without it.
     - **Save location:** `SCREENSHOT_DIR` overrides the directory; it's created on first capture.
 - `osd-bar.sh`: Writes a 0-100 value to the wob OSD pipe (`$XDG_RUNTIME_DIR/sway/wob.sock`, config in `extra/wob/wob.ini`). Called by the volume/brightness control scripts after every change; wob not running or a missing pipe is a silent no-op — the OSD is feedback, never an error surface.
+- `quick-menu.sh`: Domain quick menus in wofi (dmenu mode) — `<audio|network|bluetooth|power>`, reached from `$super+Ctrl+a/w/b/p` and the bar modules' left-clicks. Audio: default sink/source switching, mute entries (via `wpctl`). Network: NetworkManager scan/connected-state, saved profiles, masked password entry for new networks (wofi's `-P`), iwd fallback, TUI escape hatch. Bluetooth: power toggle, connect/disconnect for paired devices, TUI for pairing. Power: delegates to `extra/wofi/wofi-power.sh`. Every backend is probed first and the menu silently skips when absent; a dismissed menu is a no-op; every external call runs under `timeout` so a wedged daemon can't hang the popup.
+- `toggle-bluetooth.sh`: Toggles the bluetooth radio (`bluetoothctl power on/off`) and notifies. Bound to the bluetooth bar module's right-click.
 - `volume-control.sh`: Handles mute, volume up/down, and mic mute.
     - Prefers `wpctl` on PipeWire systems.
     - Falls back to `pactl` for PulseAudio-compatible sessions.
@@ -31,7 +33,7 @@ These scripts live in `scripts/` and are invoked in place from `$HOME/.config/sw
     - **Fallback:** read-only `ip -c -br a` + `ip -c r` summary with `kitty --hold` so the window stays open.
     - **Adding a TUI:** install one of the above and the script picks it up automatically — no config edit needed.
 - `bluetooth-tui.sh`: Launches the best available bluetooth management TUI in kitty for the Waybar bluetooth click handler.
-    - **Probe order:** `bluetuith` (recommended; ncurses TUI) → `bluetoothctl` (interactive shell).
+    - **Probe order:** `bluetuith` (recommended; ncurses TUI) → `bluetoothctl` (interactive shell). Also the pairing path for the quick menu (pairing needs an agent and a user confirmation).
     - **Adding a TUI:** install `bluetuith` and the script picks it up automatically.
 - `monitor-hotplug.sh`: Auto-switches between "Mobile" (internal screen only) and "Docked" (external screen only) modes.
     - **Logic:**
