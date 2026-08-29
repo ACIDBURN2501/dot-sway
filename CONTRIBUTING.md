@@ -29,7 +29,9 @@ just a sway install.
 
 ## House style
 
-- `#!/usr/bin/env bash` and `set -euo pipefail` in every script.
+- `#!/usr/bin/env bash` and `set -euo pipefail` in bash scripts. The one
+  `#!/bin/sh` script (the wofi power menu) carries `set -eu`; dash has no
+  pipefail.
 - 2-space indent, snake_case variables, kebab-case.sh filenames.
 - Probe for a tool before you call it:
   `command -v jq >/dev/null 2>&1 || exit 0`.
@@ -51,6 +53,9 @@ Modules in `waybar/modules/` back `custom/*` entries in the bar config:
   and read the cache (see `brightness.sh`).
 - Need a CSS class or a tooltip that depends on state? Emit JSON and
   set `"return-type": "json"` in `waybar/config.jsonc`.
+- `theme.sh` is the one module without the safety flags. Its whole body
+  is one if/else that always ends in an echo, and its contract is the
+  same one line or nothing; leave it as is.
 
 ## Commits
 

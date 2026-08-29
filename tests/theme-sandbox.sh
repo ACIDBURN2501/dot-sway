@@ -81,7 +81,7 @@ assert "init writes dark sway_theme_config" has "$RUNTIME_/sway/sway_theme_confi
 assert "init links waybar dark palette"  link_to "$Sway/waybar/colors.css" "colors-dark.css"
 assert "init links wofi dark style"     link_to "$HOME_/.config/wofi/style.css" "$Sway/extra/wofi/style-dark.css"
 # NOTE: the doubled themes/themes/ staging dir below is a known oddity;
-# see the kitty section of extra/EXTRA.md. A fix is drafted in the project queue.
+# see the kitty section of extra/EXTRA.md.
 assert "init seeds user kitty.conf"     same_as "$HOME_/.config/kitty/kitty.conf" "$Sway/extra/kitty/kitty.conf"
 assert "init seeds kitty moon theme"    same_as "$HOME_/.config/kitty/themes/themes/tokyo_night_moon.conf" "$Sway/extra/kitty/themes/tokyo_night_moon.conf"
 assert "init sets current-theme=moon"   same_as "$HOME_/.config/kitty/current-theme.conf" "$HOME_/.config/kitty/themes/themes/tokyo_night_moon.conf"
