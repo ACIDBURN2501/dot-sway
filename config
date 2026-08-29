@@ -27,9 +27,9 @@ exec dbus-update-activation-environment --systemd DISPLAY WAYLAND_DISPLAY XDG_CU
 exec systemctl --user import-environment DISPLAY WAYLAND_DISPLAY XDG_CURRENT_DESKTOP
 
 # Screen snipping
-# Snip to file (Save to ~/Pictures). The dir is created on demand — a fresh
-# box has no desktop environment to seed XDG dirs, so the bind self-heals.
-bindsym Control+Mod1+s exec sh -c 'mkdir -p ~/Pictures/Screenshots && grim -g "$(slurp)" ~/Pictures/Screenshots/screenshot-$(date +%Y-%m-%d-%H%M%S).png'
+# Snip a region: saves to ~/Pictures/Screenshots and copies to the clipboard.
+# scripts/screenshot.sh also takes screen/output/window if you want more binds.
+bindsym Control+Mod1+s exec $HOME/.config/sway/scripts/screenshot.sh region
 
 # Screen locking
 bindsym $super+l exec swaylock -f -i ~/.config/sway/images/wp.png
@@ -284,8 +284,8 @@ bindsym $mod+r mode "resize"
     bindcode --locked 232 exec $HOME/.config/sway/scripts/brightness-control.sh down
     bindcode --locked 233 exec $HOME/.config/sway/scripts/brightness-control.sh up
     bindcode --locked 256 exec $HOME/.config/sway/scripts/volume-control.sh mic-mute
-    # Special key to take a screenshot with grim
-    bindsym Print exec grim
+    # Special key to capture the whole layout (saved and copied, like the snip)
+    bindsym Print exec $HOME/.config/sway/scripts/screenshot.sh screen
 
 # Status bar: Waybar is launched from config.d/waybar.
 
