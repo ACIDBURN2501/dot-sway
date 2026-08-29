@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Theme toggle script for Sway/Swayfx
 # Syncs with Gnome when available, falls back to Sway-only theming
+set -euo pipefail
 
 THEME_STATE_FILE="$HOME/.config/sway/.theme_state"
 
@@ -84,12 +85,14 @@ toggle_theme() {
     # no-op whenever wp.png is already set, so the current wallpaper persists.
     swaymsg reload &>/dev/null || true
 
-    # Send notification if notify-send is available
+    # Send notification if notify-send is available. A Sway desktop without a
+    # notification daemon is a normal state, so a failed notify-send must not
+    # fail the flip.
     if command -v notify-send &>/dev/null; then
         if [[ "$new_theme" == "dark" ]]; then
-            notify-send -t 2000 -u low "Theme" "Switched to Dark Mode 🌙"
+            notify-send -t 2000 -u low "Theme" "Switched to Dark Mode 🌙" || true
         else
-            notify-send -t 2000 -u low "Theme" "Switched to Light Mode ☀️"
+            notify-send -t 2000 -u low "Theme" "Switched to Light Mode ☀️" || true
         fi
     fi
 }
