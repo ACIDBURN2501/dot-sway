@@ -1,17 +1,27 @@
 #!/usr/bin/env bash
 # Notification status indicator for status bar
 # Shows 🧘 when DND (Focus mode) is active
+#
+# Reads the `dnd` flag from the per-session flag store (scripts/toggle.sh).
+# The flag is owned by scripts/toggle-mako-dnd.sh: written on every
+# successful flip, absent at session start, which is mako's fresh state
+# (modes do not survive a mako restart, so no seeding is needed).
+# Empty output hides the module while DND is off.
 
 set -euo pipefail
 
-# Check for makoctl
+# makoctl absent means DND can never be on on this box; hide.
 if ! command -v makoctl >/dev/null 2>&1; then
     exit 0
 fi
 
-# Check DND status using makoctl mode
-DND_ACTIVE=$(makoctl mode 2>/dev/null | grep -q "DoNDisturb" && echo "1" || echo "0")
+TOGGLE="$HOME/.config/sway/scripts/toggle.sh"
 
-if [[ "$DND_ACTIVE" == "1" ]]; then
+# Flag store missing (e.g. pre-deploy box); hide rather than error.
+if [[ ! -x "$TOGGLE" ]]; then
+    exit 0
+fi
+
+if "$TOGGLE" get dnd; then
     echo "🧘"
 fi
