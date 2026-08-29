@@ -59,6 +59,7 @@ Optional, picked up automatically when installed: `gsettings` (Gnome `color-sche
 ## Other
 
 - `grim`, `slurp` — screenshots
+- `wl-clipboard` (`wl-copy`) — puts each screenshot on the clipboard as well as on disk. Without it captures still save, they just aren't pastable. A clipboard *history* needs a manager on top ([`cliphist`](https://github.com/sentriz/cliphist), `clipman`); neither is wired up here.
 - `swayidle`, `swaylock` — idle locking
 - `wayland-pipewire-idle-inhibit` — holds an idle inhibitor while audio plays so videos don't trigger the lock. `cargo install wayland-pipewire-idle-inhibit` (needs `libpipewire-0.3-dev` and `libclang-dev` at build time); the binary must be on the Sway session's `PATH`.
 - `dbus-update-activation-environment`, `systemctl --user import-environment` — XDG/Wayland env propagation. See [xdg-defaults.md](xdg-defaults.md).

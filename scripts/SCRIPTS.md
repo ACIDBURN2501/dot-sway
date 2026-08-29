@@ -5,6 +5,11 @@ These scripts live in `scripts/` and are invoked in place from `$HOME/.config/sw
 - `move-ws-to-active.sh`: Moves all workspaces to the currently focused output. Not bound by default — available for a keybind or manual use.
 - `move-ws-to-output.sh`: Moves all workspaces to a specific output (arg 1). Not bound by default — available for a keybind or manual use.
 - `toggle-touchpad.sh`: Toggles the touchpad on/off and sends a notification.
+- `screenshot.sh`: Captures with `grim`, writes the PNG to `~/Pictures/Screenshots`, and copies it to the clipboard so it can be pasted directly instead of attached from disk.
+    - **Modes** (arg 1, default `region`): `region` (drag a selection with `slurp`), `screen` (whole output layout), `output` (focused output, via `grim -o` so its scale is preserved), `window` (focused window).
+    - **Bound by default:** `Ctrl+Alt+s` → `region`, `Print` → `screen`. `output` and `window` are unbound; add a keybind if you want them.
+    - **Degradation:** no `grim` or a cancelled `slurp` selection exits silently; without `wl-copy` the capture is still saved, just not copied; `window`/`output` need `jq` and fall through to no capture without it.
+    - **Save location:** `SCREENSHOT_DIR` overrides the directory; it's created on first capture.
 - `volume-control.sh`: Handles mute, volume up/down, and mic mute.
     - Prefers `wpctl` on PipeWire systems.
     - Falls back to `pactl` for PulseAudio-compatible sessions.
