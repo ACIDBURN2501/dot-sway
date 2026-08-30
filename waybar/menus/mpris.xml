@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Left-click dropdown for the mpris pill (waybar config.jsonc,
+     "menu" + "menu-file" + "menu-actions"). Every item id must match a
+     menu-actions key; commands run via /bin/sh like on-click.
+     Use explicit <object class="..."> elements — bare <menu> shorthand
+     maps to GtkMenuBar in GtkBuilder. -->
+<interface>
+  <object class="GtkMenu" id="menu">
+    <child>
+      <object class="GtkMenuItem" id="play-pause">
+        <property name="label">󰏤 Play / Pause</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="next">
+        <property name="label">󰬲 Next</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="previous">
+        <property name="label">󰭏 Previous</property>
+      </object>
+    </child>
+  </object>
+</interface>

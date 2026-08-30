@@ -107,6 +107,7 @@ Examples:
   - `style.css` — imports the active palette via the `colors.css` symlink (gitignored)
   - `colors-dark.css` / `colors-light.css` — `@define-color` palettes. Both files **must define the same names** so `style.css` resolves in either palette.
   - `modules/` — custom shell modules for state Waybar can't read natively (DDC/CI brightness, theme indicator, mako DND).
+  - `menus/` — GtkBuilder XML for the native dropdown menus (audio, media, power); see `docs/waybar.md` for the contract.
 - **`scripts/`:** Utilities bound to keybinds or `exec` lines — monitor hotplug, theme toggle, media key handlers, etc.
 - **`extra/`:** Standalone configs for adjacent tools (wofi, mako, swhkd).
 

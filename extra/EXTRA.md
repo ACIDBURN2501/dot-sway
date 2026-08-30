@@ -71,7 +71,7 @@ The `extra/wofi/wofi-power.sh` script provides a power menu using wofi with opti
 
 ### Quick Menus
 
-`scripts/quick-menu.sh` builds the bar panels' popups (audio devices, network, bluetooth, power) in wofi's dmenu mode, so they inherit this theme automatically — same styling pipeline as the launcher. Hotkeys: `Super+Ctrl+a` (audio), `Super+Ctrl+w` (network), `Super+Ctrl+b` (bluetooth), `Super+Ctrl+p` (power). See `scripts/SCRIPTS.md` for the menu contract.
+`scripts/quick-menu.sh` builds the bar panels' popups (audio devices, network, bluetooth, power) in wofi's dmenu mode, so they inherit this theme automatically — same styling pipeline as the launcher. The audio pill's native Waybar dropdown (see `docs/waybar.md`) delegates to this script from its devices item, and the clock's power dropdown (`waybar/menus/power.xml`) is a parallel definition of `wofi-power.sh` — keep the two in sync. Hotkeys: `Super+Ctrl+a` (audio), `Super+Ctrl+w` (network), `Super+Ctrl+b` (bluetooth), `Super+Ctrl+p` (power). See `scripts/SCRIPTS.md` for the menu contract.
 
 ## Kitty Terminal Theme
 
