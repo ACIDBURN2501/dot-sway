@@ -22,7 +22,7 @@ Theme (🌙/☀️) and DND (🧘) read per-session flag files written by the to
 
 ## Dropdown menus
 
-Three pills carry native Waybar dropdowns instead of wofi popups: **audio** (`pulseaudio`, left-click), **media** (`mpris`, left-click), and **power** (the static `custom/power` pill ⏻, left-click). The menu XML lives in `waybar/menus/` and is wired per module with three keys in `config.jsonc`:
+Three pills carry native Waybar dropdowns instead of wofi popups: **audio** (`pulseaudio`, left-click), **media** (`mpris`, left-click), and **power** (the static `custom/power` pill ⚡, left-click). The menu XML lives in `waybar/menus/` and is wired per module with three keys in `config.jsonc`:
 
 - `"menu"` — the click that pops the menu (here always `on-click`).
 - `"menu-file"` — GtkBuilder XML; must contain a `GtkMenu` with `id="menu"`, and each action is a `GtkMenuItem` with its own `id`. Use the explicit `<object class="...">` form — bare `<menu>` shorthand maps to `GtkMenuBar` in GtkBuilder.

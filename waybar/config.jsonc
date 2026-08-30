@@ -131,8 +131,8 @@
   },
 
   "custom/power": {
-    // Static pill (NF md-power glyph, U+F0425) — the script prints the
-    // icon once ("interval": "once").
+    // Static pill (lightning bolt ⚡, U+26A1) — the script prints the icon
+    // once ("interval": "once").
     // Left-click opens the power dropdown, a parallel definition of
     // extra/wofi/wofi-power.sh ($super+Ctrl+p keeps the wofi path).
     "exec": "$HOME/.config/sway/waybar/modules/power.sh",
