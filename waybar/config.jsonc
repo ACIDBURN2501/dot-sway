@@ -17,7 +17,9 @@
   "layer": "top",
   "position": "top",
   "height": 32,
-  "spacing": 6,
+  // 0 on purpose: the .module pill framework in style.css owns the gaps
+  // (8px padding per pill side -> uniform 16px between all pills).
+  "spacing": 0,
 
   "modules-left": ["sway/workspaces", "sway/mode"],
   "modules-center": ["custom/brightness", "pulseaudio", "mpris", "custom/theme", "custom/dnd", "custom/stay-awake", "bluetooth", "network", "custom/power"],

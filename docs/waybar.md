@@ -16,6 +16,15 @@ Waybar is launched by `config.d/waybar` on Sway start. The snippet points `wayba
 
 Battery, audio, bluetooth, network, clock, and media (MPRIS now-playing with click-to-transport; hides itself when no player is active) use Waybar's native event-driven modules (D-Bus, no polling). Brightness, theme, DND, and stay-awake are custom shell modules under `waybar/modules/`.
 
+## Pill framework
+
+All pills share one set of CSS rules instead of per-module styling, so new modules get consistent spacing and hover for free:
+
+- Waybar gives every label module's label (and the workspaces and tray boxes) the shared **`module`** CSS class, and sets the `:hover` state on mouse enter. A single `.module` rule in `style.css` therefore gives every pill uniform padding, rounded corners, and the `@bg_hover` highlight — the same affordance as the workspace buttons.
+- `config.jsonc` sets `"spacing": 0` on purpose: each pill owns its 8px of padding per side, so gaps are a uniform 16px inside clusters and across cluster borders alike. Don't reintroduce per-module padding lists or `border-right` dividers; if a module must deviate, add an id-scoped override.
+- `box#battery { padding: 0 }` is that kind of override: the battery module names *both* its box and its label `battery`, so without it the pill padding would apply twice.
+- Workspaces keep per-button hover: `#workspaces:hover` suppresses the group-wide highlight so the highlight still telegraphs which workspace you're on.
+
 ## Toggle state
 
 Theme (🌙/☀️) and DND (🧘) read per-session flag files written by the toggle scripts (`scripts/toggle.sh` — see [SCRIPTS.md](../scripts/SCRIPTS.md)). `theme.sh` resolves gnome gsettings → theme flag → `.theme_state`; `dnd.sh` shows the icon only while the `dnd` flag is set and mako is present; `stay-awake.sh` shows ☕ only while the `stay-awake` flag is set (idle lock and screen-off suspended).
@@ -37,7 +46,7 @@ Styling: `menu` and `menuitem` selectors in `style.css` using palette tokens, so
 
 ## Adding modules
 
-- **Native module:** add its name to a `modules-*` array in `config.jsonc` and a config block below. See the [Waybar wiki](https://github.com/Alexays/Waybar/wiki). Native modules are preferred; they're event-driven.
+- **Native module:** add its name to a `modules-*` array in `config.jsonc` and a config block below. See the [Waybar wiki](https://github.com/Alexays/Waybar/wiki). Native modules are preferred; they're event-driven. Every new module inherits the [pill framework](#pill-framework) padding and hover automatically — no per-module CSS needed.
 - **Custom shell module:** drop an executable in `waybar/modules/`, then add `"custom/<name>"` to a cluster with `"exec"`, an `"interval"`, and an optional `"on-click"`. For state-dependent styling, emit JSON (`{text, tooltip, class, percentage}`) and set `"return-type": "json"` so `style.css` can then target `#custom-<name>.<class>`.
 
 ### The module output contract
