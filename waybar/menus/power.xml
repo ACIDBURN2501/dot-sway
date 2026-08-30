@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Left-click dropdown for the custom/power pill (⏻, waybar config.jsonc,
+<!-- Left-click dropdown for the custom/power pill (waybar config.jsonc,
      "menu" + "menu-file" + "menu-actions"). Every item id must match a
      menu-actions key; commands run via /bin/sh like on-click.
      Parallel definition of extra/wofi/wofi-power.sh — keep the commands
