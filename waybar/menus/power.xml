@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Left-click dropdown for the clock (waybar config.jsonc,
+     "menu" + "menu-file" + "menu-actions"). Every item id must match a
+     menu-actions key; commands run via /bin/sh like on-click.
+     Parallel definition of extra/wofi/wofi-power.sh — keep the commands
+     in sync (that one is reachable from $super+Ctrl+p).
+     Use explicit <object class="..."> elements — bare <menu> shorthand
+     maps to GtkMenuBar in GtkBuilder. -->
+<interface>
+  <object class="GtkMenu" id="menu">
+    <child>
+      <object class="GtkMenuItem" id="shutdown">
+        <property name="label">⏻ Shutdown</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="reboot">
+        <property name="label">󰘾 Reboot</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem" id="sep-1"/>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="suspend">
+        <property name="label">󰜶 Suspend</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="hibernate">
+        <property name="label">❆ Hibernate</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem" id="sep-2"/>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="logout">
+        <property name="label">󰒃 Logout</property>
+      </object>
+    </child>
+  </object>
+</interface>

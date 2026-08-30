@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Left-click dropdown for the pulseaudio pill (waybar config.jsonc,
+     "menu" + "menu-file" + "menu-actions"). Every item id must match a
+     menu-actions key; commands run via /bin/sh like on-click.
+     Use explicit <object class="..."> elements — bare <menu> shorthand
+     maps to GtkMenuBar in GtkBuilder. -->
+<interface>
+  <object class="GtkMenu" id="menu">
+    <child>
+      <object class="GtkMenuItem" id="mute-output">
+        <property name="label">󰝟 Mute output</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="mute-mic">
+        <property name="label">󰍩 Mute microphone</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkSeparatorMenuItem" id="sep-devices"/>
+    </child>
+    <child>
+      <!-- Dynamic device list stays in wofi; this item just delegates. -->
+      <object class="GtkMenuItem" id="devices">
+        <property name="label">󰍢 Audio devices…</property>
+      </object>
+    </child>
+  </object>
+</interface>

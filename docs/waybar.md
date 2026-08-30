@@ -1,7 +1,7 @@
 # Waybar (Status Bar)
 
 **What:** The status bar — workspace and mode indicators, brightness, audio, theme, DND, stay-awake, bluetooth, network, tray, battery, clock — plus the contract custom shell modules must follow.
-**Where:** `waybar/` — `config.jsonc` (layout), `style.css` + `colors-{dark,light}.css` (palette), `modules/` (custom shell modules). Launched from `config.d/waybar`.
+**Where:** `waybar/` — `config.jsonc` (layout), `style.css` + `colors-{dark,light}.css` (palette), `modules/` (custom shell modules), `menus/` (dropdown menu XML). Launched from `config.d/waybar`.
 **Verified:** parse errors print to stderr when run in the foreground; the theme and DND custom modules are exercised by the CI theme suite (`tests/theme-sandbox.sh`).
 
 Waybar is launched by `config.d/waybar` on Sway start. The snippet points `waybar/colors.css` at the active palette, then supervises Waybar (respawning it if it dies to an early-boot D-Bus race, capped at 5 attempts). `exec` (not `exec_always`) so reloads don't kill the bar; theme switches reload it live via `SIGUSR2`.
@@ -19,6 +19,21 @@ Battery, audio, bluetooth, network, clock, and media (MPRIS now-playing with cli
 ## Toggle state
 
 Theme (🌙/☀️) and DND (🧘) read per-session flag files written by the toggle scripts (`scripts/toggle.sh` — see [SCRIPTS.md](../scripts/SCRIPTS.md)). `theme.sh` resolves gnome gsettings → theme flag → `.theme_state`; `dnd.sh` shows the icon only while the `dnd` flag is set and mako is present; `stay-awake.sh` shows ☕ only while the `stay-awake` flag is set (idle lock and screen-off suspended).
+
+## Dropdown menus
+
+Three pills carry native Waybar dropdowns instead of wofi popups: **audio** (`pulseaudio`, left-click), **media** (`mpris`, left-click), and **power** (`clock`, left-click). The menu XML lives in `waybar/menus/` and is wired per module with three keys in `config.jsonc`:
+
+- `"menu"` — the click that pops the menu (here always `on-click`).
+- `"menu-file"` — GtkBuilder XML; must contain a `GtkMenu` with `id="menu"`, and each action is a `GtkMenuItem` with its own `id`. Use the explicit `<object class="...">` form — bare `<menu>` shorthand maps to `GtkMenuBar` in GtkBuilder.
+- `"menu-actions"` — maps item `id`s to shell commands (run via `/bin/sh`, like `on-click`).
+
+Two gotchas are baked into the config:
+
+- The command and the menu fire on the *same* click, so a module with a menu must not also keep an `on-click` command (audio's old wofi call was dropped, not kept — its devices item delegates to the same script).
+- `mpris` and `clock` carry an empty `"on-click": ""`. It arms Waybar's click handler (the clock module is built with clicks off) and, for mpris, suppresses the built-in left-click play/pause.
+
+Styling: `menu` and `menuitem` selectors in `style.css` using palette tokens, so both themes apply. Dynamic lists stay in wofi (`scripts/quick-menu.sh`): native menus are static XML, so network's SSID scan and bluetooth's device list keep their left-click popups.
 
 ## Adding modules
 

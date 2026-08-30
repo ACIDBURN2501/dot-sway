@@ -87,6 +87,28 @@ window#waybar {
   background-color: @bg_hover;
 }
 
+/* --- Dropdown menus (native GtkMenu popups) -----------------------------
+ * Popped by the `menu` property on pulseaudio, mpris, and clock (XML in
+ * waybar/menus/). Palette tokens, so both themes pick this up. */
+menu {
+  background-color: @bg;
+  color: @fg;
+  border: 1px solid @divider;
+  border-radius: 6px;
+  padding: 4px;
+}
+
+menuitem {
+  color: @fg;
+  padding: 4px 12px;
+  border-radius: 4px;
+}
+
+menuitem:hover {
+  background-color: @bg_hover;
+  color: @fg_strong;
+}
+
 /* --- Battery state ------------------------------------------------------- */
 #battery.warning  { color: @warning; }
 #battery.critical { color: @critical; }
