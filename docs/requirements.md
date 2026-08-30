@@ -52,7 +52,7 @@ Used by Waybar modules and scripts:
 - **Media (MPRIS)** (left-click dropdown: transport controls; middle previous, right next) → `waybar/menus/mpris.xml` (native Waybar menu, `playerctl`) + the module's built-in middle/right actions
 - **Bluetooth** (left-click quick menu: connect/disconnect and radio; right-click radio toggle) → `scripts/quick-menu.sh bluetooth` + `scripts/toggle-bluetooth.sh`. Pairing stays in the TUI (left-click menu → pair entry).
 - **Network** (left-click quick menu: scan, saved networks, masked password entry; right-click TUI) → `scripts/quick-menu.sh network` + `scripts/network-tui.sh` — the TUI probes `impala` → `nmtui` → `iwctl`, falls back to a read-only `ip` summary. Install [`impala`](https://github.com/pythops/impala) for the recommended iwd TUI.
-- **Power** (`Super+Ctrl+p`, or the clock's left-click dropdown) → `scripts/quick-menu.sh power` → `extra/wofi/wofi-power.sh`; the dropdown is `waybar/menus/power.xml`, a parallel definition of `wofi-power.sh` — keep the commands in sync
+- **Power** (`Super+Ctrl+p`, or the power pill ⏻'s left-click dropdown) → `scripts/quick-menu.sh power` → `extra/wofi/wofi-power.sh`; the dropdown is `waybar/menus/power.xml`, a parallel definition of `wofi-power.sh` — keep the commands in sync
 - **Theme** / **DND** (left-click) → respective toggle scripts under `scripts/`
 
 Prefer GUI tools? Swap the `on-click` lines in `waybar/config.jsonc`: `pavucontrol` (audio), `blueman-manager` (bluetooth), `nm-connection-editor` / `nmtui` (network).

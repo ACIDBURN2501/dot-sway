@@ -1,7 +1,7 @@
 // Waybar layout for the Sway desktop.
 //
 //   Left:    workspaces, sway mode
-//   Center:  brightness, volume, media, theme, DND, bluetooth, network
+//   Center:  brightness, volume, media, theme, DND, bluetooth, network, power
 //   Right:   tray, battery, clock
 //
 // Three modules under custom/* shell out to scripts in waybar/modules/
@@ -20,7 +20,7 @@
   "spacing": 6,
 
   "modules-left": ["sway/workspaces", "sway/mode"],
-  "modules-center": ["custom/brightness", "pulseaudio", "mpris", "custom/theme", "custom/dnd", "custom/stay-awake", "bluetooth", "network"],
+  "modules-center": ["custom/brightness", "pulseaudio", "mpris", "custom/theme", "custom/dnd", "custom/stay-awake", "bluetooth", "network", "custom/power"],
   "modules-right": ["tray", "battery", "clock"],
 
   "sway/workspaces": {
@@ -130,6 +130,24 @@
     "on-click-right": "$HOME/.config/sway/scripts/toggle-bluetooth.sh"
   },
 
+  "custom/power": {
+    // Static pill (⏻) — the script prints the icon once ("interval": "once").
+    // Left-click opens the power dropdown, a parallel definition of
+    // extra/wofi/wofi-power.sh ($super+Ctrl+p keeps the wofi path).
+    "exec": "$HOME/.config/sway/waybar/modules/power.sh",
+    "interval": "once",
+    "menu": "on-click",
+    "menu-file": "$HOME/.config/sway/waybar/menus/power.xml",
+    "menu-actions": {
+      "shutdown": "systemctl poweroff",
+      "reboot": "systemctl reboot",
+      "suspend": "systemctl suspend",
+      "hibernate": "systemctl hibernate",
+      "logout": "swaymsg exit"
+    },
+    "tooltip-format": "Click for power actions"
+  },
+
   "network": {
     "format-wifi": "󰖩 {signalStrength}%",
     "format-ethernet": "󰈀",
@@ -150,20 +168,6 @@
   "clock": {
     "format": "{:%H:%M}",
     "tooltip-format": "<tt><big>{:%Y-%m-%d}</big>\n\n{calendar}</tt>",
-    // Left-click opens the power dropdown (parallel to extra/wofi/wofi-power.sh).
-    "menu": "on-click",
-    "menu-file": "$HOME/.config/sway/waybar/menus/power.xml",
-    "menu-actions": {
-      "shutdown": "systemctl poweroff",
-      "reboot": "systemctl reboot",
-      "suspend": "systemctl suspend",
-      "hibernate": "systemctl hibernate",
-      "logout": "swaymsg exit"
-    },
-    // Empty on-click: the clock module is built with click support off, so
-    // a click handler (and thus the menu) only attaches when some
-    // on-click* key is present.
-    "on-click": "",
     "calendar": {
       "mode": "month",
       "weeks-pos": "right",
