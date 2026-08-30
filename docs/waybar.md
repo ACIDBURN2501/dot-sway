@@ -11,7 +11,7 @@ Waybar is launched by `config.d/waybar` on Sway start. The snippet points `wayba
 | Cluster | Modules |
 |---------|---------|
 | Left    | `sway/workspaces`, `sway/mode` |
-| Center  | `custom/brightness`, `pulseaudio`, `mpris`, `custom/theme`, `custom/dnd`, `custom/stay-awake`, `bluetooth`, `network` |
+| Center  | `custom/brightness`, `pulseaudio`, `mpris`, `custom/theme`, `custom/dnd`, `custom/stay-awake`, `bluetooth`, `network`, `custom/power` |
 | Right   | `tray`, `battery`, `clock` |
 
 Battery, audio, bluetooth, network, clock, and media (MPRIS now-playing with click-to-transport; hides itself when no player is active) use Waybar's native event-driven modules (D-Bus, no polling). Brightness, theme, DND, and stay-awake are custom shell modules under `waybar/modules/`.
@@ -22,7 +22,7 @@ Theme (🌙/☀️) and DND (🧘) read per-session flag files written by the to
 
 ## Dropdown menus
 
-Three pills carry native Waybar dropdowns instead of wofi popups: **audio** (`pulseaudio`, left-click), **media** (`mpris`, left-click), and **power** (`clock`, left-click). The menu XML lives in `waybar/menus/` and is wired per module with three keys in `config.jsonc`:
+Three pills carry native Waybar dropdowns instead of wofi popups: **audio** (`pulseaudio`, left-click), **media** (`mpris`, left-click), and **power** (the static `custom/power` pill ⏻, left-click). The menu XML lives in `waybar/menus/` and is wired per module with three keys in `config.jsonc`:
 
 - `"menu"` — the click that pops the menu (here always `on-click`).
 - `"menu-file"` — GtkBuilder XML; must contain a `GtkMenu` with `id="menu"`, and each action is a `GtkMenuItem` with its own `id`. Use the explicit `<object class="...">` form — bare `<menu>` shorthand maps to `GtkMenuBar` in GtkBuilder.
@@ -31,7 +31,7 @@ Three pills carry native Waybar dropdowns instead of wofi popups: **audio** (`pu
 Two gotchas are baked into the config:
 
 - The command and the menu fire on the *same* click, so a module with a menu must not also keep an `on-click` command (audio's old wofi call was dropped, not kept — its devices item delegates to the same script).
-- `mpris` and `clock` carry an empty `"on-click": ""`. It arms Waybar's click handler (the clock module is built with clicks off) and, for mpris, suppresses the built-in left-click play/pause.
+- `mpris` carries an empty `"on-click": ""` — it arms the menu handler and suppresses the module's built-in left-click play/pause. No such trick is needed for the other pills: the presence of the `"menu"` key itself enables the click handler on any `ALabel` module.
 
 Styling: `menu` and `menuitem` selectors in `style.css` using palette tokens, so both themes apply. Dynamic lists stay in wofi (`scripts/quick-menu.sh`): native menus are static XML, so network's SSID scan and bluetooth's device list keep their left-click popups.
 
