@@ -17,9 +17,40 @@ window#waybar {
   transition: background-color 0.2s ease;
 }
 
+/* --- Pill framework -----------------------------------------------------
+ * Every label module's label — plus the workspaces and tray boxes — carry
+ * Waybar's shared "module" CSS class (ALabel.cpp, workspaces.cpp,
+ * tray.cpp), and Waybar sets the :hover state on mouse enter
+ * (AModule.cpp handleMouseEnter). One rule therefore gives every pill
+ * uniform padding and the shared hover highlight, and any future module
+ * inherits both without per-module CSS. config.jsonc sets "spacing": 0
+ * on purpose: each pill owns 8px of padding per side, so gaps are a
+ * uniform 16px inside clusters and across cluster borders alike. */
+.module {
+  padding: 3px 8px;
+  border-radius: 6px;
+  transition: background-color 0.15s ease;
+}
+
+.module:hover {
+  background-color: @bg_hover;
+}
+
+/* The battery module names both its box and its label "battery"; the box
+ * must not stack a second pill padding on top of the label's. */
+box#battery {
+  padding: 0;
+}
+
 /* --- Workspaces (pill buttons) -------------------------------------------- */
+/* Tighter padding than the default pill, and per-button hover instead of
+ * one highlight over the whole group. */
 #workspaces {
-  margin: 0 4px;
+  padding: 0 4px;
+}
+
+#workspaces:hover {
+  background-color: transparent;
 }
 
 #workspaces button {
@@ -55,36 +86,6 @@ window#waybar {
   background-color: @accent;
   color: @fg_strong;
   padding: 0 10px;
-}
-
-/* --- Module padding & dividers ------------------------------------------- */
-#battery,
-#clock,
-#network,
-#bluetooth,
-#pulseaudio,
-#tray,
-#custom-brightness,
-#custom-theme,
-#custom-dnd {
-  padding: 0 10px;
-  border-right: 1px solid @divider;
-}
-
-/* Strip trailing divider from the last module of each cluster. */
-.modules-left > widget:last-child > #battery,
-.modules-center > widget:last-child > #network,
-.modules-right > widget:last-child > #clock {
-  border-right: 0;
-}
-
-/* --- Clickable modules: subtle hover affordance -------------------------- */
-#custom-theme:hover,
-#custom-dnd:hover,
-#pulseaudio:hover,
-#bluetooth:hover,
-#network:hover {
-  background-color: @bg_hover;
 }
 
 /* --- Dropdown menus (native GtkMenu popups) -----------------------------
@@ -130,8 +131,5 @@ menuitem:hover {
 }
 
 /* --- Tray ---------------------------------------------------------------- */
-#tray {
-  padding: 0 6px;
-}
 #tray > .passive         { -gtk-icon-effect: dim; }
 #tray > .needs-attention { -gtk-icon-effect: highlight; color: @warning; }
