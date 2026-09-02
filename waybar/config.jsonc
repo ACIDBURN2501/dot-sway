@@ -133,8 +133,7 @@
     "menu-actions": {
       "refresh": "$HOME/Workspace/neuralburn/swayi/waybar/modules/swayi.sh refresh",
       "launch": "$HOME/Workspace/neuralburn/swayi/waybar/modules/swayi.sh launch"
-    },
-    "on-click-right": "$HOME/Workspace/neuralburn/swayi/waybar/modules/swayi.sh launch"
+    }
   },
 
   "bluetooth": {
