@@ -1,18 +1,18 @@
 // Waybar layout for the Sway desktop.
 //
 //   Left:    workspaces, sway mode
-//   Center:  brightness, volume, media, theme, DND, bluetooth, network, power
+//   Center:  brightness, volume, media, theme, DND, stay-awake, swayi, bluetooth, network, power
 //   Right:   tray, battery, clock
 //
 // Three modules under custom/* shell out to scripts in waybar/modules/
 // for logic that has no native equivalent (DDC/CI brightness cache,
 // theme flag, DND flag).
 //
-// Dropdown menus (audio, media, power) are native Waybar menus: XML in
-// waybar/menus/, styled via the `menu`/`menuitem` selectors in style.css.
-// Toggles (brightness, theme, DND, stay-awake) stay plain clicks, and
-// network/bluetooth keep their wofi popups because those lists are
-// dynamic (see scripts/quick-menu.sh).
+// Dropdown menus (audio, media, power, swayi) are native Waybar menus,
+// styled via the `menu`/`menuitem` selectors in style.css. swayi's XML
+// lives in the swayi checkout. Toggles (brightness, theme, DND,
+// stay-awake) stay plain clicks, and network/bluetooth keep their wofi
+// popups because those lists are dynamic (see scripts/quick-menu.sh).
 {
   "layer": "top",
   "position": "top",
@@ -22,7 +22,7 @@
   "spacing": 0,
 
   "modules-left": ["sway/workspaces", "sway/mode"],
-  "modules-center": ["custom/brightness", "pulseaudio", "mpris", "custom/theme", "custom/dnd", "custom/stay-awake", "bluetooth", "network", "custom/power"],
+  "modules-center": ["custom/brightness", "pulseaudio", "mpris", "custom/theme", "custom/dnd", "custom/stay-awake", "custom/swayi", "bluetooth", "network", "custom/power"],
   "modules-right": ["tray", "battery", "clock"],
 
   "sway/workspaces": {
@@ -119,6 +119,22 @@
     "interval": 2,
     "on-click": "$HOME/.config/sway/scripts/toggle-stay-awake.sh",
     "tooltip-format": "Stay awake: idle lock and screen-off suspended. Click to toggle."
+  },
+
+  "custom/swayi": {
+    "exec": "$HOME/Workspace/neuralburn/swayi/waybar/modules/swayi.sh",
+    "interval": 60,
+    "signal": 8,
+    "return-type": "json",
+    "escape": false,
+    "tooltip": true,
+    "menu": "on-click",
+    "menu-file": "$HOME/Workspace/neuralburn/swayi/waybar/menus/swayi.xml",
+    "menu-actions": {
+      "refresh": "$HOME/Workspace/neuralburn/swayi/waybar/modules/swayi.sh refresh",
+      "launch": "$HOME/Workspace/neuralburn/swayi/waybar/modules/swayi.sh launch"
+    },
+    "on-click-right": "$HOME/Workspace/neuralburn/swayi/waybar/modules/swayi.sh launch"
   },
 
   "bluetooth": {

@@ -1,6 +1,6 @@
 # Waybar (Status Bar)
 
-**What:** The status bar — workspace and mode indicators, brightness, audio, theme, DND, stay-awake, bluetooth, network, tray, battery, clock — plus the contract custom shell modules must follow.
+**What:** The status bar — workspace and mode indicators, brightness, audio, theme, DND, stay-awake, swayi, bluetooth, network, tray, battery, clock — plus the contract custom shell modules must follow.
 **Where:** `waybar/` — `config.jsonc` (layout), `style.css` + `colors-{dark,light}.css` (palette), `modules/` (custom shell modules), `menus/` (dropdown menu XML). Launched from `config.d/waybar`.
 **Verified:** parse errors print to stderr when run in the foreground; the theme and DND custom modules are exercised by the CI theme suite (`tests/theme-sandbox.sh`).
 
@@ -11,10 +11,10 @@ Waybar is launched by `config.d/waybar` on Sway start. The snippet points `wayba
 | Cluster | Modules |
 |---------|---------|
 | Left    | `sway/workspaces`, `sway/mode` |
-| Center  | `custom/brightness`, `pulseaudio`, `mpris`, `custom/theme`, `custom/dnd`, `custom/stay-awake`, `bluetooth`, `network`, `custom/power` |
+| Center  | `custom/brightness`, `pulseaudio`, `mpris`, `custom/theme`, `custom/dnd`, `custom/stay-awake`, `custom/swayi`, `bluetooth`, `network`, `custom/power` |
 | Right   | `tray`, `battery`, `clock` |
 
-Battery, audio, bluetooth, network, clock, and media (MPRIS now-playing with click-to-transport; hides itself when no player is active) use Waybar's native event-driven modules (D-Bus, no polling). Brightness, theme, DND, and stay-awake are custom shell modules under `waybar/modules/`.
+Battery, audio, bluetooth, network, clock, and media (MPRIS now-playing with click-to-transport; hides itself when no player is active) use Waybar's native event-driven modules (D-Bus, no polling). Brightness, theme, DND, and stay-awake are custom shell modules under `waybar/modules/`. `custom/swayi` is the AI-usage pill; its script lives in the swayi checkout (`~/Workspace/neuralburn/swayi/waybar/modules/swayi.sh`), not this tree.
 
 ## Pill framework
 
@@ -31,7 +31,7 @@ Theme (🌙/☀️) and DND (🧘) read per-session flag files written by the to
 
 ## Dropdown menus
 
-Three pills carry native Waybar dropdowns instead of wofi popups: **audio** (`pulseaudio`, left-click), **media** (`mpris`, left-click), and **power** (the static `custom/power` pill ⚡, left-click). The menu XML lives in `waybar/menus/` and is wired per module with three keys in `config.jsonc`:
+Four pills carry native Waybar dropdowns instead of wofi popups: **audio** (`pulseaudio`, left-click), **media** (`mpris`, left-click), **power** (the static `custom/power` pill ⚡, left-click), and **swayi** (Refresh / Open agent; live session and weekly numbers stay on the hover tooltip because Waybar reads menu XML once at startup). Power XML lives in `waybar/menus/`; swayi's XML lives in the swayi checkout. Wired per module with three keys in `config.jsonc`:
 
 - `"menu"` — the click that pops the menu (here always `on-click`).
 - `"menu-file"` — GtkBuilder XML; must contain a `GtkMenu` with `id="menu"`, and each action is a `GtkMenuItem` with its own `id`. Use the explicit `<object class="...">` form — bare `<menu>` shorthand maps to `GtkMenuBar` in GtkBuilder.
