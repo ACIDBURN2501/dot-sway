@@ -113,6 +113,10 @@ menuitem:hover {
 /* --- Battery state ------------------------------------------------------- */
 #battery.warning  { color: @warning; }
 #battery.critical { color: @critical; }
+
+/* --- swayi usage --------------------------------------------------------- */
+#custom-swayi.warning  { color: @warning; }
+#custom-swayi.critical { color: @critical; }
 #battery.charging,
 #battery.plugged  { color: @success; }
 
