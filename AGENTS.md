@@ -16,7 +16,19 @@ Keep it green rather than suppressing: split `local x=$(cmd)` into two lines (SC
 CI's second job runs `sway -C` against the config. Note `sway -C` exits `0` even on parse errors, so the job greps its output for `[ERROR]` instead of trusting the exit code — do the same if you script config checks.
 
 ### Testing
-Manual — these are system-integration scripts.
+Mostly automated. The session-external scripts have sandboxed assertion suites under `tests/`; each runs its scripts inside a throwaway `$HOME` with every session-external binary stubbed, so they need no display, session, or root. Run any of them against the repo root:
+
+```bash
+bash tests/theme-sandbox.sh "$PWD"      # theme pipeline + hooks dispatcher
+bash tests/osd-sandbox.sh "$PWD"        # the wob OSD bar
+bash tests/quick-menu-sandbox.sh "$PWD"  # the quick menu
+bash tests/power-sandbox.sh "$PWD"      # power-events transitions
+bash tests/idle-sandbox.sh "$PWD"       # idle-manager + stay-awake
+bash tests/host-env-sandbox.sh "$PWD"   # host.env loader + generator + wallpaper pool
+bash tests/monitor-sandbox.sh "$PWD"    # monitor-hotplug resolution
+```
+
+All seven run in CI (the `theme-tests` job). What still needs a live session:
 
 - **Launch Waybar directly** (stderr shows parse errors):
   ```bash
@@ -109,7 +121,12 @@ Examples:
   - `modules/` — custom shell modules for state Waybar can't read natively (DDC/CI brightness, theme indicator, mako DND).
   - `menus/` — GtkBuilder XML for the native dropdown menus (audio, media, power); see `docs/waybar.md` for the contract.
 - **`scripts/`:** Utilities bound to keybinds or `exec` lines — monitor hotplug, theme toggle, media key handlers, etc.
-- **`extra/`:** Standalone configs for adjacent tools (wofi, mako, swhkd).
+  - `lib/` — sourced helpers, not executed directly: `host-env.sh` (the shared `host.env` loader every consumer uses) and `manifest.sh` (the install-manifest record `install.sh`/`setup-defaults.sh` write and `uninstall.sh` reads).
+- **`extra/`:** Standalone configs for adjacent tools (kitty, mako, swhkd, wob, wofi).
+- **`hooks/`:** Tracked event-hook drop-ins run by `scripts/hooks.sh` on events (theme change, power transitions, etc.); per-machine automation goes in the gitignored `hooks.local/` overlay. See `docs/hooks.md`.
+- **`bootstrap/`:** Zero → online for a fresh machine: archinstall JSON pair, per-distro package manifests (`packages/`), the staged idempotent provisioner (`provision.sh`), and age-encrypted secrets (`secrets/`). See `bootstrap/README.md`.
+- **`tests/`:** Sandboxed assertion suites for the session-external scripts (see Testing). Each takes the repo root as its argument and runs in CI.
+- **`install.sh` / `uninstall.sh`:** Set up / remove this desktop on an existing machine by delegating to the provisioner; `uninstall.sh` is driven by the install manifest.
 
 ## Common Workflows
 
