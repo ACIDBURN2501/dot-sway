@@ -122,17 +122,16 @@
   },
 
   "custom/swayi": {
-    "exec": "$HOME/Workspace/neuralburn/swayi/waybar/modules/swayi.sh",
+    "exec": "$HOME/.config/sway/waybar/modules/swayi.sh",
     "interval": 60,
     "signal": 8,
     "return-type": "json",
     "escape": false,
     "tooltip": true,
     "menu": "on-click",
-    "menu-file": "$HOME/Workspace/neuralburn/swayi/waybar/menus/swayi.xml",
+    "menu-file": "$HOME/.config/sway/waybar/menus/swayi.xml",
     "menu-actions": {
-      "refresh": "$HOME/Workspace/neuralburn/swayi/waybar/modules/swayi.sh refresh",
-      "launch": "$HOME/Workspace/neuralburn/swayi/waybar/modules/swayi.sh launch"
+      "refresh": "$HOME/.config/sway/waybar/modules/swayi.sh refresh"
     }
   },
 

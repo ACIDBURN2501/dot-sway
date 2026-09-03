@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Copy of the swayi checkout's waybar/menus/swayi.xml. Actions run through
+     waybar/modules/swayi.sh (the delegator), so this menu is only reachable
+     when a swayi checkout is present and the pill is visible. Keep item ids
+     in step with the "menu-actions" map in waybar/config.jsonc. -->
+<interface>
+  <object class="GtkMenu" id="menu">
+    <child>
+      <object class="GtkMenuItem" id="refresh">
+        <property name="label">Refresh</property>
+      </object>
+    </child>
+  </object>
+</interface>
