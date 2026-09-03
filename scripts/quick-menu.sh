@@ -26,7 +26,7 @@ fi
 
 command -v wofi >/dev/null 2>&1 || exit 0
 
-# Show a menu; entries on stdin, the chosen line on stdout. Cacheless —
+# Show a menu; entries on stdin, the chosen line on stdout. Cacheless;
 # these lists are dynamic, nothing should be remembered between runs.
 menu() { # menu <prompt> [extra wofi args...]
   local prompt="$1"
@@ -34,7 +34,7 @@ menu() { # menu <prompt> [extra wofi args...]
   wofi -d -k /dev/null -p "$prompt" "$@"
 }
 
-notify() { # notify <text> — best-effort toast
+notify() { # notify <text>: best-effort toast
   command -v notify-send >/dev/null 2>&1 && notify-send -t 2000 "$1" || true
 }
 
@@ -95,7 +95,7 @@ network_menu_nm() {
   local visible="" visible_ssids="" saved="" line ssid signal in_use mark name chosen pw
   while IFS= read -r line; do
     [ -n "$line" ] || continue
-    # -g escapes colons inside values as "\:", so split from the field ends —
+    # -g escapes colons inside values as "\:", so split from the field ends.
     # the SSID (middle) is the only field that may contain colons.
     in_use=${line%%:*}
     rest=${line#*:}
@@ -129,7 +129,7 @@ network_menu_nm() {
       notify "Failed to connect to $name"
     fi
     ;;
-  *" ("*")") # visible network: "● ssid (NN%)" — a saved profile connects
+  *" ("*")") # visible network: "● ssid (NN%)", a saved profile connects
     # directly, anything else asks for the password (wofi's masked mode).
     ssid="${chosen% (*}"
     ssid="${ssid#● }"
@@ -186,7 +186,7 @@ network_menu_iwd() {
 
 # -------------------------------------------------------- bluetooth (bluez)
 
-bt_query() { # bt_query <args...> — bluetoothctl with a hard ceiling; prints
+bt_query() { # bt_query <args...>: bluetoothctl with a hard ceiling; prints
   # the output, exits non-zero when it fails (caller decides the fallback)
   "${TQ[@]}" bluetoothctl "$@" 2>/dev/null
 }
@@ -203,7 +203,7 @@ bluetooth_menu() {
 
   local paired=""
   paired=$(bt_query devices Paired) || paired=""
-  # Older bluez has no Paired listing — fall back to all known devices.
+  # Older bluez has no Paired listing; fall back to all known devices.
   [ -n "$paired" ] || paired=$(bt_query devices) || paired=""
   while IFS= read -r line; do
     [ -n "$line" ] || continue

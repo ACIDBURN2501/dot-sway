@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # provision.sh: bring a machine (fresh or drifted) to the state this repo
-# describes. Stages are idempotent by construction — re-run any time, or
+# describes. Stages are idempotent by construction; re-run any time, or
 # pass stage names to run a subset.
 #
 # Usage: bootstrap/provision.sh [--check] [stage ...]
@@ -61,7 +61,7 @@ log()  { printf '  %s\n' "$*"; }
 skip() { printf '  ~ skip: %s\n' "$*"; }
 
 # Non-empty, comment-stripped lines of a manifest file. Inline comments
-# are stripped too — '#' is never valid in a package name.
+# are stripped too; '#' is never valid in a package name.
 manifest() {
   sed -e 's/[[:space:]]*#.*$//' -e '/^[[:space:]]*$/d' \
     "$REPO_ROOT/bootstrap/packages/$1" 2>/dev/null || true
@@ -231,7 +231,7 @@ stage_services() {
     skip "services: ufw not installed (run the packages stage)"
   fi
 
-  # SSH must survive reboots — it is how remote provisioning happens.
+  # SSH must survive reboots; it is how remote provisioning happens.
   # Unit probe, not `command -v sshd`: on Debian the binary lives in
   # /usr/sbin, which is not on a normal user's PATH.
   if [ -n "$ssh_unit" ] && systemctl list-unit-files "$ssh_unit.service" 2>/dev/null | grep -q "$ssh_unit"; then
@@ -256,7 +256,7 @@ stage_services() {
 
 stage_sway() {
   # This script lives inside the checkout, so it can only verify or refresh
-  # ~/.config/sway — never clone the repo from inside itself.
+  # ~/.config/sway, never clone the repo from inside itself.
   if [ -L "$HOME/.config/sway" ]; then
     log "sway: ~/.config/sway is a symlink -> $(readlink "$HOME/.config/sway")"
   elif [ -d "$HOME/.config/sway/.git" ]; then
@@ -280,11 +280,11 @@ stage_sway() {
 }
 
 stage_user_units() {
-  # Probe first — this repo's contract is probe-and-degrade. Both supported
+  # Probe first: this repo's contract is probe-and-degrade. Both supported
   # distros ship a user unit (Debian 13: gnome-keyring's ssh-agent.socket,
   # self-exporting SSH_AUTH_SOCK via set-environment at %t/openssh_agent;
   # Arch: openssh's ssh-agent.service + .socket, which leave SSH_AUTH_SOCK to
-  # the session environment) — so we only install a unit and export a socket
+  # the session environment), so we only install a unit and export a socket
   # path when we provide the unit ourselves.
   local distro_agent=0
   if systemctl --user cat ssh-agent.service >/dev/null 2>&1; then

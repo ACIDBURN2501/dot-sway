@@ -13,14 +13,26 @@ shellcheck --severity=warning $(git ls-files '*.sh')
 # syntax check, every tracked script
 for f in $(git ls-files '*.sh'); do bash -n "$f"; done
 
-# the theme-pipeline suite (no display or sway needed)
+# the sandboxed script suites (no display or sway needed)
 bash tests/theme-sandbox.sh "$PWD"
+bash tests/osd-sandbox.sh "$PWD"
+bash tests/quick-menu-sandbox.sh "$PWD"
+bash tests/power-sandbox.sh "$PWD"
+bash tests/idle-sandbox.sh "$PWD"
+bash tests/host-env-sandbox.sh "$PWD"
+bash tests/monitor-sandbox.sh "$PWD"
 
 # markdown links (needs the lychee binary, ~40s)
 lychee --no-progress '**/*.md'
 ```
 
 If you touch the Sway config itself, `sway -C` is the config gate. CI runs it with a headless backend, so you do not need a local session, just a sway install.
+
+## Documentation
+
+Touching a script means updating its header comment and its row in `scripts/SCRIPTS.md` in the same PR. The repo documents the same thing in four places (script headers, `SCRIPTS.md`, `docs/*.md`, `AGENTS.md`); keeping the header and the catalog row in step with the change is what stops them drifting apart.
+
+Prose follows a plain style (the unslop/STE rules): no em dashes in prose (use a period, comma, or colon), a colon only before a list or example rather than as a mid-sentence connector, no chatbot phrases, puffery, or filler, active voice with a named actor, one idea per sentence, one name per thing. The exception is user-visible output: tooltip formats, notification bodies, and `printf` messages keep whatever punctuation reads best, since changing them changes what the user sees.
 
 ## House style
 

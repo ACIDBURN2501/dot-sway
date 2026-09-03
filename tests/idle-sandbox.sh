@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# idle-sandbox.sh — sandboxed assertion suite for the idle/lock stack:
-# scripts/idle-manager.sh (conf parsing, swayidle argv, restart), the
+# idle-sandbox.sh: sandboxed assertion suite for the idle/lock stack:
+# scripts/idle-manager.sh (host.env parsing, swayidle argv, restart), the
 # stay-awake toggle (scripts/toggle-stay-awake.sh) and its waybar
 # indicator (waybar/modules/stay-awake.sh).
 #
@@ -12,7 +12,7 @@
 #
 # The real-swayidle timing behaviour (timeouts fire after N seconds, the
 # stay-awake guard suppresses them) is verified live on a machine with a
-# session, not here — see the ticket.
+# session, not here; see the ticket.
 #
 # Usage: idle-sandbox.sh /path/to/repo
 # Exit:  0 when every assertion passes; prints N/M summary.
@@ -50,7 +50,7 @@ new_sandbox() { # sets HOME_ RUNTIME_ BIN_ LOG_ ARGV_ SB
   ARGV_="$SB/swayidle.argv"
   Sway="$HOME_/.config/sway"
   mkdir -p "$HOME_/.config" "$RUNTIME_" "$BIN_" "$Sway"
-  # Copy without .git and the wallpaper pool — heavy, and no suite needs them.
+  # Copy without .git and the wallpaper pool (heavy, and no suite needs them).
   tar -C "$REPO" --exclude=./.git --exclude=./images/wallpapers -cf - . | tar -C "$Sway" -xf -
   : > "$LOG_"
   : > "$ARGV_"
@@ -87,25 +87,31 @@ assert "guards consult the stay-awake flag" grepq 'stay-awake' "$ARGV_"
 assert "lock command uses the wallpaper" grepq 'swaylock -f -i .*/images/wp.png' "$ARGV_"
 
 new_sandbox
-printf 'LOCK_TIMEOUT=60\nSCREEN_OFF_TIMEOUT=120\n' > "$Sway/idle.conf"
+printf 'LOCK_TIMEOUT=60\nSCREEN_OFF_TIMEOUT=120\n' > "$Sway/host.env"
 run_sandbox "$Sway/scripts/idle-manager.sh" start >/dev/null 2>&1
-assert "conf: lock timing applied" grepq 'timeout 60 ' "$ARGV_"
-assert "conf: screen-off timing applied" grepq 'timeout 120 ' "$ARGV_"
-assert "conf: defaults no longer used" no_grepq 'timeout 600 ' "$ARGV_"
+assert "host.env: lock timing applied" grepq 'timeout 60 ' "$ARGV_"
+assert "host.env: screen-off timing applied" grepq 'timeout 120 ' "$ARGV_"
+assert "host.env: defaults no longer used" no_grepq 'timeout 600 ' "$ARGV_"
 
 new_sandbox
-printf 'LOCK_TIMEOUT=0\n' > "$Sway/idle.conf"
+printf 'LOCK_TIMEOUT=0\n' > "$Sway/host.env"
 run_sandbox "$Sway/scripts/idle-manager.sh" start >/dev/null 2>&1
-assert "conf: 0 disables the lock timeout" no_grepq 'timeout 600 ' "$ARGV_"
-assert "conf: screen-off still active when only the lock is disabled" grepq 'timeout 900 ' "$ARGV_"
-assert "conf: before-sleep lock survives a disabled idle lock" grepq 'before-sleep ' "$ARGV_"
+assert "host.env: 0 disables the lock timeout" no_grepq 'timeout 600 ' "$ARGV_"
+assert "host.env: screen-off still active when only the lock is disabled" grepq 'timeout 900 ' "$ARGV_"
+assert "host.env: before-sleep lock survives a disabled idle lock" grepq 'before-sleep ' "$ARGV_"
 
 new_sandbox
-printf 'LOCK_TIMEOUT=banana\nBOGUS_KEY=1\nSCREEN_OFF_TIMEOUT=42 # trailing comment\n' > "$Sway/idle.conf"
+printf 'LOCK_TIMEOUT=banana\nBOGUS_KEY=1\nSCREEN_OFF_TIMEOUT=42 # trailing comment\n' > "$Sway/host.env"
 run_sandbox "$Sway/scripts/idle-manager.sh" start >/dev/null 2>&1
-assert "conf: invalid value falls back to the default" grepq 'timeout 600 ' "$ARGV_"
-assert "conf: unknown key ignored" no_grepq 'BOGUS_KEY' "$ARGV_"
-assert "conf: trailing comments stripped" grepq 'timeout 42 ' "$ARGV_"
+assert "host.env: invalid value falls back to the default" grepq 'timeout 600 ' "$ARGV_"
+assert "host.env: unknown key ignored" no_grepq 'BOGUS_KEY' "$ARGV_"
+assert "host.env: trailing comments stripped" grepq 'timeout 42 ' "$ARGV_"
+
+new_sandbox
+printf 'LOCK_TIMEOUT=60\n' > "$Sway/host.env"
+LOCK_TIMEOUT=30 run_sandbox "$Sway/scripts/idle-manager.sh" start >/dev/null 2>&1
+assert "precedence: env var beats host.env" grepq 'timeout 30 ' "$ARGV_"
+assert "precedence: host.env value not used when env is set" no_grepq 'timeout 60 ' "$ARGV_"
 
 # --- restart semantics ---------------------------------------------------
 

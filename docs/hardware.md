@@ -1,4 +1,4 @@
-# Hardware Integration
+# Hardware integration
 
 **What:** Media keys, monitor hotplug (including clamshell), and per-app floating windows.
 **Where:** keybindings in `config`; `scripts/` (volume, brightness, monitor-hotplug); `config.d/floating_windows`; the `extra/swhkd/` fallback for odd keyboards.
@@ -28,15 +28,16 @@ On keyboards that expose media keys through a separate hotkey device Sway doesn'
 pkexec swhkd --config "$HOME/.config/swhkd/swhkdrc"
 ```
 
-Copy `extra/swhkd/swhkdrc` to `~/.config/swhkd/swhkdrc` and keep it scoped to media keys only; otherwise Sway and swhkd both fire on the same press.
+Render `extra/swhkd/swhkdrc` to `~/.config/swhkd/swhkdrc` (substitute your home for `__SWAY_HOME__`; `install.sh` does this when `swhkd` is present) and keep it scoped to media keys only; otherwise Sway and swhkd both fire on the same press.
 
 ## Monitor hotplug
 
 `scripts/monitor-hotplug.sh` auto-detects the internal display (first `eDP-*` output) and any external. External settings resolve in this order:
 
-1. `DOTSWAY_EXT_*` environment variables.
-2. Per-monitor matches from `scripts/monitor-profiles.local.sh`.
-3. Fallback: `1920x1080@60Hz`, scale `1`, adaptive sync `off`.
+1. `DOTSWAY_EXT_*` environment variables (session env).
+2. `host.env` at the repo root (copy `host.env.example`), the same `DOTSWAY_EXT_*` names.
+3. Per-monitor matches from `scripts/monitor-profiles.local.sh`.
+4. Fallback: `1920x1080@60Hz`, scale `1`, adaptive sync `off`.
 
 Per-monitor setup:
 
@@ -59,13 +60,15 @@ Match on `serial` for a specific unit; leave it empty to share a profile across 
 | `DOTSWAY_INTERNAL_OUTPUT` | *(auto)* | Force a specific internal output name. |
 | `DOTSWAY_MONITOR_PROFILES_FILE` | `scripts/monitor-profiles.local.sh` | Alternate overrides path. |
 
+Any of the `DOTSWAY_EXT_*` / `DOTSWAY_INTERNAL_OUTPUT` rows can be set in `host.env` instead of the environment; a non-empty environment variable still wins. The daemon is `exec_always`, so `swaymsg reload` re-reads `host.env`.
+
 ### Clamshell mode
 
 For clamshell (lid closed, external only), stop `systemd-logind` from suspending; `monitor-hotplug.sh` decides suspend behavior itself:
 
 ```bash
 sudo mkdir -p /etc/systemd/logind.conf.d/
-echo -e "[Login]\nHandleLidSwitch=ignore\nHandleLidSwitchExternalPower=ignore" \
+printf '[Login]\nHandleLidSwitch=ignore\nHandleLidSwitchExternalPower=ignore\n' \
   | sudo tee /etc/systemd/logind.conf.d/sway-clamshell.conf
 sudo systemctl restart systemd-logind
 ```

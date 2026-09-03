@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
-# theme-sandbox.sh — sandboxed assertion suite for scripts/toggle_theme.sh
+# theme-sandbox.sh: sandboxed assertion suite for scripts/toggle_theme.sh
 #
 # Runs the script against a throwaway $HOME with the repo copied in (never a
-# symlink — .theme_state and friends must not leak into the real tree), with
+# symlink, so .theme_state and friends must not leak into the real tree), with
 # every session-external binary stubbed and SWAYSOCK unset. The notify-send
 # stub exits 1 on purpose: a Sway desktop without a notification daemon is a
 # normal state, and the script must survive it with exit 0.

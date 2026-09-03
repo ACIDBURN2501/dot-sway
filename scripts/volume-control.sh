@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Portable volume controls for PulseAudio and PipeWire sessions.
 # After every change the new level is pushed to the wob OSD pipe (via
-# scripts/osd-bar.sh); mic mute gets a notification instead — it has no
+# scripts/osd-bar.sh); mic mute gets a notification instead; it has no
 # numeric level worth a bar.
 set -euo pipefail
 
@@ -30,7 +30,7 @@ report_level() {
   fi
 }
 
-# Mic mute has no level worth a bar — notify instead.
+# Mic mute has no level worth a bar, so notify instead.
 report_mic() {
   command -v notify-send >/dev/null 2>&1 || return 0
   local state="unmuted"

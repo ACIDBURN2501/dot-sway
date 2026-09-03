@@ -1,8 +1,8 @@
 ### Idle handling
 # swayidle: lock after 10 minutes idle, power the display off after 15,
 # and always lock before suspend. Timings are user-configurable in
-# ~/.config/sway/idle.conf (LOCK_TIMEOUT / SCREEN_OFF_TIMEOUT, seconds;
-# 0 disables a timeout) — edit the file, then run
+# host.env (LOCK_TIMEOUT / SCREEN_OFF_TIMEOUT, seconds; 0 disables a
+# timeout; copy host.env.example). Edit, then run
 # scripts/idle-manager.sh again to apply without a reload.
 # Stay awake: $super+Ctrl+s (the ☕ bar icon shows while it is active;
 # idle lock and screen-off are suspended, locking before a manual

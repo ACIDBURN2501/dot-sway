@@ -2,23 +2,23 @@
 # Idle session manager: builds the swayidle command line from the user's
 # idle settings and execs swayidle.
 #
-# Inputs:  ${XDG_CONFIG_HOME:-$HOME/.config}/sway/idle.conf (optional):
+# Inputs:  host.env at the repo root (optional; copy host.env.example),
+#          loaded via scripts/lib/host-env.sh:
 #            LOCK_TIMEOUT=<seconds>        lock after this much idle (0 disables)
 #            SCREEN_OFF_TIMEOUT=<seconds>  power the display off after this much
 #                                          idle (0 disables)
-#            Unknown keys and non-numeric values are reported on stderr and
-#            ignored; full-line comments start with '#'.
-#          Defaults (when idle.conf is absent or silent): 600 / 900.
+#            Non-numeric values are reported on stderr and ignored.
+#          Precedence: env var > host.env > default (600 / 900).
 #          $XDG_RUNTIME_DIR/sway/idle-manager.pid: restart marker. Starting
-#          again stops the previous instance first, so "edit idle.conf, run
+#          again stops the previous instance first, so "edit host.env, run
 #          again" applies the new timings without a session reload.
 # Outputs: one long-running swayidle process (this script execs into it).
 #
 # Events wired:
-#   timeout <lock>        swaylock with the wallpaper image — skipped while
+#   timeout <lock>        swaylock with the wallpaper image, skipped while
 #                         the stay-awake flag is set (toggle-stay-awake.sh)
 #   timeout <screen off>  swaymsg "output * power off", resumed on activity
-#                         with "output * power on" — same stay-awake guard
+#                         with "output * power on", same stay-awake guard
 #   before-sleep          swaylock -w: always locks before suspend, even in
 #                         stay-awake mode (manual sleep is a deliberate act)
 #
@@ -35,7 +35,9 @@ set -euo pipefail
 DEFAULT_LOCK_TIMEOUT=600
 DEFAULT_SCREEN_OFF_TIMEOUT=900
 
-CONF="${XDG_CONFIG_HOME:-$HOME/.config}/sway/idle.conf"
+SWAY_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/sway"
+# shellcheck disable=SC1091
+. "$SWAY_DIR/scripts/lib/host-env.sh"
 PID_FILE="${XDG_RUNTIME_DIR:-/tmp}/sway/idle-manager.pid"
 WALLPAPER="$HOME/.config/sway/images/wp.png"
 TOGGLE="$HOME/.config/sway/scripts/toggle.sh"
@@ -46,34 +48,25 @@ RESUME_CMD="timeout 5 swaymsg \"output * power on\""
 
 # The stay-awake guard: swayidle executes timeout commands in a shell, so
 # each command consults the flag store first. A missing toggle.sh fails
-# open (the real command still runs — locking beats not locking).
+# open (the real command still runs; locking beats not locking).
 stay_guard() {
   printf '%s get stay-awake >/dev/null 2>&1 || %s' "$TOGGLE" "$1"
 }
 
-# Read idle.conf over the defaults. Keys are exact; anything else is noise.
+# Resolve the timeouts: env var > host.env > default. Values must be a
+# number of seconds; anything else is a warning and the default stands.
 read_conf() {
-  LOCK_TIMEOUT=$DEFAULT_LOCK_TIMEOUT
-  SCREEN_OFF_TIMEOUT=$DEFAULT_SCREEN_OFF_TIMEOUT
-  [[ -r "$CONF" ]] || return 0
-  while IFS='=' read -r key value _rest; do
-    key="${key//[[:space:]]/}"
-    value="${value%%#*}"
-    value="${value//[[:space:]]/}"
-    case "$key" in
-      ''|'#'*) continue ;;
-      LOCK_TIMEOUT|SCREEN_OFF_TIMEOUT) ;;
-      *)
-        printf 'idle-manager: unknown key in %s: %s\n' "$CONF" "$key" >&2
-        continue
-        ;;
-    esac
-    if [[ ! "$value" =~ ^[0-9]+$ ]]; then
-      printf 'idle-manager: %s must be a number of seconds, got: %s\n' "$key" "${value:-<empty>}" >&2
-      continue
-    fi
-    printf -v "$key" '%s' "$value"
-  done < "$CONF"
+  load_host_env
+  LOCK_TIMEOUT="${LOCK_TIMEOUT:-$DEFAULT_LOCK_TIMEOUT}"
+  SCREEN_OFF_TIMEOUT="${SCREEN_OFF_TIMEOUT:-$DEFAULT_SCREEN_OFF_TIMEOUT}"
+  if [[ ! "$LOCK_TIMEOUT" =~ ^[0-9]+$ ]]; then
+    printf 'idle-manager: LOCK_TIMEOUT must be a number of seconds, got: %s\n' "$LOCK_TIMEOUT" >&2
+    LOCK_TIMEOUT=$DEFAULT_LOCK_TIMEOUT
+  fi
+  if [[ ! "$SCREEN_OFF_TIMEOUT" =~ ^[0-9]+$ ]]; then
+    printf 'idle-manager: SCREEN_OFF_TIMEOUT must be a number of seconds, got: %s\n' "$SCREEN_OFF_TIMEOUT" >&2
+    SCREEN_OFF_TIMEOUT=$DEFAULT_SCREEN_OFF_TIMEOUT
+  fi
 }
 
 stop_running() {

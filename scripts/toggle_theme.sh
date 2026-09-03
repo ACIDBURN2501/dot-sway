@@ -238,7 +238,7 @@ update_mako_theme() {
     local theme_file="$mako_extra/config-light"
   fi
 
-  # Copy theme config if it exists — but never clobber a user-customized
+  # Copy theme config if it exists, but never clobber a user-customized
   # config: only write when the file is absent or still one of our two
   # theme files.
   if [[ -f "$theme_file" ]]; then
@@ -262,7 +262,7 @@ update_mako_theme() {
 }
 
 # Update waybar theme by symlinking the active palette. The live reload signal
-# is sent by toggle_theme() only — at init time waybar reads the symlink itself
+# is sent by toggle_theme() only; at init time waybar reads the symlink itself
 # on startup, and signalling it mid-startup crashes it (see toggle_theme).
 # Safe no-op when the waybar dir is absent (e.g., user still on swaybar).
 update_waybar_theme() {

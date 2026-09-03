@@ -1,32 +1,30 @@
-# Machine-local monitor profiles — copy scripts/monitor-profiles.example.sh
+# Machine-local monitor profiles: copy scripts/monitor-profiles.example.sh
 # to this path and edit for your hardware.
 scripts/monitor-profiles.local.sh
 
-# Machine-local compose key — copy compose_key.local.example to this path.
-# The compose key differs per device; the active value is not committed.
-compose_key.local
+# Per-machine settings: copy host.env.example to this path. Compose key,
+# wallpaper pool, idle timeouts, monitor overrides: not committed.
+host.env
 .theme_state
  
 # Wallpaper rotation: track the folder (via .gitkeep) and the bundled
 # public-domain wallpaper, but not the rest of the pool.
-# Never commit the active wp.png symlink — rotate-wallpaper.sh manages it.
-# wallpaper_dir.local optionally points rotation at an external folder — copy
-# wallpaper_dir.local.example; the path is machine-specific, so not committed.
+# Never commit the active wp.png symlink; rotate-wallpaper.sh manages it.
+# host.env's WALLPAPER_DIR optionally points rotation at an external folder.
 images/wallpapers/*
 !images/wallpapers/.gitkeep
 !images/wallpapers/frederic-church-parthenon.jpg
 images/wp.png
-wallpaper_dir.local
 
-# Waybar active palette symlink — managed by toggle_theme.sh, points at
+# Waybar active palette symlink: managed by toggle_theme.sh, points at
 # waybar/colors-{dark,light}.css depending on current theme state.
 waybar/colors.css
 
-# Machine-local event hook overlay — per-machine automation lives here;
+# Machine-local event hook overlay: per-machine automation lives here;
 # tracked samples under hooks/ stay generic (docs/hooks.md).
 hooks.local/
 
-# archinstall JSON pair — the real files hold a password hash and
+# archinstall JSON pair: the real files hold a password hash and
 # machine-specific details; only the .example forms are committed.
 bootstrap/archinstall/user_credentials.json
 bootstrap/archinstall/user_configuration.json

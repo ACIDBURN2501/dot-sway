@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Install a non-repo tool from a pinned release into /opt/<name>/ with
-# /usr/local/bin symlinks — this repo's standard pattern for tools the
+# /usr/local/bin symlinks, this repo's standard pattern for tools the
 # distro doesn't package well (nvim, teams-for-linux, ...).
 #
 # Usage: scripts/install-release.sh <name> <url> <sha256>
@@ -33,7 +33,7 @@ install to /opt/<name>/, symlink executables into /usr/local/bin.
 
 Tarballs: executables from a bin/ dir (or the tarball root) are
 symlinked. Plain files: symlinked into /usr/local/bin as <name>.
-Refuses to overwrite an existing /opt/<name> — remove it first
+Refuses to overwrite an existing /opt/<name>; remove it first
 (sudo rm -rf /opt/<name>). Sudo is needed for the install steps.
 EOF
 }
@@ -91,7 +91,7 @@ main() {
   command -v curl >/dev/null 2>&1 || { echo "error: curl not found" >&2; exit 1; }
   command -v sudo >/dev/null 2>&1 || { echo "error: sudo not found" >&2; exit 1; }
   if [ -e "/opt/$name" ]; then
-    echo "error: /opt/$name already exists — remove it first (sudo rm -rf /opt/$name)" >&2
+    echo "error: /opt/$name already exists; remove it first (sudo rm -rf /opt/$name)" >&2
     exit 1
   fi
 
@@ -108,7 +108,7 @@ main() {
   local actual
   actual="$(sha256sum "$file" | cut -d' ' -f1)"
   if [ "$actual" != "$sha256" ]; then
-    echo "error: SHA256 mismatch — nothing installed" >&2
+    echo "error: SHA256 mismatch; nothing installed" >&2
     echo "  expected: $sha256" >&2
     echo "  actual:   $actual" >&2
     exit 1
@@ -124,7 +124,7 @@ main() {
     tar -xf "$file" -C "$stage"
     bins="$(resolve_bins "$stage")"
     if [ -z "$bins" ]; then
-      echo "warning: no executables found in the tarball — installing without symlinks" >&2
+      echo "warning: no executables found in the tarball; installing without symlinks" >&2
     fi
   else
     mode="file"

@@ -1,4 +1,4 @@
-/* Tokyo Night Moon palette — harmonises with kitty's tokyo_night_moon.conf. */
+/* Tokyo Night Moon palette, harmonised with kitty's tokyo_night_moon.conf. */
 @define-color bg          rgba(34, 36, 54, 0.92);
 @define-color bg_hover    rgba(255, 255, 255, 0.06);
 @define-color bg_active   #5294e2;

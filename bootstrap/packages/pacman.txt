@@ -1,4 +1,4 @@
-# pacman manifest for bootstrap/provision.sh — one package per line, # comments
+# pacman manifest for bootstrap/provision.sh: one package per line, # comments
 # allowed. Single source of truth for system packages; edit to taste.
 # The provisioner runs: pacman -S --needed - < this file.
 
@@ -9,7 +9,7 @@ kitty
 wofi
 mako
 swaylock
-# swaynag — bundled in the sway package on Arch
+# swaynag: bundled in the sway package on Arch
 swayidle
 grim
 slurp
@@ -24,7 +24,7 @@ brightnessctl
 ddcutil
 bluez
 iwd
-# networkmanager   # alternative to iwd — do NOT enable both (stage_services)
+# networkmanager   # alternative to iwd; do NOT enable both (stage_services)
 pipewire
 pipewire-pulse
 wireplumber   # ships wpctl
@@ -41,11 +41,11 @@ flatpak
 age
 rage
 tailscale
-ufw   # skip on Docker/libvirt hosts — ufw breaks container/VM networking (docs/core-features.md)
+ufw   # skip on Docker/libvirt hosts; ufw breaks container/VM networking (docs/core-features.md)
 snapper
 # sops             # only if you add sops-managed structured secrets
 
-# --- AUR helper — install once manually; then the `aur` stage works:
+# --- AUR helper: install once manually; then the `aur` stage works:
 # git clone https://aur.archlinux.org/yay.git /tmp/yay && cd /tmp/yay && makepkg -si
 
 # --- Optional default apps (MIME map in scripts/setup-defaults.sh) -------------

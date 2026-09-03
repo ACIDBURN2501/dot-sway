@@ -1,10 +1,10 @@
 # XDG Defaults (Terminal, MIME, Portals)
 
-**What:** The session-level defaults — terminal, MIME associations, portals — that make Sway behave like a first-class desktop on a GNOME-based distro.
+**What:** The session-level defaults (terminal, MIME associations, portals) that make Sway behave like a first-class desktop on a GNOME-based distro.
 **Where:** applied by [`scripts/setup-defaults.sh`](../scripts/setup-defaults.sh) (idempotent; user-level steps run without root, root steps are printed); none of it lives in the Sway `config` file, it is XDG/session state.
 **Verified:** the checks at the bottom of this page.
 
-> **Scope — Debian 13 with a GNOME fallback session; Arch with caveats.** This is where the "GNOME owns the app defaults, Sway has to co-exist" friction actually shows up, so the commands below assume `apt` and Debian's package names. On **Arch** the four terminal layers and the MIME/portals sections apply as-is (packages from pacman — see `bootstrap/packages/pacman.txt`), but the Nautilus layer has no equivalent (no GNOME fallback session). The Nautilus terminal extension is the sharp edge on Debian: its Python binding is upstream-named `nautilus-python` (Debian/Ubuntu rename it `python3-nautilus`), and `nautilus-open-any-terminal` isn't packaged for Debian at all (it *is* on the Arch AUR). Translate package names rather than pasting these verbatim.
+> **Scope: Debian 13 with a GNOME fallback session; Arch with caveats.** This is where the "GNOME owns the app defaults, Sway has to co-exist" friction actually shows up, so the commands below assume `apt` and Debian's package names. On **Arch** the four terminal layers and the MIME/portals sections apply as-is (packages from pacman; see `bootstrap/packages/pacman.txt`), but the Nautilus layer has no equivalent (no GNOME fallback session). The Nautilus terminal extension is the sharp edge on Debian: its Python binding is upstream-named `nautilus-python` (Debian/Ubuntu rename it `python3-nautilus`), and `nautilus-open-any-terminal` isn't packaged for Debian at all (it *is* on the Arch AUR). Translate package names rather than pasting these verbatim.
 
 ## Session environment
 
@@ -31,7 +31,7 @@ There are **four independent "default terminal" layers** on a Debian + Sway box.
 
 Served by the `nautilus-extension-gnome-terminal` package, which is **hardwired to gnome-terminal and ignores every layer above**. To make it open kitty, replace it with [`nautilus-open-any-terminal`](https://github.com/Stunkymonkey/nautilus-open-any-terminal).
 
-This is a Nautilus **Python extension**: Nautilus loads it with the *system* `python3` interpreter (via `python3-nautilus`), so the package has to be importable by that interpreter and its files have to land in the shared XDG dirs. That rules out isolated installers like `pipx` or `uv tool` — they bury the package in a private venv Nautilus can't import from, and never lay down the extension/schema. Use a plain `--user` install:
+This is a Nautilus **Python extension**: Nautilus loads it with the *system* `python3` interpreter (via `python3-nautilus`), so the package has to be importable by that interpreter and its files have to land in the shared XDG dirs. That rules out isolated installers like `pipx` or `uv tool`; they bury the package in a private venv Nautilus can't import from, and never lay down the extension/schema. Use a plain `--user` install:
 
 ```bash
 # Drop the hardwired extension
@@ -56,8 +56,8 @@ The gsettings key is global, so "Open in Terminal" opens kitty in **both** Sway 
 
 The authoritative file is `~/.config/mimeapps.list`; its `[Default Applications]` section overrides all system defaults. Lookup precedence (highest first):
 
-1. `~/.config/sway-mimeapps.list` — desktop-specific; only for Sway≠GNOME divergence
-2. **`~/.config/mimeapps.list`** — shared across both sessions (what we use)
+1. `~/.config/sway-mimeapps.list`: desktop-specific; only for Sway≠GNOME divergence
+2. **`~/.config/mimeapps.list`**: shared across both sessions (what we use)
 3. `/etc/xdg/mimeapps.list`, then system `/usr/share/applications/…`
 
 Drive it with `xdg-mime` (writes the correct file for you) rather than editing by hand:
@@ -69,9 +69,9 @@ xdg-mime default org.gnome.Evince.desktop application/pdf # set
 
 `setup-defaults.sh` sets sane defaults (text → GNOME Text Editor, PDF → Evince, images → Loupe) only when the target app is installed. Edit its `MIME_MAP` to taste.
 
-## Manually-installed apps in "Open With"
+## Manually installed apps in "Open With"
 
-GUI file managers only list apps that ship a **`.desktop` entry** in a standard applications dir (`/usr/share/applications`, `~/.local/share/applications`, …). An app you unpacked by hand — e.g. a Neovim tarball under `/opt` — has no entry, so it never shows up in Nautilus's **Open With…**, regardless of being on your `PATH`. Drop a user-level entry:
+GUI file managers only list apps that ship a **`.desktop` entry** in a standard applications dir (`/usr/share/applications`, `~/.local/share/applications`, …). An app you unpacked by hand, e.g. a Neovim tarball under `/opt`, has no entry, so it never shows up in Nautilus's **Open With…**, regardless of being on your `PATH`. Drop a user-level entry:
 
 ```ini
 # ~/.local/share/applications/nvim.desktop
@@ -86,7 +86,7 @@ Categories=Utility;TextEditor;
 MimeType=text/plain;text/markdown;text/x-shellscript;application/json;
 ```
 
-Then `update-desktop-database ~/.local/share/applications/`. Because Neovim is a TUI, launch it *through* a terminal (`kitty -e nvim %F`) with `Terminal=false`, rather than `Terminal=true` — the latter hands off to whatever the session's terminal-launcher resolves to, which is unreliable in a mixed Sway/GNOME setup. Adjust `MimeType=` to control which file types offer Neovim. (Paths here are examples: `/opt/nvim-linux-x86_64/...` is where the official Linux tarball lands — substitute your own.)
+Then `update-desktop-database ~/.local/share/applications/`. Because Neovim is a TUI, launch it *through* a terminal (`kitty -e nvim %F`) with `Terminal=false`, rather than `Terminal=true`. The latter hands off to whatever the session's terminal-launcher resolves to, which is unreliable in a mixed Sway/GNOME setup. Adjust `MimeType=` to control which file types offer Neovim. (Paths here are examples: `/opt/nvim-linux-x86_64/...` is where the official Linux tarball lands; substitute your own.)
 
 ### `sudo <tool>` can't find a hand-installed binary
 
@@ -96,7 +96,7 @@ Same root cause, different surface. `sudo` ignores your shell's `PATH` and uses 
 sudo ln -s /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
 ```
 
-The binary still resolves its own runtime through the symlink. (The `secure_path` dir set varies by distro — check your `/etc/sudoers` if `/usr/local/bin` isn't in it.)
+The binary still resolves its own runtime through the symlink. (The `secure_path` dir set varies by distro; check your `/etc/sudoers` if `/usr/local/bin` isn't in it.)
 
 ## Portals
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Toggle stay-awake mode: while set, idle-manager.sh's lock and screen-off
 # timeouts no-op (the guards inside their command strings consult this
-# flag). Locking before a manual suspend still happens — that is a
+# flag). Locking before a manual suspend still happens; that is a
 # deliberate act, not idle.
 #
 # Owns the `stay-awake` flag in the per-session flag store
