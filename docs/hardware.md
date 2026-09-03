@@ -28,7 +28,7 @@ On keyboards that expose media keys through a separate hotkey device Sway doesn'
 pkexec swhkd --config "$HOME/.config/swhkd/swhkdrc"
 ```
 
-Copy `extra/swhkd/swhkdrc` to `~/.config/swhkd/swhkdrc` and keep it scoped to media keys only; otherwise Sway and swhkd both fire on the same press.
+Render `extra/swhkd/swhkdrc` to `~/.config/swhkd/swhkdrc` (substitute your home for `__SWAY_HOME__`; `install.sh` does this when `swhkd` is present) and keep it scoped to media keys only; otherwise Sway and swhkd both fire on the same press.
 
 ## Monitor hotplug
 

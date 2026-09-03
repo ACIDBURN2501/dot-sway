@@ -117,9 +117,9 @@ Location: `extra/swhkd/swhkdrc`
 - You want a fallback only for media keys, not a replacement for normal Sway shortcuts
 
 **Configuration:**
-- The sample config in `extra/swhkd/swhkdrc` calls the same helper scripts used by the main Sway config
-- Copy it to `~/.config/swhkd/swhkdrc`
-- The sample's absolute paths point at the maintainer's home (`/home/ajl/...`). Since `swhkd` runs as root (whose `$HOME` is `/root`), adjust them to the real user's `~/.config/sway` on each host before starting the daemon
+- The config in `extra/swhkd/swhkdrc` is a template that calls the same helper scripts used by the main Sway config
+- Render it to `~/.config/swhkd/swhkdrc`, substituting your home for the `__SWAY_HOME__` placeholder: `sed "s|__SWAY_HOME__|$HOME|" extra/swhkd/swhkdrc > ~/.config/swhkd/swhkdrc` (`install.sh` does this automatically when the `swhkd` binary is present)
+- The paths must be absolute because `swhkd` runs as root via `pkexec` (whose `$HOME` is `/root`), so your shell environment is not available
 - Keep the config limited to media keys to avoid overlapping with your normal Sway bindings
 
 **Startup:**

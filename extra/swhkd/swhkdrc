@@ -1,20 +1,29 @@
 # Optional media-key fallback for hardware that Sway does not catch reliably.
 # Uses the same helper scripts as the main Sway config.
+#
+# This file is a template. Render it to ~/.config/swhkd/swhkdrc with your own
+# home substituted for __SWAY_HOME__ before starting the daemon (swhkd runs as
+# root via pkexec, whose $HOME is /root, so the paths must be absolute):
+#
+#   mkdir -p ~/.config/swhkd
+#   sed "s|__SWAY_HOME__|$HOME|" extra/swhkd/swhkdrc > ~/.config/swhkd/swhkdrc
+#
+# install.sh renders it automatically when the swhkd binary is present.
 
 XF86AudioMute
-  /home/ajl/.config/sway/scripts/volume-control.sh mute
+  __SWAY_HOME__/.config/sway/scripts/volume-control.sh mute
 
 XF86AudioLowerVolume
-  /home/ajl/.config/sway/scripts/volume-control.sh down
+  __SWAY_HOME__/.config/sway/scripts/volume-control.sh down
 
 XF86AudioRaiseVolume
-  /home/ajl/.config/sway/scripts/volume-control.sh up
+  __SWAY_HOME__/.config/sway/scripts/volume-control.sh up
 
 XF86AudioMicMute
-  /home/ajl/.config/sway/scripts/volume-control.sh mic-mute
+  __SWAY_HOME__/.config/sway/scripts/volume-control.sh mic-mute
 
 XF86MonBrightnessDown
-  /home/ajl/.config/sway/scripts/brightness-control.sh down
+  __SWAY_HOME__/.config/sway/scripts/brightness-control.sh down
 
 XF86MonBrightnessUp
-  /home/ajl/.config/sway/scripts/brightness-control.sh up
+  __SWAY_HOME__/.config/sway/scripts/brightness-control.sh up
