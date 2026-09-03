@@ -42,6 +42,19 @@ jobs:
           # loosen, or add a .shellcheckrc to tune specific codes.
           shellcheck --severity=warning $(git ls-files '*.sh')
 
+      - name: personal-path leak gate
+        run: |
+          # The repo is publicly distributed, so a hardcoded personal path in a
+          # tracked file is a regression (it has shipped twice: the swayi module
+          # path and the swhkdrc home). Fail on any absolute /home/<user> literal
+          # in tracked files. Add an allowlist here only if a legit example ever
+          # needs one.
+          if git grep -nE '/home/[a-z_][a-z0-9_-]*' -- . ':(exclude)docs/restructure.md' ':(exclude)TODO.md'; then
+            echo '::error::personal absolute path (/home/<user>) found in a tracked file'
+            exit 1
+          fi
+          echo 'no personal paths in tracked files'
+
       - name: JSON-validate the archinstall examples
         run: |
           # archinstall consumes these as strict JSON; a stray comment or

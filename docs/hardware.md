@@ -68,7 +68,7 @@ For clamshell (lid closed, external only), stop `systemd-logind` from suspending
 
 ```bash
 sudo mkdir -p /etc/systemd/logind.conf.d/
-echo -e "[Login]\nHandleLidSwitch=ignore\nHandleLidSwitchExternalPower=ignore" \
+printf '[Login]\nHandleLidSwitch=ignore\nHandleLidSwitchExternalPower=ignore\n' \
   | sudo tee /etc/systemd/logind.conf.d/sway-clamshell.conf
 sudo systemctl restart systemd-logind
 ```

@@ -28,6 +28,10 @@ lychee --no-progress '**/*.md'
 
 If you touch the Sway config itself, `sway -C` is the config gate. CI runs it with a headless backend, so you do not need a local session, just a sway install.
 
+## Documentation
+
+Touching a script means updating its header comment and its row in `scripts/SCRIPTS.md` in the same PR. The repo documents the same thing in four places (script headers, `SCRIPTS.md`, `docs/*.md`, `AGENTS.md`); keeping the header and the catalog row in step with the change is what stops them drifting apart.
+
 ## House style
 
 - `#!/usr/bin/env bash` and `set -euo pipefail` in bash scripts. The one `#!/bin/sh` script (the wofi power menu) carries `set -eu`; dash has no pipefail.

@@ -30,7 +30,7 @@ Rotation is **on-demand**. Press `$mod+Shift+w` to switch to a fresh random wall
 
 `config.d/wallpaper` runs the script with `--if-unset` on each start/reload. That is a **bootstrap only**: it sets a wallpaper when `wp.png` isn't already an existing file (e.g. a fresh checkout) — a random pool pick, or the bundled wallpaper when the pool is empty — and is a no-op otherwise, so `$mod+Shift+c` (reload) and logins keep whatever you last chose.
 
-Because everything that references the wallpaper reads `images/wp.png`, the lock screen follows your pick automatically: the active swaylock keybind (`$super+l`) uses it, and so does the commented swayidle example in `config` (its `timeout`/`before-sleep` hooks) if you enable it.
+Because everything that references the wallpaper reads `images/wp.png`, the lock screen follows your pick automatically: the active swaylock keybind (`$super+l`) uses it, and so does the idle lock that `config.d/idle` runs via `scripts/idle-manager.sh` (its `timeout`/`before-sleep` hooks).
 
 ```bash
 cp ~/Pictures/*.jpg ~/.config/sway/images/wallpapers/   # add wallpapers

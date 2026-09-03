@@ -28,7 +28,7 @@ A few names differ from the Arch world:
 ## Core
 
 - `sway` (or `swayfx`), `swaymsg`, `swaynag`
-- `waybar` (≥ 0.9)
+- `waybar` (≥ 0.10.4) — the floor is the native dropdown-menu API (`menu`/`menu-file`/`menu-actions`), which first shipped in 0.10.4 (mainline feature release 0.11.0); the `mpris` module this config also uses is older (0.9.17)
 - `swayidle`, `swaylock` — idle lock and screen-off (`config.d/idle` via `scripts/idle-manager.sh`) and the `$super+l` lock keybind
 - `bash`, `jq`
 - A Nerd Font (config uses `SauceCodePro Nerd Font`, `Symbols Nerd Font` fallback)

@@ -17,7 +17,7 @@ Legend: ✓ working · ! degraded or N/A (box-specific — see notes) · ✗ gap
 | Screenshots | grim + slurp (`Ctrl+Alt+s`) | `grim` `slurp` | `grim` `slurp` | ✓ | ✓ |
 | Lock / idle | `config.d/idle`: lock at 600s idle (default, tunable via `LOCK_TIMEOUT`/`SCREEN_OFF_TIMEOUT` in `host.env`), display off at 900s, lock before suspend; stay-awake toggle `$super+Ctrl+s` | `swaylock` `swayidle` | `swaylock` `swayidle` | ! (pending redeploy) | ! (pending redeploy) |
 | Volume | `scripts/volume-control.sh` (wpctl → pactl → silent) | `wireplumber` (ships wpctl) | `wireplumber` (ships wpctl) | ✓ | ✓ |
-| Media (MPRIS) | transport keys + waybar `mpris` module (native, libplayerctl; waybar ≥ 0.12) | `playerctl` | `playerctl` | ! (packaged, not yet installed) | ✓ |
+| Media (MPRIS) | transport keys + waybar `mpris` module (native, libplayerctl; module since waybar 0.9.17, config floor 0.10.4 — see docs/requirements.md) | `playerctl` | `playerctl` | ! (packaged, not yet installed) | ✓ |
 | OSD (volume/brightness) | `wob` fed by the control scripts via `scripts/osd-bar.sh` (silent skip when absent) | `wob` | `wob` | ! (packaged, not yet installed) | ! (packaged, not yet installed) |
 | Backlight | `brightness-control.sh` (brightnessctl), `external-brightness.sh` (ddcutil) | `brightnessctl` `ddcutil` | `brightnessctl` `ddcutil` | ✓ | ✓ |
 | Battery | waybar native module (upower/D-Bus) | `upower` | `upower` | ✓ | ✓ |
