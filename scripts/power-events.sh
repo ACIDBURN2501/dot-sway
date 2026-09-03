@@ -10,7 +10,7 @@
 #   power-unplugged  AC disconnected
 #
 # Inputs:  UPower's DisplayDevice (percentage and state)
-# Outputs: notify-send (ordinary urgency — mako DND suppresses them like
+# Outputs: notify-send (ordinary urgency; mako DND suppresses them like
 #          every notification), scripts/hooks.sh events, and a state file
 #          under $XDG_RUNTIME_DIR/sway/ so each episode fires exactly once.
 #

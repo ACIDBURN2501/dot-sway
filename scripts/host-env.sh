@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# host-env.sh — render per-machine host.env settings into sway config.
+# host-env.sh: render per-machine host.env settings into sway config.
 #
 # Runs at session start (an exec in config, before the input block). Reads
 # host.env via the shared loader (scripts/lib/host-env.sh) and writes

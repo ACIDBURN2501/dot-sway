@@ -18,7 +18,7 @@ window#waybar {
 }
 
 /* --- Pill framework -----------------------------------------------------
- * Every label module's label — plus the workspaces and tray boxes — carry
+ * Every label module's label, plus the workspaces and tray boxes, carry
  * Waybar's shared "module" CSS class (ALabel.cpp, workspaces.cpp,
  * tray.cpp), and Waybar sets the :hover state on mouse enter
  * (AModule.cpp handleMouseEnter). One rule therefore gives every pill

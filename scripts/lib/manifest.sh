@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# lib/manifest.sh — the install manifest: a record of every artifact the
+# lib/manifest.sh: the install manifest, a record of every artifact the
 # install created, so uninstall removes exactly that list instead of
 # guessing.
 #

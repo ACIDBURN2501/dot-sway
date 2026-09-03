@@ -1,4 +1,4 @@
-# Sway configuration — the `sync` repo (see README.md).
+# Sway configuration, the `sync` repo (see README.md).
 # Repo docs: docs/ (index: docs/README.md).
 # Per-machine overrides: config.d/ drop-ins and the gitignored .local files.
 
@@ -40,7 +40,7 @@ bindsym $super+l exec swaylock -f -i ~/.config/sway/images/wp.png
 # It auto-detects the connected output name (e.g. DP-2, HDMI-A-1) and applies
 # mode, scale, and adaptive_sync at runtime.
 
-# Wallpaper — wp.png is a symlink managed by config.d/wallpaper + scripts/rotate-wallpaper.sh.
+# Wallpaper: wp.png is a symlink managed by config.d/wallpaper + scripts/rotate-wallpaper.sh.
 # Rotation pool: images/wallpapers/, or an external folder via WALLPAPER_DIR in host.env.
 output * bg ~/.config/sway/images/wp.png fill
 # Example configuration:
@@ -57,7 +57,7 @@ output * bg ~/.config/sway/images/wp.png fill
 
 # Hold an idle inhibitor while any PipeWire stream is active, so swayidle
 # doesn't lock the screen during video playback (e.g. Twitch, where the site
-# doesn't request the Wake Lock API itself). Optional — skipped if uninstalled.
+# doesn't request the Wake Lock API itself). Optional; skipped if uninstalled.
 exec sh -c 'command -v wayland-pipewire-idle-inhibit >/dev/null && exec wayland-pipewire-idle-inhibit'
 
 ### Input configuration
@@ -136,7 +136,7 @@ default_floating_border pixel 2
 
     # Quick menus (wofi popups mirroring the bar panels): audio devices,
     # network, bluetooth, power. The power key sits beside $mod+Ctrl+p (the
-    # touchpad toggle on Alt+Ctrl+p) — different modifiers, deliberate parity
+    # touchpad toggle on Alt+Ctrl+p), different modifiers, deliberate parity
     # with the reference desktop's panel keys.
     bindsym $super+Ctrl+a exec $HOME/.config/sway/scripts/quick-menu.sh audio
     bindsym $super+Ctrl+w exec $HOME/.config/sway/scripts/quick-menu.sh network
@@ -149,7 +149,7 @@ default_floating_border pixel 2
     bindsym $mod+Shift+m exec $HOME/.config/sway/scripts/toggle-mako-dnd.sh
 
     # Cycle the desktop wallpaper (random pick from the pool). Rotation is
-    # on-demand only — reloads and logins keep the current wallpaper.
+    # on-demand only; reloads and logins keep the current wallpaper.
     bindsym $mod+Shift+w exec $HOME/.config/sway/scripts/rotate-wallpaper.sh
 
     # Drag floating windows by holding down $mod and left mouse button.
@@ -280,7 +280,7 @@ bindsym $mod+r mode "resize"
     bindsym --locked XF86MonBrightnessDown exec $HOME/.config/sway/scripts/brightness-control.sh down
     bindsym --locked XF86MonBrightnessUp exec $HOME/.config/sway/scripts/brightness-control.sh up
 
-    # MPRIS transport — any MPRIS player (mpv, browsers, Spotify). Silent when
+    # MPRIS transport: any MPRIS player (mpv, browsers, Spotify). Silent when
     # playerctl or a player is absent; --locked keeps them working on the lock screen.
     bindsym --locked XF86AudioPlay exec playerctl play-pause
     bindsym --locked XF86AudioPause exec playerctl play-pause
@@ -314,7 +314,7 @@ exec_always ~/.config/sway/scripts/monitor-hotplug.sh
 exec command -v mako && mako || true
 
 # Optional: battery/AC power event watcher (only runs when upower is
-# installed and a battery is present — silent on desktops). Polls UPower
+# installed and a battery is present, silent on desktops). Polls UPower
 # every 30s and fires one notification plus one hook per power transition
 # (docs/hooks.md).
 exec $HOME/.config/sway/scripts/power-events.sh

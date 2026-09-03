@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# quick-menu-sandbox.sh — sandboxed assertion suite for scripts/quick-menu.sh.
+# quick-menu-sandbox.sh: sandboxed assertion suite for scripts/quick-menu.sh.
 #
 # Runs against a throwaway $HOME with the repo copied in and PATH restricted
 # to the stub bin: wofi returns scripted selections, and wpctl / nmcli /
@@ -40,7 +40,7 @@ new_sandbox() { # sets HOME_ RUNTIME_ BIN_ LOG_ CHOICE_ PWCHOICE_
   PWCHOICE_="$SB/pw_choice"
   Sway="$HOME_/.config/sway"
   mkdir -p "$HOME_/.config" "$RUNTIME_" "$BIN_" "$Sway"
-  # Copy without .git and the wallpaper pool — heavy, and no suite needs them.
+  # Copy without .git and the wallpaper pool (heavy, and no suite needs them).
   tar -C "$REPO" --exclude=./.git --exclude=./images/wallpapers -cf - . | tar -C "$Sway" -xf -
   : > "$LOG_"
   : > "$CHOICE_"

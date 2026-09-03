@@ -1,6 +1,6 @@
 # Example power-unplugged hook (non-executable by design).
 #
-# Fires: once per transition, when the AC is disconnected — the UPower
+# Fires: once per transition, when the AC is disconnected. The UPower
 # state moves from charging to discharging (scripts/power-events.sh, 30s
 # poll).
 # Receives: the event name ($1 = "power-unplugged").

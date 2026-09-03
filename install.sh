@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 #
 # install.sh: set up this Sway desktop on an existing machine. A thin
-# preflight plus delegation — every mutating step is an existing idempotent
+# preflight plus delegation. Every mutating step is an existing idempotent
 # stage from bootstrap/provision.sh or scripts/setup-defaults.sh, so this
 # adds an entry point, not a parallel implementation.
 #
@@ -56,7 +56,7 @@ EOF
 }
 
 confirm() {
-  # confirm <prompt> — return 0 to proceed. Always yes under --yes/--check.
+  # confirm <prompt>: return 0 to proceed. Always yes under --yes/--check.
   if [ "$ASSUME_YES" -eq 1 ] || [ "$CHECK" -eq 1 ]; then
     return 0
   fi

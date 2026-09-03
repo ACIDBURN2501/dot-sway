@@ -32,6 +32,8 @@ If you touch the Sway config itself, `sway -C` is the config gate. CI runs it wi
 
 Touching a script means updating its header comment and its row in `scripts/SCRIPTS.md` in the same PR. The repo documents the same thing in four places (script headers, `SCRIPTS.md`, `docs/*.md`, `AGENTS.md`); keeping the header and the catalog row in step with the change is what stops them drifting apart.
 
+Prose follows a plain style (the unslop/STE rules): no em dashes in prose (use a period, comma, or colon), a colon only before a list or example rather than as a mid-sentence connector, no chatbot phrases, puffery, or filler, active voice with a named actor, one idea per sentence, one name per thing. The exception is user-visible output: tooltip formats, notification bodies, and `printf` messages keep whatever punctuation reads best, since changing them changes what the user sees.
+
 ## House style
 
 - `#!/usr/bin/env bash` and `set -euo pipefail` in bash scripts. The one `#!/bin/sh` script (the wofi power menu) carries `set -eu`; dash has no pipefail.

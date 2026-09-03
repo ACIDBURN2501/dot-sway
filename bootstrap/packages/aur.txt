@@ -1,4 +1,4 @@
-# AUR manifest for bootstrap/provision.sh — built via yay (see pacman.txt).
+# AUR manifest for bootstrap/provision.sh, built via yay (see pacman.txt).
 # Everything is commented out by default: AUR builds are slow and
 # version-fragile. Uncomment a line to have the `aur` stage build it.
 #

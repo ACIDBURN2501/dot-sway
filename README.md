@@ -1,8 +1,8 @@
-# sync — Sway/SwayFX Desktop Configuration
+# sync: Sway/SwayFX Desktop Configuration
 
 [![CI](https://github.com/aajll/sync/actions/workflows/ci.yml/badge.svg)](https://github.com/aajll/sync/actions/workflows/ci.yml)
 
-A portable Sway (and Swayfx) configuration with **Waybar** as the status bar, a unified dark/light theme across bar, terminal, launcher, and notifications, and a monitor-hotplug daemon that handles clamshell mode and per-monitor profiles. Doubles as the config/installer for supported machines: **Arch Linux (rolling)** and **Debian 13 (Trixie)** — see [bootstrap/](bootstrap/README.md).
+A portable Sway (and Swayfx) configuration with **Waybar** as the status bar, a unified dark/light theme across bar, terminal, launcher, and notifications, and a monitor-hotplug daemon that handles clamshell mode and per-monitor profiles. Doubles as the config/installer for supported machines: **Arch Linux (rolling)** and **Debian 13 (Trixie)**. See [bootstrap/](bootstrap/README.md).
 
 <p align="center"> <img src="images/preview.png" alt="Desktop preview." /> </p>
 
@@ -34,7 +34,7 @@ git clone <this-repo> ~/sync
 ~/sync/install.sh                # preflight, then provision stages + defaults
 ```
 
-Log into the Sway session; `config.d/waybar` and the theme/monitor hooks start automatically. See [docs/requirements.md](docs/requirements.md) for dependencies. Per-machine settings (compose key, wallpaper pool, idle timeouts, monitor overrides) go in `host.env` — copy `host.env.example`.
+Log into the Sway session; `config.d/waybar` and the theme/monitor hooks start automatically. See [docs/requirements.md](docs/requirements.md) for dependencies. Per-machine settings (compose key, wallpaper pool, idle timeouts, monitor overrides) go in `host.env`; copy `host.env.example`.
 
 Alternative: clone directly into `~/.config/sway` (`git clone <this-repo> ~/.config/sway`) and run `scripts/setup-defaults.sh`. The provisioner's `sway` stage detects that layout and leaves it in place.
 
@@ -53,7 +53,7 @@ For a fresh machine (zero → online, including the base OS), use [`bootstrap/`]
 
 | Doc | Topic |
 |-----|-------|
-| [README.md](docs/README.md) | The docs index — one page per component, in reading order |
+| [README.md](docs/README.md) | The docs index: one page per component, in reading order |
 | [bootstrap.md](docs/bootstrap.md) | Zero to online: base install, package manifests, provisioner |
 | [sway.md](docs/sway.md) | The core config: keybindings, drop-ins, per-machine overlays |
 | [hooks.md](docs/hooks.md) | Event hooks: drop-in automation per event, with a machine-local overlay |

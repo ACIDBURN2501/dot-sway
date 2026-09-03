@@ -67,20 +67,20 @@ Changes take effect the next time wofi is launched.
 
 ### Power Menu
 
-The `extra/wofi/wofi-power.sh` script provides a power menu using wofi with options to shutdown, reboot, suspend, hibernate, and logout. It is reachable from `Super+Ctrl+p` (via `scripts/quick-menu.sh power`) and uses the active theme. Machines without suspend/hibernate support may trim the menu locally — the provisioner never overwrites local changes.
+The `extra/wofi/wofi-power.sh` script provides a power menu using wofi with options to shutdown, reboot, suspend, hibernate, and logout. It is reachable from `Super+Ctrl+p` (via `scripts/quick-menu.sh power`) and uses the active theme. Machines without suspend/hibernate support may trim the menu locally; the provisioner never overwrites local changes.
 
 ### Quick Menus
 
-`scripts/quick-menu.sh` builds the bar panels' popups (audio devices, network, bluetooth, power) in wofi's dmenu mode, so they inherit this theme automatically — same styling pipeline as the launcher. The audio pill's native Waybar dropdown (see `docs/waybar.md`) delegates to this script from its devices item, and the clock's power dropdown (`waybar/menus/power.xml`) is a parallel definition of `wofi-power.sh` — keep the two in sync. Hotkeys: `Super+Ctrl+a` (audio), `Super+Ctrl+w` (network), `Super+Ctrl+b` (bluetooth), `Super+Ctrl+p` (power). See `scripts/SCRIPTS.md` for the menu contract.
+`scripts/quick-menu.sh` builds the bar panels' popups (audio devices, network, bluetooth, power) in wofi's dmenu mode, so they inherit this theme automatically, the same styling pipeline as the launcher. The audio pill's native Waybar dropdown (see `docs/waybar.md`) delegates to this script from its devices item, and the clock's power dropdown (`waybar/menus/power.xml`) is a parallel definition of `wofi-power.sh`, so keep the two in sync. Hotkeys: `Super+Ctrl+a` (audio), `Super+Ctrl+w` (network), `Super+Ctrl+b` (bluetooth), `Super+Ctrl+p` (power). See `scripts/SCRIPTS.md` for the menu contract.
 
 ## Kitty Terminal Theme
 
 Location: `extra/kitty/`
 
-The theme toggle themes kitty with [Tokyo Night](https://github.com/folke/tokyonight.nvim) (by Folke Lemaitre — the files carry their own MIT license headers, and the full license text is in `themes/LICENSE`). `scripts/toggle_theme.sh` seeds a fresh box on first `init`:
+The theme toggle themes kitty with [Tokyo Night](https://github.com/folke/tokyonight.nvim) (by Folke Lemaitre; the files carry their own MIT license headers, and the full license text is in `themes/LICENSE`). `scripts/toggle_theme.sh` seeds a fresh box on first `init`:
 
 - `themes/tokyo_night_moon.conf` / `themes/tokyo_night_day.conf` are copied into kitty's conventional theme directory, `~/.config/kitty/themes/` (a user-installed `tokyo_night_*.conf` there always wins).
-- `kitty.conf` is copied to `~/.config/kitty/kitty.conf` **only if absent** — it carries the `include current-theme.conf` line and socket-based remote control for live `kitty @ set-colors`. A user-authored kitty.conf is never touched; if yours lacks the include, add it manually.
+- `kitty.conf` is copied to `~/.config/kitty/kitty.conf` **only if absent**. It carries the `include current-theme.conf` line and socket-based remote control for live `kitty @ set-colors`. A user-authored kitty.conf is never touched; if yours lacks the include, add it manually.
 
 ## Mako Notification Daemon (Optional)
 

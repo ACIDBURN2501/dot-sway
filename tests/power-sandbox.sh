@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# power-sandbox.sh — sandboxed assertion suite for scripts/power-events.sh.
+# power-sandbox.sh: sandboxed assertion suite for scripts/power-events.sh.
 #
 # Runs against a throwaway $HOME with the repo copied in and PATH restricted
 # to the stub bin: upower replays a scripted queue of DisplayDevice samples
@@ -44,7 +44,7 @@ new_sandbox() { # sets HOME_ RUNTIME_ BIN_ LOG_ HOOKLOG_ QUEUE_ SB
   QUEUE_="$SB/queue"
   Sway="$HOME_/.config/sway"
   mkdir -p "$HOME_/.config" "$RUNTIME_" "$BIN_" "$Sway"
-  # Copy without .git and the wallpaper pool — heavy, and no suite needs them.
+  # Copy without .git and the wallpaper pool (heavy, and no suite needs them).
   tar -C "$REPO" --exclude=./.git --exclude=./images/wallpapers -cf - . | tar -C "$Sway" -xf -
   : > "$LOG_"
   : > "$HOOKLOG_"
@@ -56,7 +56,7 @@ new_sandbox() { # sets HOME_ RUNTIME_ BIN_ LOG_ HOOKLOG_ QUEUE_ SB
   done
   # notify-send: logs the full invocation (urgency assertions included).
   printf '#!/bin/sh\necho "notify-send $*" >> "%s"\nexit 0\n' "$LOG_" > "$BIN_/notify-send"
-  # Executable test hooks — one per event, appending to the hook log.
+  # Executable test hooks, one per event, appending to the hook log.
   for ev in battery-low battery-charged power-plugged power-unplugged; do
     printf '#!/bin/sh\necho "$1" >> "%s"\n' "$HOOKLOG_" > "$Sway/hooks/$ev.d/99-test.sh"
   done

@@ -2,7 +2,7 @@
 # Idle session manager: builds the swayidle command line from the user's
 # idle settings and execs swayidle.
 #
-# Inputs:  host.env at the repo root (optional — copy host.env.example),
+# Inputs:  host.env at the repo root (optional; copy host.env.example),
 #          loaded via scripts/lib/host-env.sh:
 #            LOCK_TIMEOUT=<seconds>        lock after this much idle (0 disables)
 #            SCREEN_OFF_TIMEOUT=<seconds>  power the display off after this much
@@ -15,10 +15,10 @@
 # Outputs: one long-running swayidle process (this script execs into it).
 #
 # Events wired:
-#   timeout <lock>        swaylock with the wallpaper image — skipped while
+#   timeout <lock>        swaylock with the wallpaper image, skipped while
 #                         the stay-awake flag is set (toggle-stay-awake.sh)
 #   timeout <screen off>  swaymsg "output * power off", resumed on activity
-#                         with "output * power on" — same stay-awake guard
+#                         with "output * power on", same stay-awake guard
 #   before-sleep          swaylock -w: always locks before suspend, even in
 #                         stay-awake mode (manual sleep is a deliberate act)
 #
@@ -48,7 +48,7 @@ RESUME_CMD="timeout 5 swaymsg \"output * power on\""
 
 # The stay-awake guard: swayidle executes timeout commands in a shell, so
 # each command consults the flag store first. A missing toggle.sh fails
-# open (the real command still runs — locking beats not locking).
+# open (the real command still runs; locking beats not locking).
 stay_guard() {
   printf '%s get stay-awake >/dev/null 2>&1 || %s' "$TOGGLE" "$1"
 }

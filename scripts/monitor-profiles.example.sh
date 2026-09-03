@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# monitor-profiles.example.sh — per-monitor settings for monitor-hotplug.sh
+# monitor-profiles.example.sh: per-monitor settings for monitor-hotplug.sh
 #
 # Copy this file to ~/.config/sway/scripts/monitor-profiles.local.sh and edit
 # as needed. The hotplug script sources it automatically on startup.
@@ -19,10 +19,10 @@ set -euo pipefail
 # Inside the function, call set_monitor_profile with three positional arguments:
 #   set_monitor_profile MODE SCALE ADAPTIVE_SYNC
 #
-#   MODE          — mode string passed to `swaymsg output … mode`
+#   MODE:          mode string passed to `swaymsg output … mode`
 #                   (e.g. '3840x2160@120Hz', '1920x1080@60Hz')
-#   SCALE         — output scale factor (e.g. '1', '1.25', '2')
-#   ADAPTIVE_SYNC — 'on' or 'off'
+#   SCALE:         output scale factor (e.g. '1', '1.25', '2')
+#   ADAPTIVE_SYNC: 'on' or 'off'
 #
 # Leave any argument empty to keep the script's fallback default for that field.
 #

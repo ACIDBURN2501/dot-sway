@@ -3,9 +3,9 @@
 # Shows current theme: ☀️ (light) or 🌙 (dark)
 #
 # Resolution order:
-#   1. GNOME gsettings — the live source of truth in hybrid (GNOME)
+#   1. GNOME gsettings: the live source of truth in hybrid (GNOME)
 #      sessions; checked first so an external GNOME toggle keeps working
-#   2. the per-session `theme` flag — written by scripts/toggle_theme.sh
+#   2. the per-session `theme` flag, written by scripts/toggle_theme.sh
 #      on every flip and at session start (`init`). The flag carries the
 #      value, so it is read as text rather than via `toggle.sh get`
 #      (presence only)

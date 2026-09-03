@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
-# lib/host-env.sh — shared loader for the per-machine host.env file.
+# lib/host-env.sh: shared loader for the per-machine host.env file.
 #
 # Sourced, not executed. Every script that reads per-machine settings goes
 # through this file so the file location and the precedence rule live in
 # exactly one place.
 #
-# host.env (gitignored — copy host.env.example) holds per-machine settings
+# host.env (gitignored; copy host.env.example) holds per-machine settings
 # as bash KEY=VALUE assignments at the repo root, i.e.
 # ~/.config/sway/host.env in a standard install. It is sourced with full
 # privileges: trusted user configuration, same as
 # scripts/monitor-profiles.local.sh.
 #
 #   load_host_env
-#     Sources host.env when present (absent file is not an error — the
+#     Sources host.env when present (absent file is not an error; the
 #     caller's defaults stand). Precedence:
 #       non-empty environment variable > host.env > built-in default
 #     Known keys already set (non-empty) in the environment are snapshotted
@@ -54,7 +54,7 @@ load_host_env() {
 
   # shellcheck disable=SC1090
   if ! . "$f"; then
-    printf 'host-env: could not parse %s — ignoring it (fix the syntax)\n' "$f" >&2
+    printf 'host-env: could not parse %s; ignoring it (fix the syntax)\n' "$f" >&2
   fi
 
   local i

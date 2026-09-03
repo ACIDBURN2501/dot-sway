@@ -1,6 +1,6 @@
 # Launch Waybar as the desktop status bar.
 #
-# `exec` (not `exec_always`) so sway reloads don't kill+respawn the bar — early-boot
+# `exec` (not `exec_always`) so sway reloads don't kill+respawn the bar. Early-boot
 # reloads were leaving waybar dead. Theme switches still reload waybar live via
 # SIGUSR2 from scripts/toggle_theme.sh.
 #

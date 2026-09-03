@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# host-env-sandbox.sh — sandboxed assertion suite for the host.env stack:
+# host-env-sandbox.sh: sandboxed assertion suite for the host.env stack:
 # scripts/lib/host-env.sh (the shared loader), scripts/host-env.sh (the
 # session-start snippet generator), and the WALLPAPER_DIR handling in
 # scripts/rotate-wallpaper.sh.
@@ -38,7 +38,7 @@ new_sandbox() { # sets SB HOME_ RUNTIME_ Sway
   RUNTIME_="$SB/runtime"
   Sway="$HOME_/.config/sway"
   mkdir -p "$HOME_/.config" "$RUNTIME_" "$Sway"
-  # Copy without .git and the wallpaper pool — heavy, and no suite needs the
+  # Copy without .git and the wallpaper pool (heavy, and no suite needs the
   # real one. The rotation tests need one in-repo candidate, so fake it.
   tar -C "$REPO" --exclude=./.git --exclude=./images/wallpapers -cf - . | tar -C "$Sway" -xf -
   mkdir -p "$Sway/images/wallpapers"

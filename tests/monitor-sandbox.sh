@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# monitor-sandbox.sh — sandboxed assertion suite for
+# monitor-sandbox.sh: sandboxed assertion suite for
 # scripts/monitor-hotplug.sh in --once mode: external-setting resolution
 # (env var > host.env > per-monitor profile > default) and the docked-mode
 # action sequence.

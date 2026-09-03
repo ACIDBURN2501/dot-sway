@@ -7,7 +7,7 @@
 # Empty/absent pool → fall back to the bundled wallpaper
 # (images/wallpapers/frederic-church-parthenon.jpg) so wp.png always resolves
 # (never a black desktop or a broken swaylock image), unless a wallpaper is
-# already set. Rotation is on-demand — bound to $mod+Shift+w. With
+# already set. Rotation is on-demand, bound to $mod+Shift+w. With
 # --if-unset the script only acts when wp.png isn't already a valid wallpaper,
 # so start/reload (config.d/wallpaper) bootstrap one on first run but leave an
 # existing wallpaper in place.
@@ -29,7 +29,7 @@ DEFAULT_POOL="$SWAY_DIR/images/wallpapers"
 LINK="$SWAY_DIR/images/wp.png"
 DEFAULT="$SWAY_DIR/images/wallpapers/frederic-church-parthenon.jpg"   # committed fallback when the pool is empty
 
-# Pool override comes from WALLPAPER_DIR (env var or host.env — see
+# Pool override comes from WALLPAPER_DIR (env var or host.env; see
 # host.env.example). A set-but-missing directory is a configuration error:
 # warn and fall back to the in-repo pool rather than rotating nothing.
 WALLPAPER_DIR="${WALLPAPER_DIR:-$DEFAULT_POOL}"
@@ -46,7 +46,7 @@ if [[ "$IF_UNSET" -eq 1 && -e "$LINK" ]]; then
 fi
 
 # Apply the current wp.png live if sway IPC is reachable. On cold boot the socket
-# may not exist yet — sway picks up the symlink when it processes `output * bg`.
+# may not exist yet; sway picks up the symlink when it processes `output * bg`.
 apply_bg() {
   if [[ -n "${SWAYSOCK:-}" ]] && command -v swaymsg >/dev/null 2>&1; then
     swaymsg "output * bg $LINK fill" >/dev/null 2>&1 || true

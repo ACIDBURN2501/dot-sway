@@ -21,7 +21,7 @@ Adding a new event is a one-line change: call `scripts/hooks.sh <event>` from wh
 
 - A hook is any **executable** file in the event's directory. `.sample` files are non-executable and never run; they document the contract.
 - A hook receives the **event name as `$1`**.
-- A **missing directory is a silent no-op** — the common case on a machine with no hooks.
+- A **missing directory is a silent no-op**, the common case on a machine with no hooks.
 - A **non-zero exit is logged to stderr and skipped**; the remaining hooks still run. Hooks are fire-and-forget, in sorted filename order.
 - The dispatcher resolves the hook directories from its own location, so it works from any install path (including a symlinked `$HOME/.config/sway`).
 

@@ -1,4 +1,4 @@
-/* Tokyo Night Day palette — harmonises with kitty's tokyo_night_day.conf. */
+/* Tokyo Night Day palette, harmonised with kitty's tokyo_night_day.conf. */
 @define-color bg          rgba(225, 226, 231, 0.94);
 @define-color bg_hover    rgba(0, 0, 0, 0.06);
 @define-color bg_active   #5294e2;

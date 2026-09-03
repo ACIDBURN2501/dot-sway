@@ -35,7 +35,7 @@ Render `extra/swhkd/swhkdrc` to `~/.config/swhkd/swhkdrc` (substitute your home 
 `scripts/monitor-hotplug.sh` auto-detects the internal display (first `eDP-*` output) and any external. External settings resolve in this order:
 
 1. `DOTSWAY_EXT_*` environment variables (session env).
-2. `host.env` at the repo root (copy `host.env.example`) — the same `DOTSWAY_EXT_*` names.
+2. `host.env` at the repo root (copy `host.env.example`), the same `DOTSWAY_EXT_*` names.
 3. Per-monitor matches from `scripts/monitor-profiles.local.sh`.
 4. Fallback: `1920x1080@60Hz`, scale `1`, adaptive sync `off`.
 

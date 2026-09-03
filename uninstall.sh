@@ -64,7 +64,7 @@ confirm() {
 }
 
 do_rm() {
-  # do_rm <path> — remove a file/symlink, honouring --check.
+  # do_rm <path>: remove a file/symlink, honouring --check.
   local path="$1"
   if [ "$CHECK" -eq 1 ]; then
     remove "would remove $path"
@@ -184,9 +184,9 @@ remove_manifest_files() {
     fi
     if [ -n "$detail" ] && [ "$(sha256sum "$path" | cut -d' ' -f1)" != "$detail" ]; then
       # Changed since install: it may hold user edits. Under --yes (and
-      # --check) keep it — never auto-delete something the user touched.
+      # --check) keep it; never auto-delete something the user touched.
       if [ "$ASSUME_YES" -eq 1 ] || [ "$CHECK" -eq 1 ]; then
-        skip "$path (changed since install; kept — remove manually if unwanted)"
+        skip "$path (changed since install; kept, remove manually if unwanted)"
       elif confirm "$path changed since install; remove anyway?"; then
         do_rm "$path"
       else

@@ -2,7 +2,7 @@
 <!-- Left-click dropdown for the pulseaudio pill (waybar config.jsonc,
      "menu" + "menu-file" + "menu-actions"). Every item id must match a
      menu-actions key; commands run via /bin/sh like on-click.
-     Use explicit <object class="..."> elements — bare <menu> shorthand
+     Use explicit <object class="..."> elements; bare <menu> shorthand
      maps to GtkMenuBar in GtkBuilder. -->
 <interface>
   <object class="GtkMenu" id="menu">

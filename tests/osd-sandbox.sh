@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# osd-sandbox.sh — sandboxed assertion suite for the wob OSD writers:
+# osd-sandbox.sh: sandboxed assertion suite for the wob OSD writers:
 # scripts/osd-bar.sh, volume-control.sh, brightness-control.sh, and
 # external-brightness.sh.
 #
@@ -41,13 +41,13 @@ new_sandbox() { # sets HOME_ RUNTIME_ BIN_ LOG_
   OSD_OUT_="$SB/osd_out"
   Sway="$HOME_/.config/sway"
   mkdir -p "$HOME_/.config" "$RUNTIME_/sway" "$BIN_" "$Sway" "$SB/bl"
-  # Copy without .git and the wallpaper pool — heavy, and no suite needs them.
+  # Copy without .git and the wallpaper pool (heavy, and no suite needs them).
   tar -C "$REPO" --exclude=./.git --exclude=./images/wallpapers -cf - . | tar -C "$Sway" -xf -
   : > "$LOG_"
   : > "$OSD_OUT_"
   mkfifo "$FIFO_"
   # Real externals the scripts under test need, copied into the stub bin so
-  # the sandbox can run with PATH=$BIN_ ONLY — a real wpctl on the host must
+  # the sandbox can run with PATH=$BIN_ ONLY; a real wpctl on the host must
   # never leak into the pactl-fallback tests.
   for b in bash dirname awk grep tr cat; do
     cp "$(command -v "$b")" "$BIN_/$b"

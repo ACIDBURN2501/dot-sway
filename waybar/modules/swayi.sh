@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# swayi.sh — delegator for the swayi usage pill (AI session/weekly numbers).
+# swayi.sh: delegator for the swayi usage pill (AI session/weekly numbers).
 #
 # The swayi tool lives in its own checkout, not in this repo. This module is
 # the stable path config.jsonc points at: it resolves SWAYI_DIR (env var >

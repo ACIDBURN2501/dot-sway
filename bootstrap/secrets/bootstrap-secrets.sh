@@ -3,7 +3,7 @@
 # bootstrap-secrets.sh: decrypt bootstrap/secrets/*.age into
 # ~/.local/share/sync/secrets/ (0600 files in a 0700 dir).
 #
-# Identity: prefers the user's SSH ed25519 key — age accepts OpenSSH keys
+# Identity: prefers the user's SSH ed25519 key; age accepts OpenSSH keys
 # natively, so the key you already carry for git is the key that unlocks
 # the secrets. Falls back to a dedicated age key at ~/.config/sync/age.key,
 # created once and printed for offline backup.
@@ -33,7 +33,7 @@ resolve_identity() {
     mkdir -p "$(dirname "$FALLBACK_KEY")"
     age-keygen -o "$FALLBACK_KEY" 2>/dev/null
     chmod 600 "$FALLBACK_KEY"
-    log "secrets: created a new age key at $FALLBACK_KEY — back it up now:"
+    log "secrets: created a new age key at $FALLBACK_KEY. Back it up now:"
     log "secrets: $(cat "$FALLBACK_KEY")"
   fi
   printf '%s' "$FALLBACK_KEY"

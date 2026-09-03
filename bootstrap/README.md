@@ -1,10 +1,10 @@
 # Bootstrap: zero → online
 
-Brings a fresh install to this desktop without building an ISO. Two supported targets — **Arch Linux (rolling)** and **Debian 13 (trixie)** — with three layers, in order:
+Brings a fresh install to this desktop without building an ISO. Two supported targets, **Arch Linux (rolling)** and **Debian 13 (trixie)**, with three layers, in order:
 
-1. **`archinstall/`** — the JSON pair that installs the Arch base system unattended.
-2. **`packages/`** — per-distro package manifests (pacman / apt / AUR / flatpak).
-3. **`provision.sh`** — a staged, idempotent provisioner that applies the rest (services, sway checkout, ssh-agent, portals, secrets, tailscale).
+1. **`archinstall/`**: the JSON pair that installs the Arch base system unattended.
+2. **`packages/`**: per-distro package manifests (pacman / apt / AUR / flatpak).
+3. **`provision.sh`**: a staged, idempotent provisioner that applies the rest (services, sway checkout, ssh-agent, portals, secrets, tailscale).
 
 ## The flow
 
@@ -15,7 +15,7 @@ Brings a fresh install to this desktop without building an ISO. Two supported ta
    ```bash
    archinstall --config user_configuration.json --creds user_credentials.json --silent
    ```
-   The `.example` files here are deliberately minimal — the schema's disk layout section has churned across archinstall versions. The canonical way to get a working pair: run `archinstall` once interactively in a VM, then copy the files it wrote to `/root/` into this directory (drop the `.example` suffix).
+   The `.example` files here are deliberately minimal; the schema's disk layout section has churned across archinstall versions. The canonical way to get a working pair: run `archinstall` once interactively in a VM, then copy the files it wrote to `/root/` into this directory (drop the `.example` suffix).
 3. Reboot and log in (the install enables `sshd`; the password is the one from the credentials file).
 4. Clone this repo and run the provisioner:
    ```bash
@@ -33,13 +33,13 @@ git clone https://github.com/aajll/sync ~/sync
 ~/sync/bootstrap/provision.sh
 ```
 
-The provisioner detects the distro and switches manifests (`debian.txt` via `apt-get`), service units (`ssh` not `sshd`), and network backend (NetworkManager — the Debian baseline; `nmtui` is the network TUI). A `preseed.cfg` for fully unattended Debian installs is a possible later addition, not a current one.
+The provisioner detects the distro and switches manifests (`debian.txt` via `apt-get`), service units (`ssh` not `sshd`), and network backend (NetworkManager, the Debian baseline; `nmtui` is the network TUI). A `preseed.cfg` for fully unattended Debian installs is a possible later addition, not a current one.
 
-Both flows end at the same point: `provision.sh` stages re-run safely — pass names to run a subset (`provision.sh tailscale`). `provision.sh --check` reports what any stage would do without changing anything — run it first on a box you care about. Cloning straight into `~/.config/sway` also works; the `sway` stage then just verifies the checkout. If `~/.config/sway` already has local edits, the `sway` stage leaves it alone — per-machine drift (e.g. a trimmed power menu) is preserved on purpose.
+Both flows end at the same point: `provision.sh` stages re-run safely; pass names to run a subset (`provision.sh tailscale`). `provision.sh --check` reports what any stage would do without changing anything. Run it first on a box you care about. Cloning straight into `~/.config/sway` also works; the `sway` stage then just verifies the checkout. If `~/.config/sway` already has local edits, the `sway` stage leaves it alone. Per-machine drift (e.g. a trimmed power menu) is preserved on purpose.
 
 ### NoCloud `cidata` variant (Arch, decision)
 
-The Arch base install is also drivable from stock virtualization tooling via a config drive with the `cidata` filesystem label (the cloud-init NoCloud standard) — Proxmox, Packer, and friends all know how to attach one. **Decision: Option A — cloud-init NoCloud on the installed system.** `cloud-init` goes into the base install, its NoCloud datasource is pointed at the local `cidata` disk, and first boot applies the user-data (authorized keys, tailscale authkey, credentials) before `provision.sh` finishes the rest. Option B — a live-environment assist that copies the archinstall JSON pair and secrets from the mounted drive into `archinstall --config` — is the fallback if the on-drive pair proves fragile against archinstall schema churn in practice.
+The Arch base install is also drivable from stock virtualization tooling via a config drive with the `cidata` filesystem label (the cloud-init NoCloud standard). Proxmox, Packer, and friends all know how to attach one. **Decision: Option A, cloud-init NoCloud on the installed system.** `cloud-init` goes into the base install, its NoCloud datasource is pointed at the local `cidata` disk, and first boot applies the user-data (authorized keys, tailscale authkey, credentials) before `provision.sh` finishes the rest. Option B, a live-environment assist that copies the archinstall JSON pair and secrets from the mounted drive into `archinstall --config`, is the fallback if the on-drive pair proves fragile against archinstall schema churn in practice.
 
 The file set maps one-to-one onto the reference user-data set:
 
@@ -50,13 +50,13 @@ The file set maps one-to-one onto the reference user-data set:
 | ssh stage (the user's public key) | `authorized_keys` |
 | `tailscale` stage | `tailscale_authkey` |
 
-Labeling: the drive's filesystem label must be `cidata` (vfat); on Proxmox a cloud-init drive carries the label automatically. Two caveats travel with the variant: an encrypted unattended install still needs a human for the LUKS passphrase, and the config drive carries install secrets in the clear — treat any such drive as a secret. Implementation is a follow-up ticket whose acceptance bar is the full drive-attached flow exercised on a VM.
+Labeling: the drive's filesystem label must be `cidata` (vfat); on Proxmox a cloud-init drive carries the label automatically. Two caveats travel with the variant: an encrypted unattended install still needs a human for the LUKS passphrase, and the config drive carries install secrets in the clear, so treat any such drive as a secret. Implementation is a follow-up ticket whose acceptance bar is the full drive-attached flow exercised on a VM.
 
 ## Files
 
 | Path | Purpose |
 |------|---------|
-| `archinstall/user_configuration.json(.example)` | Arch base install: hostname, locale, keyboard, bootloader, swap. No disk layout on purpose — generate it (step 2). |
+| `archinstall/user_configuration.json(.example)` | Arch base install: hostname, locale, keyboard, bootloader, swap. No disk layout on purpose; generate it (step 2). |
 | `archinstall/user_credentials.json(.example)` | Username + **password hash** (`openssl passwd -6`). The real file holds a secret: both real files are gitignored. |
 | `packages/pacman.txt` | Arch package manifest. |
 | `packages/debian.txt` | Debian 13 package manifest, verified on a trixie reference install. |
@@ -68,11 +68,11 @@ Labeling: the drive's filesystem label must be `cidata` (vfat); on Proxmox a clo
 
 ## Non-repo tools
 
-Three tiers, in preference order — codifying what already exists on the machines (nvim, teams-for-linux under `/opt` with `/usr/local/bin` symlinks):
+Three tiers, in preference order, codifying what already exists on the machines (nvim, teams-for-linux under `/opt` with `/usr/local/bin` symlinks):
 
-1. **Distro package** — always first; the manifests carry it.
-2. **Language-native tool** — `pipx install <name>` for Python (e.g. `impala` on iwd boxes) or `cargo install <name>` for Rust (e.g. `wayland-pipewire-idle-inhibit`). These land in `~/.local/bin` / `~/.cargo/bin`, already on `PATH`.
-3. **GitHub release binary** — install to `/opt/<name>/`, symlink the binaries into `/usr/local/bin` (which is in sudo's `secure_path` and in every default `PATH`). Use `scripts/install-release.sh <name> <url> <sha256>`: it pins the exact release URL, verifies the sha256 before touching system dirs, installs, and symlinks (see `scripts/SCRIPTS.md`). Keep the URL + sha256 in the release notes so re-downloads re-verify.
+1. **Distro package**: always first; the manifests carry it.
+2. **Language-native tool**: `pipx install <name>` for Python (e.g. `impala` on iwd boxes) or `cargo install <name>` for Rust (e.g. `wayland-pipewire-idle-inhibit`). These land in `~/.local/bin` / `~/.cargo/bin`, already on `PATH`.
+3. **GitHub release binary**: install to `/opt/<name>/`, symlink the binaries into `/usr/local/bin` (which is in sudo's `secure_path` and in every default `PATH`). Use `scripts/install-release.sh <name> <url> <sha256>`: it pins the exact release URL, verifies the sha256 before touching system dirs, installs, and symlinks (see `scripts/SCRIPTS.md`). Keep the URL + sha256 in the release notes so re-downloads re-verify.
 
 ## Design notes
 

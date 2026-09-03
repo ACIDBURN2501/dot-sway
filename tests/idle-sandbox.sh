@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# idle-sandbox.sh — sandboxed assertion suite for the idle/lock stack:
+# idle-sandbox.sh: sandboxed assertion suite for the idle/lock stack:
 # scripts/idle-manager.sh (host.env parsing, swayidle argv, restart), the
 # stay-awake toggle (scripts/toggle-stay-awake.sh) and its waybar
 # indicator (waybar/modules/stay-awake.sh).
@@ -12,7 +12,7 @@
 #
 # The real-swayidle timing behaviour (timeouts fire after N seconds, the
 # stay-awake guard suppresses them) is verified live on a machine with a
-# session, not here — see the ticket.
+# session, not here; see the ticket.
 #
 # Usage: idle-sandbox.sh /path/to/repo
 # Exit:  0 when every assertion passes; prints N/M summary.
@@ -50,7 +50,7 @@ new_sandbox() { # sets HOME_ RUNTIME_ BIN_ LOG_ ARGV_ SB
   ARGV_="$SB/swayidle.argv"
   Sway="$HOME_/.config/sway"
   mkdir -p "$HOME_/.config" "$RUNTIME_" "$BIN_" "$Sway"
-  # Copy without .git and the wallpaper pool — heavy, and no suite needs them.
+  # Copy without .git and the wallpaper pool (heavy, and no suite needs them).
   tar -C "$REPO" --exclude=./.git --exclude=./images/wallpapers -cf - . | tar -C "$Sway" -xf -
   : > "$LOG_"
   : > "$ARGV_"
