@@ -18,6 +18,13 @@
 
 set -euo pipefail
 
+# Record what this script writes in the install manifest so uninstall.sh can
+# remove exactly these artifacts. Best-effort: an absent helper or manifest
+# never blocks the defaults themselves.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck disable=SC1091
+. "$SCRIPT_DIR/lib/manifest.sh" 2>/dev/null || manifest_add() { :; }
+
 # --- Constants ---------------------------------------------------------------
 
 TERMINAL_CMD="kitty"                 # binary + $TERMINAL value + gsettings exec
@@ -65,12 +72,14 @@ set_terminal() {
 
   # 1. freedesktop / GLib default (xdg-terminal-exec spec)
   printf '%s\n' "$TERMINAL_DESKTOP" > "$HOME/.config/xdg-terminals.list"
+  manifest_add file "$HOME/.config/xdg-terminals.list" "$(sha256sum "$HOME/.config/xdg-terminals.list" | cut -d' ' -f1)"
   log "xdg-terminals.list -> $TERMINAL_DESKTOP"
 
   # 2. $TERMINAL for xdg-terminal-exec fallback and TERMINAL-aware tools
   mkdir -p "$HOME/.config/environment.d"
   printf '# Preferred terminal for xdg-terminal-exec and $TERMINAL-aware tools.\nTERMINAL=%s\n' \
     "$TERMINAL_CMD" > "$HOME/.config/environment.d/10-terminal.conf"
+  manifest_add file "$HOME/.config/environment.d/10-terminal.conf" "$(sha256sum "$HOME/.config/environment.d/10-terminal.conf" | cut -d' ' -f1)"
   log "environment.d/10-terminal.conf -> TERMINAL=$TERMINAL_CMD"
 
   # 3. GNOME legacy key (used by some GNOME components under the fallback session)
@@ -95,6 +104,9 @@ set_mime_defaults() {
     if desktop_exists "$app"; then
       xdg-mime default "$app" "$mime"
       log "$mime -> $app"
+      if [ -f "$HOME/.config/mimeapps.list" ]; then
+        manifest_add file "$HOME/.config/mimeapps.list" "modified-by-setup-defaults"
+      fi
     else
       skip "$mime: $app not installed"
     fi
