@@ -128,7 +128,7 @@ tooltip * {
 }
 
 tooltip, tooltip label {
-  font-family: "SauceCodePro Nerd Font", "Symbols Nerd Font", monospace;
+  font-family: "Swayi Brands", "SauceCodePro Nerd Font", "Symbols Nerd Font", monospace;
   font-size: 11pt;
   font-weight: normal;
   text-shadow: none;
