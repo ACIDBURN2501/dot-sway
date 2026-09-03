@@ -1,8 +1,14 @@
-# sync: Sway/SwayFX desktop configuration
+# sync: a Sway/SwayFX desktop
 
 [![CI](https://github.com/aajll/sync/actions/workflows/ci.yml/badge.svg)](https://github.com/aajll/sync/actions/workflows/ci.yml)
 
-A portable Sway (and Swayfx) configuration with **Waybar** as the status bar, a unified dark/light theme across bar, terminal, launcher, and notifications, and a monitor-hotplug daemon that handles clamshell mode and per-monitor profiles. Doubles as the config/installer for supported machines: **Arch Linux (rolling)** and **Debian 13 (Trixie)**. See [bootstrap/](bootstrap/README.md).
+A complete desktop for **Arch Linux (rolling)** and **Debian 13 (Trixie)**, built on Sway or SwayFX: from a bare machine to a working session in one flow.
+
+- **Zero-to-online bootstrap**: unattended Arch base install (or the Debian installer), per-distro package manifests, and a staged idempotent provisioner. [`bootstrap/`](bootstrap/README.md)
+- **The compositor config**: keybindings, workspace rules, and a per-machine overlay layer. [`config` + `config.d/`](docs/sway.md)
+- **The status bar**: Waybar, native event-driven modules plus custom shell modules. [`waybar/`](docs/waybar.md)
+- **One theme everywhere**: a single dark/light toggle across bar, terminal, launcher, and notifications, plus on-demand wallpaper rotation. [`scripts/` + `extra/`](docs/theming.md)
+- **Hardware handling**: media keys, and a monitor-hotplug daemon with clamshell mode and per-monitor profiles. [`docs/hardware.md`](docs/hardware.md)
 
 <p align="center"> <img src="images/preview.png" alt="Desktop preview." /> </p>
 
