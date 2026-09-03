@@ -1,4 +1,4 @@
-# The Sway Config
+# The Sway config
 
 **What:** The core compositor configuration: keybindings, workspace rules, and the startup hooks that launch the bar, theme, and monitor daemons.
 **Where:** `config` (the main file), `config.d/` (drop-in snippets), and gitignored `*.local` overlays for per-machine drift.

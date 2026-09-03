@@ -1,4 +1,4 @@
-# Core Features: the "just works" matrix
+# Core features: the "just works" matrix
 
 **What:** The capability matrix: what the configuration expects, per distro, and what is verified on the reference machines.
 **Where:** this page; the source of truth is `scripts/check-core-features.sh`, which probes the machine and prints the matrix as ✓/!/✗ (exit 1 on any ✗).

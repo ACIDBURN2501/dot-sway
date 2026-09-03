@@ -1,4 +1,4 @@
-# Agent Guidelines for Sway Configuration Repository
+# Agent guidelines for the Sway configuration repository
 
 Conventions for contributing changes to this Sway + Waybar desktop configuration.
 
@@ -43,7 +43,7 @@ All seven run in CI (the `theme-tests` job). What still needs a live session:
   chmod +x scripts/*.sh waybar/modules/*.sh
   ```
 
-## Code Style & Conventions
+## Code style & conventions
 
 ### Shebang & Safety
 - **Shebang:** `#!/usr/bin/env bash`
@@ -56,14 +56,14 @@ All seven run in CI (the `theme-tests` job). What still needs a live session:
 - **Constants:** `UPPER_SNAKE_CASE`.
 - **Markdown:** one line per paragraph and per list item. The renderer decides where lines break, so never reflow prose to an 80-column (or any other) width. Fenced code blocks keep their authored line breaks, and table rows are already one per line.
 
-### Script Structure
+### Script structure
 1. Shebang + safety flags.
 2. Header comment: purpose, inputs, outputs.
 3. Constants.
 4. Helper functions.
 5. Main logic.
 
-### Waybar Custom Modules (`waybar/modules/`)
+### Waybar custom modules (`waybar/modules/`)
 Scripts here back `custom/*` modules in `waybar/config.jsonc`.
 
 - **Output:** print one line per invocation. Empty output hides the module.
@@ -80,7 +80,7 @@ command -v jq >/dev/null 2>&1 || exit 0
 
 Common tools: `jq`, `swaymsg`, `upower`, `brightnessctl`, `ddcutil`, `pactl` / `wpctl`, `bluetoothctl`, `nmcli`, `makoctl`.
 
-### Error Handling
+### Error handling
 - `|| true` on commands whose failure should not abort the script.
 - `2>/dev/null` to suppress noise from probes.
 - Provide a sensible fallback or exit 0 when state is unobtainable.
@@ -110,7 +110,7 @@ Examples:
 - `fix(brightness): handle backlight devices without max_brightness`
 - `docs(scripts): clarify monitor profile precedence`
 
-## Project Architecture
+## Project architecture
 
 - **`config`:** Primary Sway configuration. Includes `config.d/*` and theme/SwayFX snippets generated under `$XDG_RUNTIME_DIR/sway/` (per-user, 0700, wiped on logout, not world-writable `/tmp`). sway expands the variable in `include` via wordexp(3).
 - **`config.d/`:** Drop-in Sway snippets sourced via `include config.d/*`. `waybar` launches the bar; `wallpaper` bootstraps `images/wp.png` from `images/wallpapers/` via `rotate-wallpaper.sh --if-unset` (a no-op when one is already set; rotation is on-demand via `$mod+Shift+w`); `floating_windows` carries per-app rules. (The compose-key input rule comes from `host.env` at the repo root, rendered into a runtime snippet by `scripts/host-env.sh` and included directly by `config`, not a `config.d` drop-in.)
@@ -128,7 +128,7 @@ Examples:
 - **`tests/`:** Sandboxed assertion suites for the session-external scripts (see Testing). Each takes the repo root as its argument and runs in CI.
 - **`install.sh` / `uninstall.sh`:** Set up / remove this desktop on an existing machine by delegating to the provisioner; `uninstall.sh` is driven by the install manifest.
 
-## Common Workflows
+## Common workflows
 
 ### Adding a Waybar module
 1. **Native module:** add its name to a `modules-*` array in `waybar/config.jsonc` and a config block below. Native modules are preferred when one fits; they're event-driven.
@@ -136,7 +136,7 @@ Examples:
 3. `chmod +x waybar/modules/<name>.sh`.
 4. Reload: `pkill -SIGUSR2 -x waybar` (style or `config.jsonc` changes; waybar rereads both). `swaymsg reload` no longer relaunches waybar; if you ever need a full restart, `pkill -x waybar` and let the next sway login (or run the launch command from `config.d/waybar`) bring it back.
 
-### Modifying Sway config
+### Modifying the Sway config
 1. Edit `config` (or a snippet under `config.d/`).
 2. Syntax check: `sway -C`.
 3. `swaymsg reload`.
@@ -149,7 +149,7 @@ Examples:
    ```
 3. Live reload a running Waybar: `pkill -SIGUSR2 -x waybar`.
 
-## Handling Hardware Variability
+## Handling hardware variability
 
 This config is shared across laptops and desktops.
 
@@ -164,7 +164,7 @@ This config is shared across laptops and desktops.
 - **Theme didn't repaint:** confirm `waybar/colors.css` symlink exists (`scripts/toggle_theme.sh init` recreates it) and that Waybar is running (`pgrep -x waybar`).
 - **Permissions:** all scripts must be `chmod +x`.
 
-## Design Philosophy
+## Design philosophy
 
 - **Native first:** prefer Waybar's native modules; reach for `custom/*` only when there's no native equivalent for the state we need.
 - **Event-driven over polling:** when a custom module *must* poll, cache aggressively on the producer side (see `scripts/external-brightness.sh` writing a cache that `waybar/modules/brightness.sh` reads).

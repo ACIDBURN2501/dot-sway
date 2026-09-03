@@ -2,7 +2,7 @@
 
 These files are not part of the main configuration, but are available for specific use cases.
 
-## Wofi Application Launcher (Optional)
+## Wofi application launcher (optional)
 
 Location: `extra/wofi/`
 
@@ -20,7 +20,7 @@ Wofi is referenced in the main Sway config but is optional - the configuration w
 
 **Keybind:** `Mod+d` launches wofi (if installed)
 
-### Setup for Theme Switching
+### Setup for theme switching
 
 No manual setup is required. The `toggle_theme.sh` script manages `~/.config/wofi/style.css` for you, pointing it straight at the active theme's source file in this repo (`extra/wofi/style-{dark,light}.css`). It runs on first toggle (`Mod+Shift+t`) and at Sway startup (`toggle_theme.sh init`).
 
@@ -30,7 +30,7 @@ If wofi ever launches in the wrong (or default) theme, re-apply the current one:
 scripts/toggle_theme.sh init
 ```
 
-### Theme Integration
+### Theme integration
 
 Wofi integrates with the theme toggle system to automatically switch between dark and light themes:
 
@@ -44,7 +44,7 @@ Wofi integrates with the theme toggle system to automatically switch between dar
 - `toggle_theme.sh` symlinks `~/.config/wofi/style.css` to `extra/wofi/style-dark.css` or `extra/wofi/style-light.css` in this repo
 - Because the symlink targets the repo source directly, there is no separate copy to keep in sync and no way to end up with a dangling `style.css`
 
-### Customizing Wofi Themes
+### Customizing Wofi themes
 
 You can customize the appearance by editing the theme files:
 
@@ -65,15 +65,15 @@ nano extra/wofi/style-light.css
 
 Changes take effect the next time wofi is launched.
 
-### Power Menu
+### Power menu
 
 The `extra/wofi/wofi-power.sh` script provides a power menu using wofi with options to shutdown, reboot, suspend, hibernate, and logout. It is reachable from `Super+Ctrl+p` (via `scripts/quick-menu.sh power`) and uses the active theme. Machines without suspend/hibernate support may trim the menu locally; the provisioner never overwrites local changes.
 
-### Quick Menus
+### Quick menus
 
 `scripts/quick-menu.sh` builds the bar panels' popups (audio devices, network, bluetooth, power) in wofi's dmenu mode, so they inherit this theme automatically, the same styling pipeline as the launcher. The audio pill's native Waybar dropdown (see `docs/waybar.md`) delegates to this script from its devices item, and the clock's power dropdown (`waybar/menus/power.xml`) is a parallel definition of `wofi-power.sh`, so keep the two in sync. Hotkeys: `Super+Ctrl+a` (audio), `Super+Ctrl+w` (network), `Super+Ctrl+b` (bluetooth), `Super+Ctrl+p` (power). See `scripts/SCRIPTS.md` for the menu contract.
 
-## Kitty Terminal Theme
+## Kitty terminal theme
 
 Location: `extra/kitty/`
 
@@ -82,7 +82,7 @@ The theme toggle themes kitty with [Tokyo Night](https://github.com/folke/tokyon
 - `themes/tokyo_night_moon.conf` / `themes/tokyo_night_day.conf` are copied into kitty's conventional theme directory, `~/.config/kitty/themes/` (a user-installed `tokyo_night_*.conf` there always wins).
 - `kitty.conf` is copied to `~/.config/kitty/kitty.conf` **only if absent**. It carries the `include current-theme.conf` line and socket-based remote control for live `kitty @ set-colors`. A user-authored kitty.conf is never touched; if yours lacks the include, add it manually.
 
-## Mako Notification Daemon (Optional)
+## Mako notification daemon (optional)
 
 Location: `extra/mako/`
 
@@ -105,7 +105,7 @@ Location: `extra/mako/`
 - 5-second default timeout
 - Grouped notifications by app
 
-## swhkd Media Key Fallback (Optional)
+## swhkd media key fallback (optional)
 
 Location: `extra/swhkd/swhkdrc`
 

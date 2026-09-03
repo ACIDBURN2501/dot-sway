@@ -69,7 +69,7 @@ xdg-mime default org.gnome.Evince.desktop application/pdf # set
 
 `setup-defaults.sh` sets sane defaults (text → GNOME Text Editor, PDF → Evince, images → Loupe) only when the target app is installed. Edit its `MIME_MAP` to taste.
 
-## Manually-installed apps in "Open With"
+## Manually installed apps in "Open With"
 
 GUI file managers only list apps that ship a **`.desktop` entry** in a standard applications dir (`/usr/share/applications`, `~/.local/share/applications`, …). An app you unpacked by hand, e.g. a Neovim tarball under `/opt`, has no entry, so it never shows up in Nautilus's **Open With…**, regardless of being on your `PATH`. Drop a user-level entry:
 

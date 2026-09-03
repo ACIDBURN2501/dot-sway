@@ -1,4 +1,4 @@
-# Waybar (Status Bar)
+# Waybar (status bar)
 
 **What:** The status bar (workspace and mode indicators, brightness, audio, theme, DND, stay-awake, swayi, bluetooth, network, tray, battery, clock) plus the contract custom shell modules must follow.
 **Where:** `waybar/`: `config.jsonc` (layout), `style.css` + `colors-{dark,light}.css` (palette), `modules/` (custom shell modules), `menus/` (dropdown menu XML). Launched from `config.d/waybar`.

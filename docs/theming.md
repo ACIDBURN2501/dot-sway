@@ -1,4 +1,4 @@
-# Theme Toggle & Wallpaper
+# Theme toggle & wallpaper
 
 **What:** The unified dark/light theme across bar, terminal, launcher, and notifications, plus on-demand wallpaper rotation.
 **Where:** `scripts/toggle_theme.sh` and `scripts/rotate-wallpaper.sh`; the palettes in `waybar/colors-{dark,light}.css`; per-app bits in `extra/{kitty,wofi,mako}`.

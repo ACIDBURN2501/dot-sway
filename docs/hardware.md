@@ -1,4 +1,4 @@
-# Hardware Integration
+# Hardware integration
 
 **What:** Media keys, monitor hotplug (including clamshell), and per-app floating windows.
 **Where:** keybindings in `config`; `scripts/` (volume, brightness, monitor-hotplug); `config.d/floating_windows`; the `extra/swhkd/` fallback for odd keyboards.

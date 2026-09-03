@@ -1,4 +1,4 @@
-# sync: Sway/SwayFX Desktop Configuration
+# sync: Sway/SwayFX desktop configuration
 
 [![CI](https://github.com/aajll/sync/actions/workflows/ci.yml/badge.svg)](https://github.com/aajll/sync/actions/workflows/ci.yml)
 

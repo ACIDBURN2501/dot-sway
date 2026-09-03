@@ -1,4 +1,4 @@
-# Event Hooks
+# Event hooks
 
 **What:** A drop-in extension point for per-event automation: on each event, every executable in the event's hook directory runs, in sorted order. Tracked hooks ship in the repo; machine-local hooks live in a gitignored overlay.
 **Where:** `scripts/hooks.sh` (dispatcher), `hooks/<event>.d/` (tracked), `hooks.local/<event>.d/` (machine-local, gitignored).
