@@ -41,7 +41,7 @@ bindsym $super+l exec swaylock -f -i ~/.config/sway/images/wp.png
 # mode, scale, and adaptive_sync at runtime.
 
 # Wallpaper — wp.png is a symlink managed by config.d/wallpaper + scripts/rotate-wallpaper.sh.
-# Rotation pool: images/wallpapers/, or an external folder via wallpaper_dir.local.
+# Rotation pool: images/wallpapers/, or an external folder via WALLPAPER_DIR in host.env.
 output * bg ~/.config/sway/images/wp.png fill
 # Example configuration:
 #
@@ -52,8 +52,8 @@ output * bg ~/.config/sway/images/wp.png fill
 ### Idle configuration
 # Handled by config.d/idle: swayidle via scripts/idle-manager.sh (lock after
 # 10 min idle, screen off after 15, lock before suspend). Timings are
-# user-configurable in ~/.config/sway/idle.conf; stay-awake toggle on
-# $super+Ctrl+s.
+# user-configurable in host.env (LOCK_TIMEOUT / SCREEN_OFF_TIMEOUT);
+# stay-awake toggle on $super+Ctrl+s.
 
 # Hold an idle inhibitor while any PipeWire stream is active, so swayidle
 # doesn't lock the screen during video playback (e.g. Twitch, where the site
@@ -61,11 +61,14 @@ output * bg ~/.config/sway/images/wp.png fill
 exec sh -c 'command -v wayland-pipewire-idle-inhibit >/dev/null && exec wayland-pipewire-idle-inhibit'
 
 ### Input configuration
-# Default compose key. Per-device override lives in the gitignored
-# compose_key.local (copy compose_key.local.example to create it). Sway
-# silently skips the include when the file is absent, so the default stands.
+# Default compose key. Per-machine override: COMPOSE_KEY in the gitignored
+# host.env (copy host.env.example), rendered into a runtime snippet by
+# scripts/host-env.sh. Sway silently skips the include until the snippet
+# exists, so the default stands on first run. After editing host.env:
+# run scripts/host-env.sh, then reload.
+exec $HOME/.config/sway/scripts/host-env.sh
 set $compose_key compose:menu
-include ~/.config/sway/compose_key.local
+include $XDG_RUNTIME_DIR/sway/host_config_snippet
 input type:keyboard {
        xkb_layout "gb"
        xkb_model "pc105"

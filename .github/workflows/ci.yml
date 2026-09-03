@@ -131,3 +131,9 @@ jobs:
 
       - name: Run the idle suite
         run: bash tests/idle-sandbox.sh "$GITHUB_WORKSPACE"
+
+      - name: Run the host-env suite
+        run: bash tests/host-env-sandbox.sh "$GITHUB_WORKSPACE"
+
+      - name: Run the monitor-hotplug suite
+        run: bash tests/monitor-sandbox.sh "$GITHUB_WORKSPACE"

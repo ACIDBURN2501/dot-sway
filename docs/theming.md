@@ -23,7 +23,7 @@ scripts/toggle_theme.sh get      # print "dark" or "light"
 
 Rotation is **on-demand**. Press `$mod+Shift+w` to switch to a fresh random wallpaper; otherwise the current one persists across reloads and logins. `scripts/rotate-wallpaper.sh` does the work:
 
-1. Scans the pool for `.png/.jpg/.jpeg` (case-insensitive, top level). Pool is `images/wallpapers/` by default; a gitignored `wallpaper_dir.local` (copy `wallpaper_dir.local.example`) can point it at an external folder.
+1. Scans the pool for `.png/.jpg/.jpeg` (case-insensitive, top level). Pool is `images/wallpapers/` by default; `WALLPAPER_DIR` in the gitignored `host.env` (copy `host.env.example`) can point it at an external folder.
 2. Picks one uniformly at random.
 3. Repoints the `images/wp.png` symlink at the pick.
 4. Applies it live with `swaymsg output * bg images/wp.png fill`.

@@ -13,8 +13,14 @@ shellcheck --severity=warning $(git ls-files '*.sh')
 # syntax check, every tracked script
 for f in $(git ls-files '*.sh'); do bash -n "$f"; done
 
-# the theme-pipeline suite (no display or sway needed)
+# the sandboxed script suites (no display or sway needed)
 bash tests/theme-sandbox.sh "$PWD"
+bash tests/osd-sandbox.sh "$PWD"
+bash tests/quick-menu-sandbox.sh "$PWD"
+bash tests/power-sandbox.sh "$PWD"
+bash tests/idle-sandbox.sh "$PWD"
+bash tests/host-env-sandbox.sh "$PWD"
+bash tests/monitor-sandbox.sh "$PWD"
 
 # markdown links (needs the lychee binary, ~40s)
 lychee --no-progress '**/*.md'

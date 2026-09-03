@@ -34,9 +34,10 @@ Copy `extra/swhkd/swhkdrc` to `~/.config/swhkd/swhkdrc` and keep it scoped to me
 
 `scripts/monitor-hotplug.sh` auto-detects the internal display (first `eDP-*` output) and any external. External settings resolve in this order:
 
-1. `DOTSWAY_EXT_*` environment variables.
-2. Per-monitor matches from `scripts/monitor-profiles.local.sh`.
-3. Fallback: `1920x1080@60Hz`, scale `1`, adaptive sync `off`.
+1. `DOTSWAY_EXT_*` environment variables (session env).
+2. `host.env` at the repo root (copy `host.env.example`) — the same `DOTSWAY_EXT_*` names.
+3. Per-monitor matches from `scripts/monitor-profiles.local.sh`.
+4. Fallback: `1920x1080@60Hz`, scale `1`, adaptive sync `off`.
 
 Per-monitor setup:
 
@@ -58,6 +59,8 @@ Match on `serial` for a specific unit; leave it empty to share a profile across 
 | `DOTSWAY_EXT_ADAPTIVE_SYNC` | `off` | Adaptive sync (`on`/`off`). |
 | `DOTSWAY_INTERNAL_OUTPUT` | *(auto)* | Force a specific internal output name. |
 | `DOTSWAY_MONITOR_PROFILES_FILE` | `scripts/monitor-profiles.local.sh` | Alternate overrides path. |
+
+Any of the `DOTSWAY_EXT_*` / `DOTSWAY_INTERNAL_OUTPUT` rows can be set in `host.env` instead of the environment; a non-empty environment variable still wins. The daemon is `exec_always`, so `swaymsg reload` re-reads `host.env`.
 
 ### Clamshell mode
 

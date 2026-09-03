@@ -38,7 +38,7 @@ These scripts live in `scripts/` and are invoked in place from `$HOME/.config/sw
 - `power-events.sh`: Battery/AC event watcher, started once per session by a guarded `exec` in `config` (next to the mako guard). Polls UPower's DisplayDevice every 30s and fires one notification plus one hook per transition: `battery-low` (≤20% on discharge, once per episode), `battery-charged`, `power-plugged`, `power-unplugged` (see `docs/hooks.md`). State lives in `$XDG_RUNTIME_DIR/sway/power-events.state` so each episode fires exactly once; a pid file keeps a stray second copy from double-notifying. Tunables for testing: `POWER_EVENTS_INTERVAL`, `POWER_EVENTS_LOW_PCT`.
     - **Degradation:** without `upower`, without a battery (desktops), or without a usable runtime dir it exits 0 at the first probe — silent forever after.
     - **Notifications:** ordinary urgency, so mako's DoNDisturb mode suppresses them like every other notification.
-- `idle-manager.sh`: Starts swayidle with the session's idle handling: lock after 10 minutes idle, display off after 15 (resume powers it back on), and always lock before suspend (`-w` so the lock finishes first). Timings are user-configurable in `~/.config/sway/idle.conf` (`LOCK_TIMEOUT` / `SCREEN_OFF_TIMEOUT`, seconds; `0` disables a timeout; full-line `#` comments) — edit the file, then run the script again: it restarts the previous instance via a pid file, no reload needed. While the `stay-awake` flag is set (see `toggle-stay-awake.sh`) the lock and screen-off commands no-op; the before-sleep lock always runs.
+- `idle-manager.sh`: Starts swayidle with the session's idle handling: lock after 10 minutes idle, display off after 15 (resume powers it back on), and always lock before suspend (`-w` so the lock finishes first). Timings are user-configurable in `host.env` (`LOCK_TIMEOUT` / `SCREEN_OFF_TIMEOUT`, seconds; `0` disables a timeout — copy `host.env.example`) — edit, then run the script again: it restarts the previous instance via a pid file, no reload needed. While the `stay-awake` flag is set (see `toggle-stay-awake.sh`) the lock and screen-off commands no-op; the before-sleep lock always runs.
     - **Started by** a guarded `exec` in `config.d/idle` once per session. swaylock intentionally has no `timeout` wrapper — it must block until the session is unlocked.
 - `toggle-stay-awake.sh`: Toggles stay-awake mode (`stay-awake` flag in the flag store) and notifies. While set, idle-manager's lock and screen-off timeouts no-op, so a presentation or reading session stays on and unlocked; locking before a manual suspend still happens. Bound to `$super+Ctrl+s` and the bar indicator's click; never survives a session (runtime-dir flag).
 - `monitor-hotplug.sh`: Auto-switches between "Mobile" (internal screen only) and "Docked" (external screen only) modes.
@@ -55,16 +55,17 @@ These scripts live in `scripts/` and are invoked in place from `$HOME/.config/sw
     - **Hardware Support:** Internal display is auto-detected as the first `eDP-*` output. Lid state is read from the first available `/proc/acpi/button/lid/*/state` entry when present.
     - **Logging:** Logs actions to `$XDG_RUNTIME_DIR/sway/monitor-hotplug.log`.
     - **External output settings precedence:**
-        1. `DOTSWAY_EXT_*` environment variables
-        2. Per-monitor matches from `~/.config/sway/scripts/monitor-profiles.local.sh`
-        3. Universal fallback defaults (`1920x1080@60Hz`, scale `1`, adaptive sync `off`)
+        1. `DOTSWAY_EXT_*` environment variables (session env)
+        2. `host.env` at the repo root (copy `host.env.example`) — the same `DOTSWAY_EXT_*` names
+        3. Per-monitor matches from `~/.config/sway/scripts/monitor-profiles.local.sh`
+        4. Universal fallback defaults (`1920x1080@60Hz`, scale `1`, adaptive sync `off`)
     - **Per-monitor setup:**
         - Copy `scripts/monitor-profiles.example.sh` to `~/.config/sway/scripts/monitor-profiles.local.sh`.
         - Use `swaymsg -t get_outputs -r` to capture the external display `name`, `make`, `model`, and `serial`.
         - Add a `dotsway_monitor_profile()` case entry that calls `set_monitor_profile MODE SCALE ADAPTIVE_SYNC`.
         - Reload Sway and run `~/.config/sway/scripts/monitor-hotplug.sh --once` to re-apply immediately.
         - Check `$XDG_RUNTIME_DIR/sway/monitor-hotplug.log` if the detected values or applied settings do not look right.
-    - **Environment variables** (set before starting Sway to force the same external monitor behaviour everywhere):
+    - **Environment variables** (set in the session environment or in `host.env` — a non-empty env var wins — to force the same external monitor behaviour everywhere):
 
         | Variable | Default | Description |
         |---|---|---|
@@ -75,10 +76,10 @@ These scripts live in `scripts/` and are invoked in place from `$HOME/.config/sw
         | `DOTSWAY_MONITOR_PROFILES_FILE` | `~/.config/sway/scripts/monitor-profiles.local.sh` | Alternate path for local per-monitor overrides |
 
 - `rotate-wallpaper.sh`: Picks a random `.png/.jpg/.jpeg` from the wallpaper pool, repoints the `images/wp.png` symlink at it, and applies the change live via `swaymsg output * bg`. Bound to `$mod+Shift+w` for on-demand switching. `config.d/wallpaper` runs it with `--if-unset` on start/reload, which only picks when `wp.png` isn't already set — so reloads and logins keep the current wallpaper.
-    - **Pool location:** `images/wallpapers/` by default. A `wallpaper_dir.local` file at the repo root (gitignored — copy `wallpaper_dir.local.example`) redirects it to any external folder, e.g. a synced image library; only top-level files are scanned, so a subfolder of a larger collection works.
+    - **Pool location:** `images/wallpapers/` by default. `WALLPAPER_DIR` in `host.env` (gitignored — copy `host.env.example`) redirects it to any external folder, e.g. a synced image library; only top-level files are scanned, so a subfolder of a larger collection works. A set-but-missing directory warns and falls back to the in-repo pool.
     - **Empty/absent pool:** an already-set `wp.png` is left alone; otherwise it falls back to the bundled wallpaper (`images/wallpapers/frederic-church-parthenon.jpg`), so `wp.png` always resolves (no black desktop, no broken swaylock image) even on a fresh checkout with an empty pool.
     - **Lock screen:** the swaylock keybind (and the optional swayidle example in `config`) consume `images/wp.png`, so the lock screen follows rotation automatically — no extra wiring.
-    - **Override the repo dir:** set `SWAY_DIR=/some/other/path` before invoking; the script resolves `images/`, `wallpaper_dir.local`, and the default pool underneath it.
+    - **Override the repo dir:** set `SWAY_DIR=/some/other/path` before invoking; the script resolves `images/`, `host.env`, and the default pool underneath it.
 - `install-release.sh`: Installs a non-repo tool from a pinned release into `/opt/<name>/` with `/usr/local/bin` symlinks — the pattern for tools the distro doesn't package well (nvim, teams-for-linux). Verifies the SHA256 from the release notes before touching system dirs; a mismatch aborts before anything is written.
     - **Usage:** `install-release.sh <name> <url> <sha256>` — the payload is detected by content: tarballs extract into `/opt/<name>/` and executables from a `bin/` dir (or the tarball root) get symlinked; a plain file is symlinked into `/usr/local/bin` as `<name>`.
     - **Never overwrites:** if `/opt/<name>` already exists, it refuses and tells you to remove it first.

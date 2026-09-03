@@ -4,12 +4,20 @@ set -euo pipefail
 # Robust monitor hotplugging and clamshell mode for Sway
 
 # --- Configuration ---
+# Per-machine settings can live in host.env at the repo root (copy
+# host.env.example); the shared loader applies them with precedence
+# env var > host.env > per-monitor profile > built-in default. The daemon
+# is exec_always, so `swaymsg reload` re-reads host.env.
+# shellcheck disable=SC1091
+. "$HOME/.config/sway/scripts/lib/host-env.sh"
+load_host_env
+
 # Internal display: auto-detected (any eDP-* output).
-# Override with DOTSWAY_INTERNAL_OUTPUT env var or set directly here.
+# Override with DOTSWAY_INTERNAL_OUTPUT (env var or host.env).
 INTERNAL_OUTPUT="${DOTSWAY_INTERNAL_OUTPUT:-}"
 
-# External monitor settings. Environment variables override everything.
-# Otherwise, the script uses per-monitor profile overrides from
+# External monitor settings. Environment variables (or host.env) override
+# everything. Otherwise, the script uses per-monitor profile overrides from
 # ~/.config/sway/scripts/monitor-profiles.local.sh when available, and finally
 # falls back to universal defaults.
 #   DOTSWAY_EXT_RES    — mode string passed to `swaymsg output … mode`

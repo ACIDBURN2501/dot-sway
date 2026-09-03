@@ -20,18 +20,22 @@ IF_UNSET=0
 [[ "${1:-}" == "--if-unset" ]] && IF_UNSET=1
 
 SWAY_DIR="${SWAY_DIR:-$HOME/.config/sway}"
-WALLPAPER_DIR="$SWAY_DIR/images/wallpapers"
+# shellcheck disable=SC1091
+. "$SWAY_DIR/scripts/lib/host-env.sh"
+DOTSWAY_HOST_ENV="${DOTSWAY_HOST_ENV:-$SWAY_DIR/host.env}"
+load_host_env
+
+DEFAULT_POOL="$SWAY_DIR/images/wallpapers"
 LINK="$SWAY_DIR/images/wp.png"
 DEFAULT="$SWAY_DIR/images/wallpapers/frederic-church-parthenon.jpg"   # committed fallback when the pool is empty
 
-# Machine-local pool override — wallpaper_dir.local (gitignored, like
-# compose_key.local) holds one path to an external wallpaper folder.
-# Absent file → the in-repo images/wallpapers/ pool above.
-# First non-blank, non-comment line is the path (~ is expanded).
-OVERRIDE_FILE="$SWAY_DIR/wallpaper_dir.local"
-if [[ -f "$OVERRIDE_FILE" ]]; then
-  override="$(grep -m1 -v -e '^[[:space:]]*#' -e '^[[:space:]]*$' "$OVERRIDE_FILE" || true)"
-  [[ -n "$override" ]] && WALLPAPER_DIR="${override/#\~/$HOME}"
+# Pool override comes from WALLPAPER_DIR (env var or host.env — see
+# host.env.example). A set-but-missing directory is a configuration error:
+# warn and fall back to the in-repo pool rather than rotating nothing.
+WALLPAPER_DIR="${WALLPAPER_DIR:-$DEFAULT_POOL}"
+if [[ "$WALLPAPER_DIR" != "$DEFAULT_POOL" && ! -d "$WALLPAPER_DIR" ]]; then
+  printf 'rotate-wallpaper: WALLPAPER_DIR %q is not a directory; using the in-repo pool\n' "$WALLPAPER_DIR" >&2
+  WALLPAPER_DIR="$DEFAULT_POOL"
 fi
 
 # In --if-unset (start/reload) mode, leave an already-set wallpaper alone so it
